@@ -1,0 +1,20 @@
+<package>
+  <description brief="monolithic_pr2_planner_node">
+
+     monolithic_pr2_planner_node
+
+  </description>
+  <author></author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/full_body_planner_dual_arm</url>
+
+  <depend package="roscpp" />
+  <depend package="common_rosdeps" />
+  <depend package="geometry_msgs" />
+  <depend package="monolithic_pr2_planner" />
+  <rosdep name="yaml-cpp" />
+
+</package>
+
+
