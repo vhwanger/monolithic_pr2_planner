@@ -25,5 +25,6 @@ rosbuild_add_boost_directories()
 #common commands for building c++ executables and libraries
 #target_link_libraries(${PROJECT_NAME} another_library)
 #rosbuild_link_boost(${PROJECT_NAME} thread)
-rosbuild_add_executable(node src/node.cpp)
+rosbuild_add_executable(node src/node.cpp src/EnvInterfaces.cpp
+    src/CollisionSpaceInterface.cpp)
 target_link_libraries(node monolithic_pr2_planner)

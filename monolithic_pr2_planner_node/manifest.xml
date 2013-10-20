@@ -13,6 +13,9 @@
   <depend package="common_rosdeps" />
   <depend package="geometry_msgs" />
   <depend package="monolithic_pr2_planner" />
+  <depend package="leatherman" />
+  <depend package="geometry_msgs" />
+  <depend package="arm_navigation_msgs" />
   <rosdep name="yaml-cpp" />
 
 </package>

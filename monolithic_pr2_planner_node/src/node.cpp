@@ -4,9 +4,8 @@
 using namespace monolithic_pr2_planner_node;
 using namespace monolithic_pr2_planner;
 
-bool Node::init(){
-    m_env.init();
-    return true;
+Node::Node() : m_env_interface(m_env){
+    m_env_interface.bindCollisionSpaceToTopic("collision_map_out");
 }
 
 int main(int argc, char** argv){

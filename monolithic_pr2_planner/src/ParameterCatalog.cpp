@@ -9,46 +9,55 @@ ParameterCatalog::ParameterCatalog() : m_nodehandle("~") {
 }
 
 void ParameterCatalog::fetch(){
+    ROS_INFO("fetching parameters");
     setMotionPrimitiveFiles();
-    setRobotHardwareDescriptionFiles();
+    setHardwareDescriptionFiles(m_hardware_description_files);
+    setCollisionSpaceParams(m_collision_space_params);
+    setRobotResolutionParams(m_robot_resolution_params);
 }
 
 void ParameterCatalog::setMotionPrimitiveFiles(){
-    ROS_INFO("setting motion primitive file from param server");
     setFileNameFromParamServer("planner/motion_primitive_file", 
             &m_motion_primitive_files.arm_motion_primitive_file);
     setFileNameFromParamServer("planner/base_motion_primitive_file", 
             &m_motion_primitive_files.base_motion_primitive_file);
 }
 
-void ParameterCatalog::setRobotHardwareDescriptionFiles(){
-    ROS_INFO("setting robot hardware description files from param server");
+void ParameterCatalog::setHardwareDescriptionFiles(HardwareDescriptionFiles& params){
     setFileNameFromParamServer("planner/left_arm_description_file", 
-            &m_arm_description_files.left_arm_description_file);
+            &params.l_arm_file);
     setFileNameFromParamServer("planner/right_arm_description_file", 
-            &m_arm_description_files.right_arm_description_file);
+            &params.r_arm_file);
+
+    std::string robot_urdf_param;
+    if(!m_nodehandle.searchParam("robot_description",robot_urdf_param)){
+        ROS_ERROR("Can't find description on param server (/robot_description not set). Exiting");
+    } else {
+        m_nodehandle.param<std::string>(robot_urdf_param, params.robot_description_string, 
+                                        "robot_description");
+    }
 }
 
-void ParameterCatalog::setOccupancyGridParams(){
-    m_nodehandle.param("collision_space/resolution",
-                            m_collision_space_params.env_resolution, 0.02);
-    m_nodehandle.param("collision_space/reference_frame",
-                            m_collision_space_params.reference_frame, 
+void ParameterCatalog::setCollisionSpaceParams(CollisionSpaceParams& params){
+    m_nodehandle.param("collision_space/resolution", params.env_resolution, 0.02);
+    m_nodehandle.param("collision_space/reference_frame", params.reference_frame, 
                             std::string("base_link"));
-    m_nodehandle.param("collision_space/occupancy_grid/origin_x",
-                            m_collision_space_params.origin.x,-0.6);
-    m_nodehandle.param("collision_space/occupancy_grid/origin_y",
-                            m_collision_space_params.origin.y,-1.15);
-    m_nodehandle.param("collision_space/occupancy_grid/origin_z",
-                            m_collision_space_params.origin.z,-0.05);
-    m_nodehandle.param("collision_space/occupancy_grid/size_x",
-                            m_collision_space_params.origin.x,1.6);
-    m_nodehandle.param("collision_space/occupancy_grid/size_y",
-                            m_collision_space_params.origin.y,1.8);
-    m_nodehandle.param("collision_space/occupancy_grid/size_z",
-                            m_collision_space_params.origin.z,1.4);
+    m_nodehandle.param("collision_space/occupancy_grid/origin_x", params.origin.x,-0.6);
+    m_nodehandle.param("collision_space/occupancy_grid/origin_y", params.origin.y,-1.15);
+    m_nodehandle.param("collision_space/occupancy_grid/origin_z", params.origin.z,-0.05);
+    m_nodehandle.param("collision_space/occupancy_grid/size_x", params.origin.x,1.6);
+    m_nodehandle.param("collision_space/occupancy_grid/size_y", params.origin.y,1.8);
+    m_nodehandle.param("collision_space/occupancy_grid/size_z", params.origin.z,1.4);
 }
 
+// currently just hard code these...maybe someone will want to retrieve them
+// from param server at some point.
+void ParameterCatalog::setRobotResolutionParams(RobotResolutionParams& params){
+    params.obj_xyz_resolution = 0.02;
+    params.obj_rpy_resolution = 2*M_PI/180;
+    params.arm_free_angle_resolution = 3*M_PI/180;
+    params.base_theta_resolution = 22.5*M_PI/180;
+}
 
 bool ParameterCatalog::setFileNameFromParamServer(const std::string param_name, 
                                                   std::string* parameter){
@@ -59,6 +68,7 @@ bool ParameterCatalog::setFileNameFromParamServer(const std::string param_name,
        *parameter = filename;
         ROS_INFO("Pulling in data from %s", filename.c_str());
     } else {
+       *parameter = filename;
         ROS_ERROR("Failed to find file '%s' to load in parameters for %s", filename.c_str(),
                                                                            param_name.c_str());
         return false;

@@ -9,10 +9,10 @@ namespace monolithic_pr2_planner {
             ContBaseState(double x, double y, double z, double theta);
             ContBaseState(DiscBaseState disc_body_pose);
 
-            double getBodyX() const { return pose[X]; };
-            double getBodyY() const { return pose[Y]; };
-            double getBodyZ() const { return pose[Z]; };
-            double getBodyTheta() const { return pose[THETA]; };
+            double getBodyX() const { return pose[BodyDOF::X]; };
+            double getBodyY() const { return pose[BodyDOF::Y]; };
+            double getBodyZ() const { return pose[BodyDOF::Z]; };
+            double getBodyTheta() const { return pose[BodyDOF::THETA]; };
 
             void setBodyX(double x);
             void setBodyY(double y);

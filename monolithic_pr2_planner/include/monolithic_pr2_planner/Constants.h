@@ -1,17 +1,33 @@
 #pragma once
-enum BodyDOF {X, Y, Z, THETA};
+namespace monolithic_pr2_planner {
+    class BodyDOF {
+        public:
+            enum {X, Y, Z, THETA};
+    };
 
-enum Joints { 
-    SHOULDER_PAN,
-    SHOULDER_LIFT,
-    UPPER_ARM_ROLL,
-    ELBOW_FLEX,
-    FOREARM_ROLL,
-    WRIST_FLEX,
-    WRIST_ROLL
-};
+    class Joints { 
+        public:
+            enum {
+                SHOULDER_PAN,
+                SHOULDER_LIFT,
+                UPPER_ARM_ROLL,
+                ELBOW_FLEX,
+                FOREARM_ROLL,
+                WRIST_FLEX,
+                WRIST_ROLL
+            };
+    };
 
-enum ArmSide {
-    LEFT,
-    RIGHT
-};
+    class ArmSide {
+        public:
+            enum {
+                LEFT,
+                RIGHT
+            };
+    };
+
+    class ObjectPose {
+        public:
+            enum { X, Y, Z, ROLL, PITCH, YAW};
+    };
+}

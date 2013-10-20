@@ -9,12 +9,16 @@ namespace monolithic_pr2_planner {
         public:
             DiscBaseState(unsigned int x, unsigned int y, 
                              unsigned int z, unsigned int theta);
-            DiscBaseState(ContBaseState cont_body_pose);
+            DiscBaseState(ContBaseState cont_body_state);
 
-            unsigned int getBodyX() const { return pose[X]; };
-            unsigned int getBodyY() const { return pose[Y]; };
-            unsigned int getBodyZ() const { return pose[Z]; };
-            unsigned int getBodyTheta() const { return pose[THETA]; };
+            unsigned int getBodyX() const { return m_state[BodyDOF::X]; };
+            unsigned int getBodyY() const { return m_state[BodyDOF::Y]; };
+            unsigned int getBodyZ() const { return m_state[BodyDOF::Z]; };
+            unsigned int getBodyTheta() const { return m_state[BodyDOF::THETA]; };
+
+            void getVectorOfValues(std::vector<unsigned int>* values);
+            std::vector<unsigned int>::const_iterator getCoordBegin(){ return m_state.begin(); };
+            std::vector<unsigned int>::const_iterator getCoordEnd(){ return m_state.end(); };
 
             void setBodyX(unsigned int x);
             void setBodyY(unsigned int y);
@@ -23,6 +27,6 @@ namespace monolithic_pr2_planner {
 
             ContBaseState getContBaseState();
         private:
-            std::vector<unsigned int> pose;
+            std::vector<unsigned int> m_state;
     };
 }

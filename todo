@@ -1,0 +1,7 @@
+figure out where to put in discrete->continuous conversion code. it currently
+depends on grid_, but how do i feed that to graph state and all its objects?
+
+
+add free angle to hash function
+
+exceptnion stuff for static configuration

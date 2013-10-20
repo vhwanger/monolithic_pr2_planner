@@ -9,6 +9,7 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/full_body_planner_env</url>
   <depend package="pr2_collision_checker"/>
+  <depend package="angles"/>
 
   <export>
       <cpp cflags="-I${prefix}/include" lflags="-L${prefix}/lib -lmonolithic_pr2_planner"/>
