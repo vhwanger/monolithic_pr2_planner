@@ -1,6 +1,7 @@
 #pragma once
 #include <monolithic_pr2_planner/Environment.h>
 #include <monolithic_pr2_planner_node/CollisionSpaceInterface.h>
+#include <monolithic_pr2_planner_node/GetMobileArmPlan.h>
 #include <boost/shared_ptr.hpp>
 #include <string>
 #include <Eigen/Core>
@@ -16,7 +17,9 @@ namespace monolithic_pr2_planner_node {
         public:
             EnvInterfaces(monolithic_pr2_planner::Environment& env);
             void getParams();
-            bool bindPlanPathService();
+            bool planPathCallback(GetMobileArmPlan::Request &req, 
+                                  GetMobileArmPlan::Response &res);
+            void bindPlanPathToEnv();
             bool bindCollisionSpaceToTopic(std::string topic_name);
 
         private:

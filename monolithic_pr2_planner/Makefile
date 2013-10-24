@@ -422,30 +422,6 @@ gtest_main/fast:
 	$(MAKE) -f gtest/CMakeFiles/gtest_main.dir/build.make gtest/CMakeFiles/gtest_main.dir/build
 .PHONY : gtest_main/fast
 
-src/ArmModel.o: src/ArmModel.cpp.o
-.PHONY : src/ArmModel.o
-
-# target to build an object file
-src/ArmModel.cpp.o:
-	$(MAKE) -f CMakeFiles/monolithic_pr2_planner.dir/build.make CMakeFiles/monolithic_pr2_planner.dir/src/ArmModel.cpp.o
-.PHONY : src/ArmModel.cpp.o
-
-src/ArmModel.i: src/ArmModel.cpp.i
-.PHONY : src/ArmModel.i
-
-# target to preprocess a source file
-src/ArmModel.cpp.i:
-	$(MAKE) -f CMakeFiles/monolithic_pr2_planner.dir/build.make CMakeFiles/monolithic_pr2_planner.dir/src/ArmModel.cpp.i
-.PHONY : src/ArmModel.cpp.i
-
-src/ArmModel.s: src/ArmModel.cpp.s
-.PHONY : src/ArmModel.s
-
-# target to generate assembly for a file
-src/ArmModel.cpp.s:
-	$(MAKE) -f CMakeFiles/monolithic_pr2_planner.dir/build.make CMakeFiles/monolithic_pr2_planner.dir/src/ArmModel.cpp.s
-.PHONY : src/ArmModel.cpp.s
-
 src/CollisionSpaceMgr.o: src/CollisionSpaceMgr.cpp.o
 .PHONY : src/CollisionSpaceMgr.o
 
@@ -517,6 +493,30 @@ src/HashManager.s: src/HashManager.cpp.s
 src/HashManager.cpp.s:
 	$(MAKE) -f CMakeFiles/monolithic_pr2_planner.dir/build.make CMakeFiles/monolithic_pr2_planner.dir/src/HashManager.cpp.s
 .PHONY : src/HashManager.cpp.s
+
+src/OccupancyGridUser.o: src/OccupancyGridUser.cpp.o
+.PHONY : src/OccupancyGridUser.o
+
+# target to build an object file
+src/OccupancyGridUser.cpp.o:
+	$(MAKE) -f CMakeFiles/monolithic_pr2_planner.dir/build.make CMakeFiles/monolithic_pr2_planner.dir/src/OccupancyGridUser.cpp.o
+.PHONY : src/OccupancyGridUser.cpp.o
+
+src/OccupancyGridUser.i: src/OccupancyGridUser.cpp.i
+.PHONY : src/OccupancyGridUser.i
+
+# target to preprocess a source file
+src/OccupancyGridUser.cpp.i:
+	$(MAKE) -f CMakeFiles/monolithic_pr2_planner.dir/build.make CMakeFiles/monolithic_pr2_planner.dir/src/OccupancyGridUser.cpp.i
+.PHONY : src/OccupancyGridUser.cpp.i
+
+src/OccupancyGridUser.s: src/OccupancyGridUser.cpp.s
+.PHONY : src/OccupancyGridUser.s
+
+# target to generate assembly for a file
+src/OccupancyGridUser.cpp.s:
+	$(MAKE) -f CMakeFiles/monolithic_pr2_planner.dir/build.make CMakeFiles/monolithic_pr2_planner.dir/src/OccupancyGridUser.cpp.s
+.PHONY : src/OccupancyGridUser.cpp.s
 
 src/ParameterCatalog.o: src/ParameterCatalog.cpp.o
 .PHONY : src/ParameterCatalog.o
@@ -613,6 +613,30 @@ src/StateReps/ContBaseState.s: src/StateReps/ContBaseState.cpp.s
 src/StateReps/ContBaseState.cpp.s:
 	$(MAKE) -f CMakeFiles/monolithic_pr2_planner.dir/build.make CMakeFiles/monolithic_pr2_planner.dir/src/StateReps/ContBaseState.cpp.s
 .PHONY : src/StateReps/ContBaseState.cpp.s
+
+src/StateReps/ContObjectState.o: src/StateReps/ContObjectState.cpp.o
+.PHONY : src/StateReps/ContObjectState.o
+
+# target to build an object file
+src/StateReps/ContObjectState.cpp.o:
+	$(MAKE) -f CMakeFiles/monolithic_pr2_planner.dir/build.make CMakeFiles/monolithic_pr2_planner.dir/src/StateReps/ContObjectState.cpp.o
+.PHONY : src/StateReps/ContObjectState.cpp.o
+
+src/StateReps/ContObjectState.i: src/StateReps/ContObjectState.cpp.i
+.PHONY : src/StateReps/ContObjectState.i
+
+# target to preprocess a source file
+src/StateReps/ContObjectState.cpp.i:
+	$(MAKE) -f CMakeFiles/monolithic_pr2_planner.dir/build.make CMakeFiles/monolithic_pr2_planner.dir/src/StateReps/ContObjectState.cpp.i
+.PHONY : src/StateReps/ContObjectState.cpp.i
+
+src/StateReps/ContObjectState.s: src/StateReps/ContObjectState.cpp.s
+.PHONY : src/StateReps/ContObjectState.s
+
+# target to generate assembly for a file
+src/StateReps/ContObjectState.cpp.s:
+	$(MAKE) -f CMakeFiles/monolithic_pr2_planner.dir/build.make CMakeFiles/monolithic_pr2_planner.dir/src/StateReps/ContObjectState.cpp.s
+.PHONY : src/StateReps/ContObjectState.cpp.s
 
 src/StateReps/DiscBaseState.o: src/StateReps/DiscBaseState.cpp.o
 .PHONY : src/StateReps/DiscBaseState.o
@@ -720,9 +744,6 @@ help:
 	@echo "... tests"
 	@echo "... gtest"
 	@echo "... gtest_main"
-	@echo "... src/ArmModel.o"
-	@echo "... src/ArmModel.i"
-	@echo "... src/ArmModel.s"
 	@echo "... src/CollisionSpaceMgr.o"
 	@echo "... src/CollisionSpaceMgr.i"
 	@echo "... src/CollisionSpaceMgr.s"
@@ -732,6 +753,9 @@ help:
 	@echo "... src/HashManager.o"
 	@echo "... src/HashManager.i"
 	@echo "... src/HashManager.s"
+	@echo "... src/OccupancyGridUser.o"
+	@echo "... src/OccupancyGridUser.i"
+	@echo "... src/OccupancyGridUser.s"
 	@echo "... src/ParameterCatalog.o"
 	@echo "... src/ParameterCatalog.i"
 	@echo "... src/ParameterCatalog.s"
@@ -744,6 +768,9 @@ help:
 	@echo "... src/StateReps/ContBaseState.o"
 	@echo "... src/StateReps/ContBaseState.i"
 	@echo "... src/StateReps/ContBaseState.s"
+	@echo "... src/StateReps/ContObjectState.o"
+	@echo "... src/StateReps/ContObjectState.i"
+	@echo "... src/StateReps/ContObjectState.s"
 	@echo "... src/StateReps/DiscBaseState.o"
 	@echo "... src/StateReps/DiscBaseState.i"
 	@echo "... src/StateReps/DiscBaseState.s"

@@ -7,12 +7,14 @@ SearchRequest::SearchRequest(SearchRequestParamsPtr params){
     m_params = params;
 }
 
-RequestErrors SearchRequest::isValidSearchRequest(CSpaceMgrPtr& cspace,
-                                                  ArmModelPtr& arm_model){
-    RobotPose robot_pose(m_params->base_start,
-                         m_params->right_arm_start,
-                         m_params->left_arm_start);
-    cspace->isValid(robot_pose);
-    return INVALID_START;
+RequestErrors SearchRequest::isValid(CSpaceMgrPtr& cspace,
+                                     ArmModelPtr& arm_model){
+    RobotPose robot_start_pose(m_params->base_start,
+                               m_params->right_arm_start,
+                               m_params->left_arm_start);
+    if (!cspace->isValid(robot_start_pose)){
+        return INVALID_START;
+    }
+    return VALID_REQUEST;
 }
 

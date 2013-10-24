@@ -55,7 +55,7 @@ namespace monolithic_pr2_planner {
         std::string reference_frame;
         Point3D origin; 
         Point3D max_point;
-    } CollisionSpaceParams;
+    } OccupancyGridParams;
 
     typedef struct {
         double obj_xyz_resolution;
@@ -71,13 +71,13 @@ namespace monolithic_pr2_planner {
 
             void setMotionPrimitiveFiles();
             void setHardwareDescriptionFiles(HardwareDescriptionFiles& params);
-            void setCollisionSpaceParams(CollisionSpaceParams& params);
+            void setOccupancyGridParams(OccupancyGridParams& params);
             void setRobotResolutionParams(RobotResolutionParams& params);
 
             RobotResolutionParams m_robot_resolution_params;
             HardwareDescriptionFiles m_hardware_description_files;
             MotionPrimitiveFiles m_motion_primitive_files;
-            CollisionSpaceParams m_collision_space_params;
+            OccupancyGridParams m_occupancy_grid_params;
 
         private:
             ros::NodeHandle m_nodehandle;

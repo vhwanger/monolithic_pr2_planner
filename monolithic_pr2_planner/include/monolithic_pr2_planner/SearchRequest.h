@@ -15,12 +15,13 @@ namespace monolithic_pr2_planner {
         ContObjectState obj_goal_pose;
         ContBaseState base_start;
         ContArmState left_arm_start;
-        KDL::Frame left_arm_object;
         ContArmState right_arm_start;
+        KDL::Frame left_arm_object;
         KDL::Frame right_arm_object;
     } SearchRequestParams;
 
     enum RequestErrors { 
+        VALID_REQUEST,
         INVALID_START, 
         INVALID_GOAL, 
         INVALID_LEFT_ARM, 
@@ -31,8 +32,7 @@ namespace monolithic_pr2_planner {
     class SearchRequest {
         public:
             SearchRequest(SearchRequestParamsPtr params);
-            RequestErrors isValidSearchRequest(CSpaceMgrPtr& cspace, ArmModelPtr& arm_model);
-        private:
+            RequestErrors isValid(CSpaceMgrPtr& cspace, ArmModelPtr& arm_model);
             SearchRequestParamsPtr m_params;
     };
     typedef boost::shared_ptr<SearchRequest> SearchRequestPtr;

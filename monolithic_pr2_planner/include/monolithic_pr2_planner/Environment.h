@@ -11,7 +11,7 @@ namespace monolithic_pr2_planner {
         public:
             Environment();
             CSpaceMgrPtr getCollisionSpace(){ return m_collision_space_mgr; };
-            bool initSearchRequest(SearchRequestParamsPtr search_request_params);
+            bool plan(SearchRequestParamsPtr search_request_params);
 
         private:
             void configureStateReps();

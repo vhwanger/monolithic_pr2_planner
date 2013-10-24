@@ -23,15 +23,15 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #rosbuild_gensrv()
 
 #common commands for building c++ executables and libraries
-rosbuild_add_library(monolithic_pr2_planner src/ArmModel.cpp
-                                            src/StateReps/RobotPose.cpp
+rosbuild_add_library(monolithic_pr2_planner src/StateReps/RobotPose.cpp
                                             src/StateReps/ContArmState.cpp
                                             src/StateReps/ContBaseState.cpp
                                             src/StateReps/DiscBaseState.cpp
                                             src/StateReps/DiscObjectState.cpp
-                                            #src/StateReps/ContObjectState.cpp
+                                            src/StateReps/ContObjectState.cpp
                                             src/SearchRequest.cpp
                                             src/Environment.cpp
+                                            src/OccupancyGridUser.cpp
                                             src/CollisionSpaceMgr.cpp
                                             src/ParameterCatalog.cpp
                                             src/HashManager.cpp

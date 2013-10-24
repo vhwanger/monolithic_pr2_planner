@@ -1,15 +1,20 @@
 #pragma once
 #include <vector>
 #include <monolithic_pr2_planner/Constants.h>
-#include <monolithic_pr2_planner/ArmModel.h>
 #include <monolithic_pr2_planner/ParameterCatalog.h>
+#include <pr2_collision_checker/sbpl_arm_model.h>
 #include <boost/shared_ptr.hpp>
 
 namespace monolithic_pr2_planner {
-    class ArmModel;
+    typedef boost::shared_ptr<sbpl_arm_planner::SBPLArmModel> SBPLArmModelPtr;
     class ContArmState {
         public:
             ContArmState();
+            ContArmState(std::vector<double> arm_state);
+
+            bool operator==(const ContArmState& other);
+            bool operator!=(const ContArmState& other);
+
             static void setRobotResolutionParams(const RobotResolutionParams& params);
 
             void enableJointLimitChecking();
@@ -40,14 +45,41 @@ namespace monolithic_pr2_planner {
             void setWristRoll(double cont_value);
             void setArm(ArmSide arm);
 
-            void getBodyFrameObjectPose();
+            void getBodyFrameObjectState();
             
-        private:
-            boost::shared_ptr<ArmModel> m_arm_model;
-            static boost::shared_ptr<RobotResolutionParams> m_params;
 
+        private:
+
+            static boost::shared_ptr<RobotResolutionParams> m_params;
             bool m_is_enforcing_joint_limits;
             std::vector<double> m_angles;
             ArmSide m_arm_side;
+    };
+    typedef boost::shared_ptr<ContArmState> ContArmStatePtr;
+
+    class LeftContArmState : public ContArmState {
+        public:
+            LeftContArmState(std::vector<double> angles) : ContArmState(angles) { }
+            virtual SBPLArmModelPtr getArmModel(){ return m_arm_model; };
+            static void setArmModel(const HardwareDescriptionFiles& params);
+
+        private:
+            static SBPLArmModelPtr m_arm_model;
+    };
+
+    class RightContArmState : public ContArmState {
+        public:
+            RightContArmState(std::vector<double> angles) : ContArmState(angles) { }
+            virtual SBPLArmModelPtr getArmModel(){ return m_arm_model; };
+            static void setArmModel(const HardwareDescriptionFiles& params);
+
+        private:
+            static SBPLArmModelPtr m_arm_model;
+    };
+
+    class ArmStateFactory {
+        public:
+            static boost::shared_ptr<ContArmState> createArmState(int arm_side,
+                                                                  std::vector<double> angles);
     };
 }

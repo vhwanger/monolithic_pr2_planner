@@ -5,15 +5,24 @@
 namespace monolithic_pr2_planner {
     class GraphState {
         public:
-            unsigned int getStateID() const { return m_state_id; } ;
-            RobotPose getRobotPose() const { return m_robot_state; } ;
-            DiscObjectState getDiscObjectState() const { return m_disc_obj_pose;} ;
+            GraphState(RobotPose robot_pose);
+            // equality of graphstates is defined as:
+            //      same discrete base state
+            //      same discrete object state
+            //      same left and right arm discrete free angles
+            bool operator==(const GraphState& other);
+            bool operator!=(const GraphState& other);
+            unsigned int getID() const { return m_id; };
+            void setID(unsigned int id) { m_id = id; };
+            RobotPose getRobotPose() const { return m_robot_pose; };
+
+            DiscObjectState getDiscObjectState() const { return m_disc_obj_state;};
             ContObjectState getContObjectState();
 
         private:
-            unsigned int m_state_id;
-            RobotPose m_robot_state;
-            DiscObjectState m_disc_obj_pose;
+            unsigned int m_id;
+            RobotPose m_robot_pose;
+            DiscObjectState m_disc_obj_state;
     };
 
 };

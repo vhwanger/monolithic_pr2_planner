@@ -1,29 +1,33 @@
 #pragma once
 #include <monolithic_pr2_planner/StateReps/ContBaseState.h>
 #include <monolithic_pr2_planner/Constants.h>
+#include <monolithic_pr2_planner/OccupancyGridUser.h>
 #include <vector>
 namespace monolithic_pr2_planner {
     class ContBaseState;
 
-    class DiscBaseState {
+    class DiscBaseState : public OccupancyGridUser {
         public:
             DiscBaseState(unsigned int x, unsigned int y, 
-                             unsigned int z, unsigned int theta);
+                    unsigned int z, unsigned int theta);
             DiscBaseState(ContBaseState cont_body_state);
 
-            unsigned int getBodyX() const { return m_state[BodyDOF::X]; };
-            unsigned int getBodyY() const { return m_state[BodyDOF::Y]; };
-            unsigned int getBodyZ() const { return m_state[BodyDOF::Z]; };
-            unsigned int getBodyTheta() const { return m_state[BodyDOF::THETA]; };
+            bool operator==(const DiscBaseState& other);
+            bool operator!=(const DiscBaseState& other);
+
+            unsigned int getX() const { return m_state[BodyDOF::X]; };
+            unsigned int getY() const { return m_state[BodyDOF::Y]; };
+            unsigned int getZ() const { return m_state[BodyDOF::Z]; };
+            unsigned int getTheta() const { return m_state[BodyDOF::THETA]; };
 
             void getVectorOfValues(std::vector<unsigned int>* values);
             std::vector<unsigned int>::const_iterator getCoordBegin(){ return m_state.begin(); };
             std::vector<unsigned int>::const_iterator getCoordEnd(){ return m_state.end(); };
 
-            void setBodyX(unsigned int x);
-            void setBodyY(unsigned int y);
-            void setBodyZ(unsigned int z);
-            void setBodyTheta(unsigned int theta);
+            void setX(unsigned int x);
+            void setY(unsigned int y);
+            void setZ(unsigned int z);
+            void setTheta(unsigned int theta);
 
             ContBaseState getContBaseState();
         private:

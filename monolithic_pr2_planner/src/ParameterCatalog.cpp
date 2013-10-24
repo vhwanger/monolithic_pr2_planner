@@ -12,8 +12,8 @@ void ParameterCatalog::fetch(){
     ROS_INFO("fetching parameters");
     setMotionPrimitiveFiles();
     setHardwareDescriptionFiles(m_hardware_description_files);
-    setCollisionSpaceParams(m_collision_space_params);
-    setRobotResolutionParams(m_robot_resolution_params);
+    setOccupancyGridParams(m_occupancy_grid_params);
+    
 }
 
 void ParameterCatalog::setMotionPrimitiveFiles(){
@@ -38,7 +38,7 @@ void ParameterCatalog::setHardwareDescriptionFiles(HardwareDescriptionFiles& par
     }
 }
 
-void ParameterCatalog::setCollisionSpaceParams(CollisionSpaceParams& params){
+void ParameterCatalog::setOccupancyGridParams(OccupancyGridParams& params){
     m_nodehandle.param("collision_space/resolution", params.env_resolution, 0.02);
     m_nodehandle.param("collision_space/reference_frame", params.reference_frame, 
                             std::string("base_link"));

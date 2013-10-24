@@ -7,6 +7,7 @@
 #include <boost/shared_ptr.hpp>
 
 namespace monolithic_pr2_planner {
+    typedef boost::shared_ptr<sbpl_arm_planner::SBPLArmModel> SBPLArmModelPtr;
     class ContArmState;
     class ArmModel {
         public:
@@ -14,12 +15,12 @@ namespace monolithic_pr2_planner {
             bool getArmAnglesFromObjectPose(DiscObjectState obj_pose, boost::shared_ptr<ContArmState> arm_state);
             bool getArmAnglesFromObjectPose(ContObjectState obj_pose, boost::shared_ptr<ContArmState> arm_state);
             
-            boost::shared_ptr<sbpl_arm_planner::SBPLArmModel> getRightArmModel(){ return m_r_arm; };
-            boost::shared_ptr<sbpl_arm_planner::SBPLArmModel> getLeftArmModel(){ return m_l_arm; };
+            SBPLArmModelPtr getRightArmModel(){ return m_r_arm; };
+            SBPLArmModelPtr getLeftArmModel(){ return m_l_arm; };
 
         private:
-            boost::shared_ptr<sbpl_arm_planner::SBPLArmModel> m_l_arm;
-            boost::shared_ptr<sbpl_arm_planner::SBPLArmModel> m_r_arm;
+            SBPLArmModelPtr m_l_arm;
+            SBPLArmModelPtr m_r_arm;
     };
     typedef boost::shared_ptr<ArmModel> ArmModelPtr;
 }
