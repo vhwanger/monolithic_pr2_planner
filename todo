@@ -1,14 +1,14 @@
-figure out where to put in discrete->continuous conversion code. it currently
-depends on grid_, but how do i feed that to graph state and all its objects?
-
-
-add free angle to hash function
-
 exceptnion stuff for static configuration
-
-clean up collisionspacemgr (it really only deals with arm model right now)
 
 maybe change the name of occupancygriduser to something like discretizer? it
 uses a bunch of stuff other than occup grid
 
 delete arm model files
+
+change getANgles to return a vector rather than referenc?
+
+deal with unsigned int stateid -> maybe change it to ints?
+
+set arm to map transform function in the collisionspaceinterface
+
+error check service request

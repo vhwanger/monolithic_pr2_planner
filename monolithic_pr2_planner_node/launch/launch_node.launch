@@ -1,7 +1,7 @@
 <launch>
-  <node name="map_server" pkg="map_server" type="map_server" args="/home/victor/full-body-planner/sbpl_mobile_arm_node/maps/video.pgm 0.020" />
+  <node name="map_server" pkg="map_server" type="map_server" args="$(find monolithic_pr2_planner_node)/maps/freezer.yaml" />
   <node name="octomap_server_combined" pkg="octomap_server" type="octomap_server_node"
-        args="/home/victor/full-body-planner/sbpl_mobile_arm_planner/maps/freezer.bt">
+        args="$(find monolithic_pr2_planner_node)/maps/freezer.bt">
     <param name="resolution" value="0.025" />
     <param name="sensor_model/range" value="4.0" />
 

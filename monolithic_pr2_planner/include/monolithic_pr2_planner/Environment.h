@@ -4,7 +4,6 @@
 #include <monolithic_pr2_planner/ArmModel.h>
 #include <monolithic_pr2_planner/HashManager.h>
 #include <monolithic_pr2_planner/SearchRequest.h>
-#include <boost/shared_ptr.hpp>
 
 namespace monolithic_pr2_planner {
     class Environment {
@@ -14,11 +13,12 @@ namespace monolithic_pr2_planner {
             bool plan(SearchRequestParamsPtr search_request_params);
 
         private:
-            void configureStateReps();
+            void configurePlanningDomain();
+            void configureQuerySpecificParams(SearchRequestPtr search_request);
+
             ParameterCatalog m_param_catalog;
             ArmModelPtr m_arm_model;
             CSpaceMgrPtr m_collision_space_mgr;
-            SearchRequestPtr m_search_request;
             HashManager m_hash_mgr;
     };
 }

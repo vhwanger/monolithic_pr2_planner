@@ -7,6 +7,9 @@ namespace monolithic_pr2_planner {
     class ContObjectState;
     class DiscObjectState {
         public:
+            bool operator==(const DiscObjectState& other);
+            bool operator!=(const DiscObjectState& other);
+            DiscObjectState(){};
             DiscObjectState(ContObjectState obj_state);
             DiscObjectState(unsigned int x, unsigned int y, unsigned int z, 
                             unsigned int roll, unsigned int pitch, unsigned int yaw);

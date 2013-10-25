@@ -2,6 +2,7 @@
 #include <monolithic_pr2_planner/StateReps/ContBaseState.h>
 #include <monolithic_pr2_planner/Constants.h>
 #include <monolithic_pr2_planner/OccupancyGridUser.h>
+#include <pr2_collision_checker/pr2_collision_space.h>
 #include <vector>
 namespace monolithic_pr2_planner {
     class ContBaseState;
@@ -20,7 +21,7 @@ namespace monolithic_pr2_planner {
             unsigned int getZ() const { return m_state[BodyDOF::Z]; };
             unsigned int getTheta() const { return m_state[BodyDOF::THETA]; };
 
-            void getVectorOfValues(std::vector<unsigned int>* values);
+            void getValues(std::vector<unsigned int>* values);
             std::vector<unsigned int>::const_iterator getCoordBegin(){ return m_state.begin(); };
             std::vector<unsigned int>::const_iterator getCoordEnd(){ return m_state.end(); };
 
@@ -30,6 +31,7 @@ namespace monolithic_pr2_planner {
             void setTheta(unsigned int theta);
 
             ContBaseState getContBaseState();
+            BodyPose getBodyPose();
         private:
             std::vector<unsigned int> m_state;
     };

@@ -11,7 +11,7 @@ namespace monolithic_pr2_planner {
     class ContArmState;
     class ArmModel {
         public:
-            ArmModel(HardwareDescriptionFiles robot_model);
+            ArmModel();
             bool getArmAnglesFromObjectPose(DiscObjectState obj_pose, boost::shared_ptr<ContArmState> arm_state);
             bool getArmAnglesFromObjectPose(ContObjectState obj_pose, boost::shared_ptr<ContArmState> arm_state);
             

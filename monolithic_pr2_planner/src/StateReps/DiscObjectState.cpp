@@ -2,6 +2,14 @@
 
 using namespace monolithic_pr2_planner;
 
+bool DiscObjectState::operator==(const DiscObjectState& other){
+    return m_coord == other.m_coord;
+}
+
+bool DiscObjectState::operator!=(const DiscObjectState& other){
+    return !(*this == other);
+}
+
 DiscObjectState::DiscObjectState(unsigned int x, unsigned int y, 
                                  unsigned int z, unsigned int roll, 
                                  unsigned int pitch, unsigned int yaw) : m_coord(6){

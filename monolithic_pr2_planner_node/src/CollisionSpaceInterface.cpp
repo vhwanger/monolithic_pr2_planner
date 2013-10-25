@@ -4,6 +4,7 @@ using namespace monolithic_pr2_planner_node;
 using namespace monolithic_pr2_planner;
 
 CollisionSpaceInterface::CollisionSpaceInterface(CSpaceMgrPtr cspace_mgr):m_cspace_mgr(cspace_mgr){
+    m_cmap_pub = m_nodehandle.advertise<arm_navigation_msgs::CollisionMap>("environment", 1);
 }
 
 bool CollisionSpaceInterface::bindCollisionSpaceToTopic(string topic_name, tf::TransformListener& tf,
@@ -25,6 +26,8 @@ void CollisionSpaceInterface::mapCallback(const arm_navigation_msgs::CollisionMa
         ROS_DEBUG("the collision map has %i cubic obstacles", int(map->boxes.size()));
     }
     m_cspace_mgr->updateMap(*map);
+    ROS_INFO("publishing map");
+    m_cmap_pub.publish(*map);
     //setArmToMapTransform(map_frame_);
     return;
 }

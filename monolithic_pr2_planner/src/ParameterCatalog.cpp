@@ -11,8 +11,9 @@ ParameterCatalog::ParameterCatalog() : m_nodehandle("~") {
 void ParameterCatalog::fetch(){
     ROS_INFO("fetching parameters");
     setMotionPrimitiveFiles();
-    setHardwareDescriptionFiles(m_hardware_description_files);
     setOccupancyGridParams(m_occupancy_grid_params);
+    setLeftArmParams(m_left_arm_params);
+    setRightArmParams(m_right_arm_params);
     
 }
 
@@ -23,12 +24,23 @@ void ParameterCatalog::setMotionPrimitiveFiles(){
             &m_motion_primitive_files.base_motion_primitive_file);
 }
 
-void ParameterCatalog::setHardwareDescriptionFiles(HardwareDescriptionFiles& params){
+void ParameterCatalog::setLeftArmParams(ArmDescriptionParams& params){
+    m_nodehandle.param("collision_space/resolution", params.env_resolution, 0.02);
     setFileNameFromParamServer("planner/left_arm_description_file", 
-            &params.l_arm_file);
-    setFileNameFromParamServer("planner/right_arm_description_file", 
-            &params.r_arm_file);
+            &params.arm_file);
+    std::string robot_urdf_param;
+    if(!m_nodehandle.searchParam("robot_description",robot_urdf_param)){
+        ROS_ERROR("Can't find description on param server (/robot_description not set). Exiting");
+    } else {
+        m_nodehandle.param<std::string>(robot_urdf_param, params.robot_description_string, 
+                                        "robot_description");
+    }
+}
 
+void ParameterCatalog::setRightArmParams(ArmDescriptionParams& params){
+    m_nodehandle.param("collision_space/resolution", params.env_resolution, 0.02);
+    setFileNameFromParamServer("planner/right_arm_description_file", 
+            &params.arm_file);
     std::string robot_urdf_param;
     if(!m_nodehandle.searchParam("robot_description",robot_urdf_param)){
         ROS_ERROR("Can't find description on param server (/robot_description not set). Exiting");

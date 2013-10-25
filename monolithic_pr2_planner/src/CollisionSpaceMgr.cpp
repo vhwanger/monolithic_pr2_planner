@@ -6,11 +6,10 @@ using namespace pr2_collision_checker;
 using namespace boost;
 using namespace std;
 
-CollisionSpaceMgr::CollisionSpaceMgr(ArmModelPtr arm_model){
-    m_arm_model = arm_model;
-
-    m_cspace = make_shared<PR2CollisionSpace>(m_arm_model->getRightArmModel(), 
-                                              m_arm_model->getLeftArmModel(), 
+CollisionSpaceMgr::CollisionSpaceMgr(SBPLArmModelPtr right_arm,
+                                     SBPLArmModelPtr left_arm){
+    m_cspace = make_shared<PR2CollisionSpace>(right_arm,
+                                              left_arm,
                                               m_occupancy_grid);
     ROS_INFO("Launched collision space manager");
 }
@@ -22,16 +21,11 @@ void CollisionSpaceMgr::updateMap(const arm_navigation_msgs::CollisionMap& map){
 bool CollisionSpaceMgr::isValid(RobotPose& robot_pose){
     vector<double> l_arm;
     vector<double> r_arm;
-    robot_pose.getContLeftArm().getVectorOfAngles(&l_arm);
-    robot_pose.getContRightArm().getVectorOfAngles(&r_arm);
-    DiscBaseState base_state = robot_pose.getContBaseState();
+    robot_pose.getContLeftArm().getAngles(&l_arm);
+    robot_pose.getContRightArm().getAngles(&r_arm);
+    DiscBaseState discbody_pose = robot_pose.getDiscBaseState();
+    BodyPose body_pose = robot_pose.getDiscBaseState().getBodyPose();
 
-    // yucky code to make things work with pr2_collision_checker
-    BodyPose body_pose;
-    body_pose.x = base_state.getX();
-    body_pose.y = base_state.getY();
-    body_pose.z = base_state.getZ();
-    body_pose.theta = base_state.getTheta();
     double dist_temp;
     int debug_code;
 

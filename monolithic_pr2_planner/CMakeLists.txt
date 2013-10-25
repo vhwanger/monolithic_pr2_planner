@@ -7,7 +7,7 @@ include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 #  Release        : w/o debug symbols, w/ optimization
 #  RelWithDebInfo : w/ debug symbols, w/ optimization
 #  MinSizeRel     : w/o debug symbols, w/ optimization, stripped binaries
-#set(ROS_BUILD_TYPE RelWithDebInfo)
+set(ROS_BUILD_TYPE Debug)
 
 rosbuild_init()
 SET(CMAKE_CXX_FLAGS "-std=c++0x")
@@ -29,6 +29,7 @@ rosbuild_add_library(monolithic_pr2_planner src/StateReps/RobotPose.cpp
                                             src/StateReps/DiscBaseState.cpp
                                             src/StateReps/DiscObjectState.cpp
                                             src/StateReps/ContObjectState.cpp
+                                            src/StateReps/GraphState.cpp
                                             src/SearchRequest.cpp
                                             src/Environment.cpp
                                             src/OccupancyGridUser.cpp

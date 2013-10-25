@@ -18,6 +18,6 @@ namespace monolithic_pr2_planner_node {
             boost::shared_ptr<CollisionMapMsgFilter> m_collision_map_filter;
             monolithic_pr2_planner::CSpaceMgrPtr m_cspace_mgr;
             ros::NodeHandle m_nodehandle;
-
+            ros::Publisher m_cmap_pub;
     };
 }

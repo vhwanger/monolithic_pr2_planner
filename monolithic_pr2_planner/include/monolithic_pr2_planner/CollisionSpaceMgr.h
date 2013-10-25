@@ -10,9 +10,11 @@
 #include <Eigen/Core>
 
 namespace monolithic_pr2_planner {
+    typedef boost::shared_ptr<sbpl_arm_planner::SBPLArmModel> SBPLArmModelPtr;
     class CollisionSpaceMgr : OccupancyGridUser {
         public:
-            CollisionSpaceMgr(ArmModelPtr arm_model);
+            CollisionSpaceMgr(SBPLArmModelPtr right_arm,
+                              SBPLArmModelPtr left_arm);
             bool isBodyWorldColliding(RobotPose& robot_pose);
             bool isArmsWorldColliding(RobotPose& robot_pose);
             bool isBodyArmsColliding(RobotPose& robot_pose);

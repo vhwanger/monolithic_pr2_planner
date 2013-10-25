@@ -16,13 +16,13 @@ namespace monolithic_pr2_planner {
             void setID(unsigned int id) { m_id = id; };
             RobotPose getRobotPose() const { return m_robot_pose; };
 
-            DiscObjectState getDiscObjectState() const { return m_disc_obj_state;};
+            DiscObjectState getDiscObjectState() const { return m_obj_state;};
             ContObjectState getContObjectState();
 
         private:
             unsigned int m_id;
             RobotPose m_robot_pose;
-            DiscObjectState m_disc_obj_state;
+            DiscObjectState m_obj_state;
     };
 
 };

@@ -7,6 +7,7 @@
 
 namespace monolithic_pr2_planner {
     typedef boost::shared_ptr<sbpl_arm_planner::SBPLArmModel> SBPLArmModelPtr;
+
     class ContArmState {
         public:
             ContArmState();
@@ -28,9 +29,9 @@ namespace monolithic_pr2_planner {
             inline double getWristRollAngle() const { return m_angles[Joints::WRIST_ROLL]; };
 
 
-            unsigned int getDiscFreeAngle();
-            double convertDiscFreeAngleToCont(unsigned int disc_angle);
-            void getVectorOfAngles(std::vector<double>* angles); 
+            unsigned int getDiscFreeAngle() const;
+            double convertDiscFreeAngleToCont(unsigned int disc_angle) const;
+            void getAngles(std::vector<double>* angles); 
             std::vector<double>::const_iterator getAnglesBegin() const{return m_angles.begin();};
             std::vector<double>::const_iterator getAnglesEnd() const { return m_angles.end(); };
 
@@ -46,40 +47,67 @@ namespace monolithic_pr2_planner {
             void setArm(ArmSide arm);
 
             void getBodyFrameObjectState();
-            
 
         private:
-
+            static SBPLArmModelPtr m_arm_model;
+            static KDL::Frame m_object_offset;
             static boost::shared_ptr<RobotResolutionParams> m_params;
+
             bool m_is_enforcing_joint_limits;
             std::vector<double> m_angles;
             ArmSide m_arm_side;
     };
     typedef boost::shared_ptr<ContArmState> ContArmStatePtr;
 
-    class LeftContArmState : public ContArmState {
+    // trying CRTP as described here:
+    // http://stackoverflow.com/questions/12796580/static-variable-for-each-derived-class
+
+    template<class Derived>
+    class BaseX : public ContArmState {
         public:
-            LeftContArmState(std::vector<double> angles) : ContArmState(angles) { }
-            virtual SBPLArmModelPtr getArmModel(){ return m_arm_model; };
-            static void setArmModel(const HardwareDescriptionFiles& params);
+            BaseX() : ContArmState() {}
+            BaseX(std::vector<double> angles) : ContArmState(angles) {}
+            static SBPLArmModelPtr getArmModel() { return m_arm_model; }
+
+            // TODO: figure out why i have to put this in header for it to compile
+            static void setArmModel(ArmDescriptionParams& params){
+                FILE* fp_arm= fopen(params.arm_file.c_str(), "r");
+                if (!fp_arm){
+                    ROS_ERROR("Couldn't open right arm model file (%s)!",
+                               params.arm_file.c_str());
+                }
+                m_arm_model = boost::make_shared<sbpl_arm_planner::SBPLArmModel>(fp_arm);
+                m_arm_model->setResolution(params.env_resolution);
+                if (!params.robot_description_string.compare("ROS_PARAM")){
+                    ROS_INFO("getting kdl chain from paramserver");
+                    m_arm_model->initKDLChainFromParamServer();
+                } else {
+                    ROS_INFO("getting kdl chain from string");
+                    m_arm_model->initKDLChain(params.robot_description_string);
+                }
+            }
+
+            static KDL::Frame getObjectOffset() { return m_object_offset; }
+            static void setObjectOffset(KDL::Frame& object_offset){ m_object_offset = object_offset; };
+    };
+
+    class LeftContArmState : public BaseX<LeftContArmState> {
+        public:
+            LeftContArmState() : BaseX() { }
+            LeftContArmState(std::vector<double> angles) : BaseX(angles) { }
 
         private:
             static SBPLArmModelPtr m_arm_model;
+            static KDL::Frame m_object_offset;
     };
 
-    class RightContArmState : public ContArmState {
+    class RightContArmState : public BaseX<RightContArmState> {
         public:
-            RightContArmState(std::vector<double> angles) : ContArmState(angles) { }
-            virtual SBPLArmModelPtr getArmModel(){ return m_arm_model; };
-            static void setArmModel(const HardwareDescriptionFiles& params);
+            RightContArmState() : BaseX() { }
+            RightContArmState(std::vector<double> angles) : BaseX(angles) { }
 
         private:
             static SBPLArmModelPtr m_arm_model;
-    };
-
-    class ArmStateFactory {
-        public:
-            static boost::shared_ptr<ContArmState> createArmState(int arm_side,
-                                                                  std::vector<double> angles);
+            static KDL::Frame m_object_offset;
     };
 }

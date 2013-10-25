@@ -19,7 +19,7 @@ namespace monolithic_pr2_planner_node {
             void getParams();
             bool planPathCallback(GetMobileArmPlan::Request &req, 
                                   GetMobileArmPlan::Response &res);
-            void bindPlanPathToEnv();
+            void bindPlanPathToEnv(std::string service_name);
             bool bindCollisionSpaceToTopic(std::string topic_name);
 
         private:
@@ -28,5 +28,6 @@ namespace monolithic_pr2_planner_node {
             boost::shared_ptr<monolithic_pr2_planner::Environment> m_env;
             tf::TransformListener m_tf;
             CollisionSpaceInterface m_collision_space_interface;
+            ros::ServiceServer m_plan_service;
     };
 }

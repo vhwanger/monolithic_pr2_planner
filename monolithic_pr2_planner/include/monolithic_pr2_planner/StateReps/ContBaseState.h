@@ -2,6 +2,7 @@
 #include <monolithic_pr2_planner/StateReps/DiscBaseState.h>
 #include <monolithic_pr2_planner/Constants.h>
 #include <monolithic_pr2_planner/OccupancyGridUser.h>
+#include <pr2_collision_checker/pr2_collision_space.h>
 #include <vector>
 namespace monolithic_pr2_planner {
     class DiscBaseState;
@@ -10,7 +11,7 @@ namespace monolithic_pr2_planner {
             ContBaseState();
             ContBaseState(double x, double y, double z, double theta);
             ContBaseState(std::vector<double> base_pose);
-            ContBaseState(DiscBaseState base_pose);
+            ContBaseState(const DiscBaseState& base_pose);
 
             double getX() const { return m_pose[BodyDOF::X]; };
             double getY() const { return m_pose[BodyDOF::Y]; };

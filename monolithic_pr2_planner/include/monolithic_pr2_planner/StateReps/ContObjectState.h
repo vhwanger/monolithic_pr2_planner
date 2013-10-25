@@ -9,7 +9,7 @@ namespace monolithic_pr2_planner {
         public:
             ContObjectState(); 
             ContObjectState(DiscObjectState obj_state); 
-            ContObjectState(geometry_msgs::PoseStamped obj_pose); 
+            ContObjectState(const geometry_msgs::PoseStamped& obj_pose); 
             std::vector<double>::const_iterator getCoordBegin(){ return m_coord.begin(); };
             std::vector<double>::const_iterator getCoordEnd(){ return m_coord.end(); };
         private:

@@ -686,6 +686,30 @@ src/StateReps/DiscObjectState.cpp.s:
 	$(MAKE) -f CMakeFiles/monolithic_pr2_planner.dir/build.make CMakeFiles/monolithic_pr2_planner.dir/src/StateReps/DiscObjectState.cpp.s
 .PHONY : src/StateReps/DiscObjectState.cpp.s
 
+src/StateReps/GraphState.o: src/StateReps/GraphState.cpp.o
+.PHONY : src/StateReps/GraphState.o
+
+# target to build an object file
+src/StateReps/GraphState.cpp.o:
+	$(MAKE) -f CMakeFiles/monolithic_pr2_planner.dir/build.make CMakeFiles/monolithic_pr2_planner.dir/src/StateReps/GraphState.cpp.o
+.PHONY : src/StateReps/GraphState.cpp.o
+
+src/StateReps/GraphState.i: src/StateReps/GraphState.cpp.i
+.PHONY : src/StateReps/GraphState.i
+
+# target to preprocess a source file
+src/StateReps/GraphState.cpp.i:
+	$(MAKE) -f CMakeFiles/monolithic_pr2_planner.dir/build.make CMakeFiles/monolithic_pr2_planner.dir/src/StateReps/GraphState.cpp.i
+.PHONY : src/StateReps/GraphState.cpp.i
+
+src/StateReps/GraphState.s: src/StateReps/GraphState.cpp.s
+.PHONY : src/StateReps/GraphState.s
+
+# target to generate assembly for a file
+src/StateReps/GraphState.cpp.s:
+	$(MAKE) -f CMakeFiles/monolithic_pr2_planner.dir/build.make CMakeFiles/monolithic_pr2_planner.dir/src/StateReps/GraphState.cpp.s
+.PHONY : src/StateReps/GraphState.cpp.s
+
 src/StateReps/RobotPose.o: src/StateReps/RobotPose.cpp.o
 .PHONY : src/StateReps/RobotPose.o
 
@@ -777,6 +801,9 @@ help:
 	@echo "... src/StateReps/DiscObjectState.o"
 	@echo "... src/StateReps/DiscObjectState.i"
 	@echo "... src/StateReps/DiscObjectState.s"
+	@echo "... src/StateReps/GraphState.o"
+	@echo "... src/StateReps/GraphState.i"
+	@echo "... src/StateReps/GraphState.s"
 	@echo "... src/StateReps/RobotPose.o"
 	@echo "... src/StateReps/RobotPose.i"
 	@echo "... src/StateReps/RobotPose.s"

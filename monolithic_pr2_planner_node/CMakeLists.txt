@@ -7,7 +7,7 @@ include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 #  Release        : w/o debug symbols, w/ optimization
 #  RelWithDebInfo : w/ debug symbols, w/ optimization
 #  MinSizeRel     : w/o debug symbols, w/ optimization, stripped binaries
-#set(ROS_BUILD_TYPE RelWithDebInfo)
+set(ROS_BUILD_TYPE Debug)
 
 rosbuild_init()
 
@@ -28,3 +28,6 @@ rosbuild_add_boost_directories()
 rosbuild_add_executable(node src/node.cpp src/EnvInterfaces.cpp
     src/CollisionSpaceInterface.cpp)
 target_link_libraries(node monolithic_pr2_planner)
+
+rosbuild_add_executable(testPlanningRequest src/testPlanningRequest.cpp)
+target_link_libraries(testPlanningRequest monolithic_pr2_planner)
