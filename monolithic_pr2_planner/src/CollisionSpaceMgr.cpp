@@ -1,4 +1,5 @@
 #include <monolithic_pr2_planner/CollisionSpaceMgr.h>
+#include <monolithic_pr2_planner/LoggerNames.h>
 #include <vector>
 
 using namespace monolithic_pr2_planner;
@@ -11,7 +12,7 @@ CollisionSpaceMgr::CollisionSpaceMgr(SBPLArmModelPtr right_arm,
     m_cspace = make_shared<PR2CollisionSpace>(right_arm,
                                               left_arm,
                                               m_occupancy_grid);
-    ROS_INFO("Launched collision space manager");
+    ROS_INFO_NAMED(INIT, "Launched collision space manager");
 }
 
 void CollisionSpaceMgr::updateMap(const arm_navigation_msgs::CollisionMap& map){
@@ -28,6 +29,5 @@ bool CollisionSpaceMgr::isValid(RobotPose& robot_pose){
 
     double dist_temp;
     int debug_code;
-
     return m_cspace->checkAllMotion(l_arm, r_arm, body_pose, true, dist_temp, debug_code);
 }

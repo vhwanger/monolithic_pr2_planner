@@ -8,10 +8,9 @@
 using namespace monolithic_pr2_planner;
 using namespace boost;
 
+
 typedef scoped_ptr<SearchRequest> SearchRequestPtr;
 Environment::Environment(){
-    ROS_INFO("Launching monolithic_pr2_planner environment");
-
     m_param_catalog.fetch();
     configurePlanningDomain();
 }

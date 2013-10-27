@@ -2,6 +2,7 @@
 #include <vector>
 #include <monolithic_pr2_planner/Constants.h>
 #include <monolithic_pr2_planner/ParameterCatalog.h>
+#include <monolithic_pr2_planner/LoggerNames.h>
 #include <pr2_collision_checker/sbpl_arm_model.h>
 #include <boost/shared_ptr.hpp>
 
@@ -73,16 +74,16 @@ namespace monolithic_pr2_planner {
             static void setArmModel(ArmDescriptionParams& params){
                 FILE* fp_arm= fopen(params.arm_file.c_str(), "r");
                 if (!fp_arm){
-                    ROS_ERROR("Couldn't open right arm model file (%s)!",
+                    ROS_ERROR_NAMED(CONFIG, "Couldn't open right arm model file (%s)!",
                                params.arm_file.c_str());
                 }
                 m_arm_model = boost::make_shared<sbpl_arm_planner::SBPLArmModel>(fp_arm);
                 m_arm_model->setResolution(params.env_resolution);
                 if (!params.robot_description_string.compare("ROS_PARAM")){
-                    ROS_INFO("getting kdl chain from paramserver");
+                    ROS_INFO_NAMED(CONFIG, "getting kdl chain from paramserver");
                     m_arm_model->initKDLChainFromParamServer();
                 } else {
-                    ROS_INFO("getting kdl chain from string");
+                    ROS_INFO_NAMED(CONFIG, "getting kdl chain from string");
                     m_arm_model->initKDLChain(params.robot_description_string);
                 }
             }

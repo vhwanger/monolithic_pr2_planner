@@ -1,0 +1,4 @@
+debug:
+    logging:
+        configuration: fatal
+        initialization: info

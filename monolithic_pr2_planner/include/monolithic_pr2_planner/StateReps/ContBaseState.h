@@ -18,10 +18,10 @@ namespace monolithic_pr2_planner {
             double getZ() const { return m_pose[BodyDOF::Z]; };
             double getTheta() const { return m_pose[BodyDOF::THETA]; };
 
-            void setX(double x);
-            void setY(double y);
-            void setZ(double z);
-            void setTheta(double theta);
+            void setX(double x) { m_pose[BodyDOF::X] = x; };
+            void setY(double y) { m_pose[BodyDOF::Y] = y; };
+            void setZ(double z) { m_pose[BodyDOF::Z] = z; };
+            void setTheta(double theta) { m_pose[BodyDOF::THETA] = theta; };
 
             DiscBaseState getDiscBaseState();
         private:

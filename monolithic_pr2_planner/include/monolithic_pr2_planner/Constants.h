@@ -31,3 +31,4 @@ namespace monolithic_pr2_planner {
             enum { X, Y, Z, ROLL, PITCH, YAW};
     };
 }
+

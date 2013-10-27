@@ -10,14 +10,18 @@ int main(int argc, char** argv){
     monolithic_pr2_planner_node::GetMobileArmPlan srv;
 
     std::vector<double> right_arm_start(7,0), left_arm_start(7,0), body_start(4,0);
+    body_start[0] = 1;
+    body_start[1] = 1;
+    body_start[2] = .5;
+    body_start[3] = 1;
 
     srv.request.rarm_start = right_arm_start;
     srv.request.larm_start = left_arm_start;
     srv.request.body_start = body_start;
     geometry_msgs::PoseStamped pose;
-    pose.pose.position.x = 0;
-    pose.pose.position.y = 0;
-    pose.pose.position.z = 0;
+    pose.pose.position.x = 1;
+    pose.pose.position.y = 1;
+    pose.pose.position.z = .5;
     srv.request.goal = pose;
     srv.request.initial_eps = 10;
     srv.request.final_eps = 9;

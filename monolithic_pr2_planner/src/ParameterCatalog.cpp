@@ -1,5 +1,7 @@
 #include <monolithic_pr2_planner/ParameterCatalog.h>
+#include <monolithic_pr2_planner/LoggerNames.h>
 #include <boost/filesystem.hpp>
+#include <log4cxx/logger.h>
 
 using namespace boost::filesystem;
 using namespace monolithic_pr2_planner;
@@ -9,7 +11,7 @@ ParameterCatalog::ParameterCatalog() : m_nodehandle("~") {
 }
 
 void ParameterCatalog::fetch(){
-    ROS_INFO("fetching parameters");
+    ROS_INFO_NAMED(CONFIG, "fetching parameters");
     setMotionPrimitiveFiles();
     setOccupancyGridParams(m_occupancy_grid_params);
     setLeftArmParams(m_left_arm_params);
@@ -30,7 +32,8 @@ void ParameterCatalog::setLeftArmParams(ArmDescriptionParams& params){
             &params.arm_file);
     std::string robot_urdf_param;
     if(!m_nodehandle.searchParam("robot_description",robot_urdf_param)){
-        ROS_ERROR("Can't find description on param server (/robot_description not set). Exiting");
+        ROS_ERROR_NAMED(CONFIG, "Can't find description on param server "
+                                "(/robot_description not set).");
     } else {
         m_nodehandle.param<std::string>(robot_urdf_param, params.robot_description_string, 
                                         "robot_description");
@@ -43,7 +46,8 @@ void ParameterCatalog::setRightArmParams(ArmDescriptionParams& params){
             &params.arm_file);
     std::string robot_urdf_param;
     if(!m_nodehandle.searchParam("robot_description",robot_urdf_param)){
-        ROS_ERROR("Can't find description on param server (/robot_description not set). Exiting");
+        ROS_ERROR_NAMED(CONFIG, "Can't find description on param server "
+                                "(/robot_description not set).");
     } else {
         m_nodehandle.param<std::string>(robot_urdf_param, params.robot_description_string, 
                                         "robot_description");
@@ -78,11 +82,11 @@ bool ParameterCatalog::setFileNameFromParamServer(const std::string param_name,
     path input_path(filename.c_str());
     if (exists(input_path)){
        *parameter = filename;
-        ROS_INFO("Pulling in data from %s", filename.c_str());
+        ROS_INFO_NAMED(CONFIG, "Pulling in data from %s", filename.c_str());
     } else {
        *parameter = filename;
-        ROS_ERROR("Failed to find file '%s' to load in parameters for %s", filename.c_str(),
-                                                                           param_name.c_str());
+        ROS_ERROR_NAMED(CONFIG, "Failed to find file '%s' to load in parameters for %s", 
+                        filename.c_str(), param_name.c_str());
         return false;
     }
     return true;
