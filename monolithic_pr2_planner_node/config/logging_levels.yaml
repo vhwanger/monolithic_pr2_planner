@@ -1,4 +1,5 @@
 debug:
     logging:
         configuration: fatal
-        initialization: info
+        initialization: debug
+        collision_space: debug

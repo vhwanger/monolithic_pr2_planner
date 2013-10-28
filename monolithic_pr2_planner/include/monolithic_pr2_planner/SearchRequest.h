@@ -30,7 +30,7 @@ namespace monolithic_pr2_planner {
     class SearchRequest {
         public:
             SearchRequest(SearchRequestParamsPtr params);
-            RequestErrors isValid(CSpaceMgrPtr& cspace);
+            bool isValid(CSpaceMgrPtr& cspace);
             SearchRequestParamsPtr m_params;
     };
     typedef boost::shared_ptr<SearchRequest> SearchRequestPtr;

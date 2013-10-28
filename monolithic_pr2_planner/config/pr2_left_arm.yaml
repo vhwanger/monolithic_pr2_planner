@@ -34,9 +34,12 @@ collision_space:
   collision_map_topic: collision_map_occ
 
   occupancy_grid:
-    origin_x: -0.60
-    origin_y: -0.50
-    origin_z: -0.05
+    origin_x: 0
+    origin_y: 0
+    origin_z: 0
+    #origin_x: -0.60
+    #origin_y: -0.50
+    #origin_z: -0.05
     size_x: 1.7
     size_y: 1.9
     size_z: 1.4

@@ -13,7 +13,7 @@ bool CollisionSpaceInterface::bindCollisionSpaceToTopic(string topic_name,
                                                         tf::TransformListener& tf,
                                                         string target_frame){
     m_collision_map_subscriber.subscribe(m_nodehandle, topic_name, 1);
-    ROS_DEBUG_NAMED(INIT, "binding collision space to topic %s and transforming to %s!", 
+    ROS_DEBUG_NAMED(INIT_LOG, "binding collision space to topic %s and transforming to %s!", 
                    topic_name.c_str(), target_frame.c_str());
     m_ref_frame = target_frame;
     m_collision_map_filter = boost::shared_ptr<CollisionMapMsgFilter>(new CollisionMapMsgFilter(
@@ -25,16 +25,16 @@ bool CollisionSpaceInterface::bindCollisionSpaceToTopic(string topic_name,
 
 void CollisionSpaceInterface::mapCallback(
         const arm_navigation_msgs::CollisionMapConstPtr &map){
-    ROS_DEBUG_NAMED(INIT, "map callback!");
+    ROS_DEBUG_NAMED(INIT_LOG, "map callback!");
     if(map->header.frame_id.compare(m_ref_frame) != 0)
     {
-        ROS_WARN_NAMED(INIT, "collision_map_occ is in %s not in %s", 
+        ROS_WARN_NAMED(INIT_LOG, "collision_map_occ is in %s not in %s", 
                        map->header.frame_id.c_str(), m_ref_frame.c_str());
-        ROS_DEBUG_NAMED(INIT,"the collision map has %i cubic obstacles", 
+        ROS_DEBUG_NAMED(INIT_LOG,"the collision map has %i cubic obstacles", 
                         int(map->boxes.size()));
     }
     m_cspace_mgr->updateMap(*map);
-    ROS_DEBUG_NAMED(INIT, "publishing map");
+    ROS_DEBUG_NAMED(INIT_LOG, "publishing map");
     m_cmap_pub.publish(*map);
     //setArmToMapTransform(map_frame_);
     return;

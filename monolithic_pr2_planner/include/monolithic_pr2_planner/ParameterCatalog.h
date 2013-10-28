@@ -66,7 +66,7 @@ namespace monolithic_pr2_planner {
     class ParameterCatalog {
         public:
             ParameterCatalog();
-            void fetch();
+            void fetch(ros::NodeHandle nh);
 
             void setMotionPrimitiveFiles();
             void setOccupancyGridParams(OccupancyGridParams& params);

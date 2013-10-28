@@ -66,7 +66,11 @@ bool EnvInterfaces::planPathCallback(GetMobileArmPlan::Request &req,
     search_request->left_arm_object = larm_offset;
     search_request->right_arm_object = rarm_offset;
 
-    return m_env->plan(search_request);
+    res.stats_field_names.resize(18);
+    res.stats.resize(18);
+    bool retVal = m_env->plan(search_request);
+    return retVal;
+
 }
 
 bool EnvInterfaces::bindCollisionSpaceToTopic(std::string topic_name){

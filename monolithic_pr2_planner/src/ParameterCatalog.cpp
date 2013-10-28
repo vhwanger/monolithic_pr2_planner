@@ -10,8 +10,9 @@ using namespace monolithic_pr2_planner;
 ParameterCatalog::ParameterCatalog() : m_nodehandle("~") {
 }
 
-void ParameterCatalog::fetch(){
-    ROS_INFO_NAMED(CONFIG, "fetching parameters");
+void ParameterCatalog::fetch(ros::NodeHandle nh){
+    ROS_INFO_NAMED(CONFIG_LOG, "fetching parameters");
+    m_nodehandle = nh;
     setMotionPrimitiveFiles();
     setOccupancyGridParams(m_occupancy_grid_params);
     setLeftArmParams(m_left_arm_params);
@@ -32,7 +33,7 @@ void ParameterCatalog::setLeftArmParams(ArmDescriptionParams& params){
             &params.arm_file);
     std::string robot_urdf_param;
     if(!m_nodehandle.searchParam("robot_description",robot_urdf_param)){
-        ROS_ERROR_NAMED(CONFIG, "Can't find description on param server "
+        ROS_ERROR_NAMED(CONFIG_LOG, "Can't find description on param server "
                                 "(/robot_description not set).");
     } else {
         m_nodehandle.param<std::string>(robot_urdf_param, params.robot_description_string, 
@@ -46,7 +47,7 @@ void ParameterCatalog::setRightArmParams(ArmDescriptionParams& params){
             &params.arm_file);
     std::string robot_urdf_param;
     if(!m_nodehandle.searchParam("robot_description",robot_urdf_param)){
-        ROS_ERROR_NAMED(CONFIG, "Can't find description on param server "
+        ROS_ERROR_NAMED(CONFIG_LOG, "Can't find description on param server "
                                 "(/robot_description not set).");
     } else {
         m_nodehandle.param<std::string>(robot_urdf_param, params.robot_description_string, 
@@ -61,9 +62,9 @@ void ParameterCatalog::setOccupancyGridParams(OccupancyGridParams& params){
     m_nodehandle.param("collision_space/occupancy_grid/origin_x", params.origin.x,-0.6);
     m_nodehandle.param("collision_space/occupancy_grid/origin_y", params.origin.y,-1.15);
     m_nodehandle.param("collision_space/occupancy_grid/origin_z", params.origin.z,-0.05);
-    m_nodehandle.param("collision_space/occupancy_grid/size_x", params.origin.x,1.6);
-    m_nodehandle.param("collision_space/occupancy_grid/size_y", params.origin.y,1.8);
-    m_nodehandle.param("collision_space/occupancy_grid/size_z", params.origin.z,1.4);
+    m_nodehandle.param("collision_space/occupancy_grid/size_x", params.max_point.x,1.6);
+    m_nodehandle.param("collision_space/occupancy_grid/size_y", params.max_point.y,1.8);
+    m_nodehandle.param("collision_space/occupancy_grid/size_z", params.max_point.z,1.4);
 }
 
 // currently just hard code these...maybe someone will want to retrieve them
@@ -82,10 +83,10 @@ bool ParameterCatalog::setFileNameFromParamServer(const std::string param_name,
     path input_path(filename.c_str());
     if (exists(input_path)){
        *parameter = filename;
-        ROS_INFO_NAMED(CONFIG, "Pulling in data from %s", filename.c_str());
+        ROS_INFO_NAMED(CONFIG_LOG, "Pulling in data from %s", filename.c_str());
     } else {
        *parameter = filename;
-        ROS_ERROR_NAMED(CONFIG, "Failed to find file '%s' to load in parameters for %s", 
+        ROS_ERROR_NAMED(CONFIG_LOG, "Failed to find file '%s' to load in parameters for %s", 
                         filename.c_str(), param_name.c_str());
         return false;
     }

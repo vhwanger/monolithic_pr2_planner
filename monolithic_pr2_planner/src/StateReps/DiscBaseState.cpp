@@ -1,4 +1,5 @@
 #include <monolithic_pr2_planner/StateReps/DiscBaseState.h>
+#include <monolithic_pr2_planner/LoggerNames.h>
 #include <angles/angles.h>
 using namespace monolithic_pr2_planner;
 using namespace std;
@@ -19,6 +20,7 @@ DiscBaseState::DiscBaseState(unsigned int x, unsigned int y, unsigned int z,
     m_state[BodyDOF::Z] = z;
     m_state[BodyDOF::THETA] = theta;
 }
+
 DiscBaseState::DiscBaseState(ContBaseState body_state): m_state(4){
     int x, y, z, theta;
     m_occupancy_grid->worldToGrid(body_state.getX(), 
@@ -28,10 +30,10 @@ DiscBaseState::DiscBaseState(ContBaseState body_state): m_state(4){
     double theta_res = m_resolution_params.base_theta_resolution;
     theta = static_cast<unsigned int>((normalize_angle_positive(body_state.getTheta() + theta_res*0.5))/theta_res);
 
-    DiscBaseState(static_cast<unsigned int>(x),
-                  static_cast<unsigned int>(y),
-                  static_cast<unsigned int>(z),
-                  theta);
+    m_state[BodyDOF::X] = static_cast<unsigned int>(x);
+    m_state[BodyDOF::Y] = static_cast<unsigned int>(y),
+    m_state[BodyDOF::Z] = static_cast<unsigned int>(z),
+    m_state[BodyDOF::THETA] = theta;
 }
 
 void DiscBaseState::getValues(vector<unsigned int>* values){

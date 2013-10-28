@@ -20,6 +20,9 @@ namespace monolithic_pr2_planner {
             unsigned int getLeftDiscFreeAngle() const { return m_left_arm.getDiscFreeAngle(); };
             unsigned int getRightDiscFreeAngle() const { return m_right_arm.getDiscFreeAngle(); };
 
+            void printToDebug(char* log_level);
+            void printToInfo(char* log_level);
+
             DiscObjectState getMapFrameObjectState();
 
         private:

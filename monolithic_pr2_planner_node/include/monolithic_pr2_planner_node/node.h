@@ -6,7 +6,7 @@
 namespace monolithic_pr2_planner_node {
     class Node {
         public:
-            Node();
+            Node(ros::NodeHandle nh);
         private:
             monolithic_pr2_planner::Environment m_env;
             EnvInterfaces m_env_interface;

@@ -12,7 +12,7 @@ CollisionSpaceMgr::CollisionSpaceMgr(SBPLArmModelPtr right_arm,
     m_cspace = make_shared<PR2CollisionSpace>(right_arm,
                                               left_arm,
                                               m_occupancy_grid);
-    ROS_INFO_NAMED(INIT, "Launched collision space manager");
+    ROS_INFO_NAMED(INIT_LOG, "Launched collision space manager");
 }
 
 void CollisionSpaceMgr::updateMap(const arm_navigation_msgs::CollisionMap& map){
@@ -29,5 +29,26 @@ bool CollisionSpaceMgr::isValid(RobotPose& robot_pose){
 
     double dist_temp;
     int debug_code;
-    return m_cspace->checkAllMotion(l_arm, r_arm, body_pose, true, dist_temp, debug_code);
+    ROS_DEBUG_NAMED(CSPACE_LOG, "collision checking pose");
+    // TODO make a macro for this
+    ROS_DEBUG_NAMED(CSPACE_LOG, "\tbase: %f %f %f", body_pose.x, body_pose.y, 
+                                                body_pose.z);
+    ROS_DEBUG_NAMED(CSPACE_LOG, "\tleft arm: %f %f %f %f %f %f %f",
+                    l_arm[0],
+                    l_arm[1],
+                    l_arm[2],
+                    l_arm[3],
+                    l_arm[4],
+                    l_arm[5],
+                    l_arm[6]);
+    ROS_DEBUG_NAMED(CSPACE_LOG, "\tright arm: %f %f %f %f %f %f %f", 
+                    r_arm[0],
+                    r_arm[1],
+                    r_arm[2],
+                    r_arm[3],
+                    r_arm[4],
+                    r_arm[5],
+                    r_arm[6]);
+    return m_cspace->checkAllMotion(l_arm, r_arm, body_pose, true, dist_temp, 
+                                    debug_code);
 }

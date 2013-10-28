@@ -10,14 +10,17 @@ using namespace boost;
 
 
 typedef scoped_ptr<SearchRequest> SearchRequestPtr;
-Environment::Environment(){
-    m_param_catalog.fetch();
+Environment::Environment(ros::NodeHandle nh) : m_nodehandle(nh){
+    m_param_catalog.fetch(nh);
     configurePlanningDomain();
 }
 
 bool Environment::plan(SearchRequestParamsPtr search_request_params){
     SearchRequestPtr search_request = SearchRequestPtr(new SearchRequest(search_request_params));
-    search_request->isValid(m_collision_space_mgr);
+    if (!search_request->isValid(m_collision_space_mgr)){
+        ROS_ERROR_NAMED(INIT_LOG, "Start state is invalid!");
+        return false;
+    }
     configureQuerySpecificParams(search_request);
 
     RobotPose start_pose(search_request->m_params->base_start, 
@@ -25,6 +28,7 @@ bool Environment::plan(SearchRequestParamsPtr search_request_params){
                          search_request->m_params->left_arm_start);
     GraphStatePtr start_graph_state = make_shared<GraphState>(start_pose);
     m_hash_mgr.save(start_graph_state);
+    start_pose.printToInfo(INIT_LOG);
 
     return true;
 }

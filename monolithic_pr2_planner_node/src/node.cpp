@@ -6,7 +6,7 @@
 using namespace monolithic_pr2_planner_node;
 using namespace monolithic_pr2_planner;
 
-Node::Node() : m_env_interface(m_env){
+Node::Node(ros::NodeHandle nh) : m_env(nh), m_env_interface(m_env){
     m_env_interface.bindPlanPathToEnv("/sbpl_planning/plan_path");
     m_env_interface.bindCollisionSpaceToTopic("collision_map_out");
 }
@@ -28,28 +28,45 @@ void changeLoggerLevel(std::string name, std::string level)
     }
 }
 
-
+// TODO clean this up
 void setLoggersFromParamServer(ros::NodeHandle nh){
     std::string level;
-    nh.param<std::string>("/monolithic_pr2_planner_node/debug/logging/configuration", 
+    nh.param<std::string>("debug/logging/configuration", 
                           level, "info");
     changeLoggerLevel(std::string("ros.monolithic_pr2_planner") + 
                                   std::string(".") + 
-                                  std::string(CONFIG), level);
+                                  std::string(CONFIG_LOG), level);
+    changeLoggerLevel(std::string("ros.monolithic_pr2_planner_node") + 
+                                  std::string(".") + 
+                                  std::string(CONFIG_LOG), level);
+    ROS_INFO_NAMED(CONFIG_LOG, "configuration logging level set to %s", level.c_str());
 
-    nh.param<std::string>("/monolithic_pr2_planner_node/debug/logging/initialization", 
+    nh.param<std::string>("debug/logging/initialization", 
                           level, "info");
     changeLoggerLevel(std::string("ros.monolithic_pr2_planner") + 
                                   std::string(".") + 
-                                  std::string(INIT), level);
+                                  std::string(INIT_LOG), level);
+    changeLoggerLevel(std::string("ros.monolithic_pr2_planner_node") + 
+                                  std::string(".") + 
+                                  std::string(INIT_LOG), level);
+    ROS_INFO_NAMED(CONFIG_LOG, "initialization logging level set to %s", level.c_str());
+
+    nh.param<std::string>("debug/logging/collision_space", 
+                          level, "info");
+    changeLoggerLevel(std::string("ros.monolithic_pr2_planner") + 
+                                  std::string(".") + 
+                                  std::string(CSPACE_LOG), level);
+    changeLoggerLevel(std::string("ros.monolithic_pr2_planner_node") + 
+                                  std::string(".") + 
+                                  std::string(CSPACE_LOG), level);
+    ROS_INFO_NAMED(CONFIG_LOG, "collision space logging level set to %s", level.c_str());
 }
-
 
 int main(int argc, char** argv){
     ros::init(argc, argv, "monolithic_pr2_planner_node");
     ros::NodeHandle nh("~");
     setLoggersFromParamServer(nh);
-    Node node;
+    Node node(nh);
 
     ros::spin();
 }

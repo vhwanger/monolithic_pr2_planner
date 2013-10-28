@@ -49,7 +49,6 @@ unsigned int HashManager::hash(const GraphStatePtr& graph_state){
 
     // should have used 12 values during the hash function
     // xyzrpy(obj pose) fa1 fa2 (arm) xyzyaw(base)
-    assert(counter==13);
 
     return val & HASH_TABLE_SIZE;
 }
@@ -93,7 +92,5 @@ bool HashManager::save(GraphStatePtr& graph_state){
     m_state_id_to_graph_table.push_back(graph_state);
     return true;
 }
-
-
 
 
