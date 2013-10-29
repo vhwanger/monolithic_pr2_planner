@@ -60,7 +60,7 @@ GraphStatePtr HashManager::getGraphState(unsigned int state_id){
 unsigned int HashManager::getStateID(const GraphStatePtr& graph_state){
     int index = 0;
     unsigned int bin_idx = hash(graph_state);
-    BOOST_FOREACH(auto g_s, m_coord_to_state_id_table.at(bin_idx)){
+    BOOST_FOREACH(auto g_s, m_coord_to_state_id_table[bin_idx]){
         if (*g_s == *graph_state){
             return index;
         }
@@ -71,7 +71,9 @@ unsigned int HashManager::getStateID(const GraphStatePtr& graph_state){
 
 bool HashManager::exists(const GraphStatePtr& graph_state){
     unsigned int bin_idx = hash(graph_state);
-    BOOST_FOREACH(auto g_s, m_coord_to_state_id_table.at(bin_idx)){
+    ROS_DEBUG_NAMED(HASH_LOG, "Hashed state to %du", bin_idx);
+    m_coord_to_state_id_table[bin_idx];
+    BOOST_FOREACH(auto g_s, m_coord_to_state_id_table[bin_idx]){
         if (*g_s == *graph_state){
             return true;
         }
@@ -81,10 +83,11 @@ bool HashManager::exists(const GraphStatePtr& graph_state){
 
 bool HashManager::save(GraphStatePtr& graph_state){
     // this may not be the desired behavior...
+    ROS_DEBUG_NAMED(HASH_LOG, "Saving graph state");
     if (exists(graph_state)){
         return false;
     }
-
+    ROS_DEBUG_NAMED(HASH_LOG, "This is a new graph state, adding to table");
     unsigned int bin_idx = hash(graph_state);
     m_coord_to_state_id_table[bin_idx].push_back(graph_state);
 

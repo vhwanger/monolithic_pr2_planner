@@ -5,6 +5,7 @@
 #include <pviz/pviz.h>
 #include <boost/shared_ptr.hpp>
 #include <boost/scoped_ptr.hpp>
+#include <assert.h>
 
 using namespace monolithic_pr2_planner;
 using namespace boost;
@@ -35,6 +36,7 @@ bool Environment::plan(SearchRequestParamsPtr search_request_params){
     start_pose.visualize();
 
     m_hash_mgr.save(start_graph_state);
+    assert(m_hash_mgr.getGraphState(start_graph_state->getID()) == start_graph_state);
 
     return true;
 }

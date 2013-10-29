@@ -2,3 +2,4 @@
 #define INIT_LOG "initialization"
 #define CSPACE_LOG "collision_space"
 #define KIN_LOG "kinematics"
+#define HASH_LOG "hashmanager"

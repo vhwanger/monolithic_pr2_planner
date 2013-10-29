@@ -4,3 +4,4 @@ debug:
         initialization: debug
         collision_space: debug
         kinematics: debug
+        hashmanager: debug
