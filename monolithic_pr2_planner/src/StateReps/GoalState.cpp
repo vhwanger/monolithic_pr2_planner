@@ -2,14 +2,14 @@
 
 using namespace monolithic_pr2_planner;
 
-GoalState::GoalState(const GoalStateParams& params):
-    m_goal_state(params.goal_state), m_tolerances(4,0){
+GoalState::GoalState(SearchRequestPtr search_request):
+    m_goal_state(search_request->m_params->obj_goal), m_tolerances(4,0){
     // TODO: should i run an IK check here just to test feasibility?
 
-    m_tolerances[Tolerances::XYZ] = params.xyz_tolerance;
-    m_tolerances[Tolerances::ROLL] = params.roll_tolerance;
-    m_tolerances[Tolerances::PITCH] = params.pitch_tolerance;
-    m_tolerances[Tolerances::YAW] = params.yaw_tolerance;
+    m_tolerances[Tolerances::XYZ] = search_request->m_params->xyz_tolerance;
+    m_tolerances[Tolerances::ROLL] = search_request->m_params->roll_tolerance;
+    m_tolerances[Tolerances::PITCH] = search_request->m_params->pitch_tolerance;
+    m_tolerances[Tolerances::YAW] = search_request->m_params->yaw_tolerance;
 }
 
 bool GoalState::isGoal(GraphStatePtr graph_state) const {
@@ -22,6 +22,7 @@ bool GoalState::isGoal(GraphStatePtr graph_state) const {
                           m_tolerances[Tolerances::YAW]);
     DiscObjectState d_tol = c_tol.getDiscObjectState();
     DiscObjectState obj = graph_state->getDiscObjectState();
+
     bool within_xyz_tol = (abs(m_goal_state.getX()-obj.getX()) < d_tol.getX() &&
                            abs(m_goal_state.getY()-obj.getY()) < d_tol.getY() &&
                            abs(m_goal_state.getZ()-obj.getZ()) < d_tol.getZ());

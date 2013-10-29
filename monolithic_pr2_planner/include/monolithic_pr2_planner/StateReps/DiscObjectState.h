@@ -2,10 +2,11 @@
 #include <vector>
 #include <monolithic_pr2_planner/Constants.h>
 #include <monolithic_pr2_planner/StateReps/ContObjectState.h>
+#include <monolithic_pr2_planner/OccupancyGridUser.h>
 
 namespace monolithic_pr2_planner {
     class ContObjectState;
-    class DiscObjectState {
+    class DiscObjectState : public OccupancyGridUser {
         public:
             bool operator==(const DiscObjectState& other);
             bool operator!=(const DiscObjectState& other);

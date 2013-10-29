@@ -14,20 +14,30 @@ bool DiscObjectState::operator!=(const DiscObjectState& other){
 DiscObjectState::DiscObjectState(unsigned int x, unsigned int y, 
                                  unsigned int z, unsigned int roll, 
                                  unsigned int pitch, unsigned int yaw) : m_coord(6){
-   m_coord[ObjectPose::X] = x; 
-   m_coord[ObjectPose::Y] = y; 
-   m_coord[ObjectPose::Z] = z; 
-   m_coord[ObjectPose::ROLL] = roll;
-   m_coord[ObjectPose::PITCH] = pitch;
-   m_coord[ObjectPose::YAW] = yaw;
+    m_coord[ObjectPose::X] = x; 
+    m_coord[ObjectPose::Y] = y; 
+    m_coord[ObjectPose::Z] = z; 
+    m_coord[ObjectPose::ROLL] = roll;
+    m_coord[ObjectPose::PITCH] = pitch;
+    m_coord[ObjectPose::YAW] = yaw;
 }
 
 DiscObjectState::DiscObjectState(ContObjectState obj_state): m_coord(6){
-    int counter = 0;
-    for (auto it=obj_state.getCoordBegin(); it != obj_state.getCoordEnd(); ++it){
-        m_coord[counter] = *it;
-        counter++;
-    }
+    int x, y, z;
+    m_occupancy_grid->worldToGrid(obj_state.getX(), 
+                        obj_state.getY(), 
+                        obj_state.getZ(),
+                        x, y, z);
+    double rpy_res = m_resolution_params.obj_rpy_resolution;
+    double roll = static_cast<unsigned int>((normalize_angle_positive(obj_state.getRoll() + rpy_res*0.5))/rpy_res);
+    double pitch = static_cast<unsigned int>((normalize_angle_positive(obj_state.getPitch() + rpy_res*0.5))/rpy_res);
+    double yaw = static_cast<unsigned int>((normalize_angle_positive(obj_state.getYaw() + rpy_res*0.5))/rpy_res);
+    m_coord[ObjectPose::X] = x; 
+    m_coord[ObjectPose::Y] = y; 
+    m_coord[ObjectPose::Z] = z; 
+    m_coord[ObjectPose::ROLL] = roll;
+    m_coord[ObjectPose::PITCH] = pitch;
+    m_coord[ObjectPose::YAW] = yaw;
 }
 
 ContObjectState DiscObjectState::getContObjectState(){

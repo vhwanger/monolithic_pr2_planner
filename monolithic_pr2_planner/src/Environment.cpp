@@ -19,8 +19,10 @@ Environment::Environment(ros::NodeHandle nh) : m_nodehandle(nh){
 
 bool Environment::plan(SearchRequestParamsPtr search_request_params){
     SearchRequestPtr search_request = SearchRequestPtr(new SearchRequest(search_request_params));
-    if (!setStartGoal(search_request))
+    configureQuerySpecificParams(search_request);
+    if (!setStartGoal(search_request)){
         return false;
+    }
 
     return true;
 }
@@ -31,11 +33,10 @@ bool Environment::setStartGoal(SearchRequestPtr search_request){
                          search_request->m_params->left_arm_start);
     ContObjectState obj_state = start_pose.getDiscMapFrameObjectState();
     if (!search_request->isValid(m_collision_space_mgr)){
-        obj_state.printToInfo(INIT_LOG);
+        obj_state.printToInfo(SEARCH_LOG);
         start_pose.visualize();
         return false;
     }
-    configureQuerySpecificParams(search_request);
     GraphStatePtr start_graph_state = make_shared<GraphState>(start_pose);
     m_hash_mgr.save(start_graph_state);
     assert(m_hash_mgr.getGraphState(start_graph_state->getID()) == start_graph_state);
@@ -45,17 +46,11 @@ bool Environment::setStartGoal(SearchRequestPtr search_request){
     obj_state.printToInfo(SEARCH_LOG);
     start_pose.visualize();
 
-    GoalStateParams goal_params;
-    goal_params.goal_state = search_request->m_params->obj_goal;
-    goal_params.xyz_tolerance = search_request->m_params->xyz_tolerance;
-    goal_params.roll_tolerance = search_request->m_params->roll_tolerance;
-    goal_params.pitch_tolerance = search_request->m_params->pitch_tolerance;
-    goal_params.yaw_tolerance = search_request->m_params->yaw_tolerance;
-    GoalState goal(goal_params);
+    GoalState goal(search_request);
     m_goals.push_back(goal);
 
     ROS_INFO_NAMED(SEARCH_LOG, "Goal state created:");
-    goal_params.goal_state.printToInfo(SEARCH_LOG);
+    goal.getContObjectState().printToInfo(SEARCH_LOG);
 
     return true;
 }
