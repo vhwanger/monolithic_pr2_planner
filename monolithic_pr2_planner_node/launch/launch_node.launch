@@ -1,6 +1,6 @@
 <launch>
   <node name="map_server" pkg="map_server" type="map_server" args="$(find monolithic_pr2_planner_node)/maps/freezer.yaml" />
-  <node name="octomap_server_combined" pkg="octomap_server" type="octomap_server_node"
+  <node name="octomap_server" pkg="octomap_server" type="octomap_server_node"
         args="$(find monolithic_pr2_planner_node)/maps/freezer.bt">
     <param name="resolution" value="0.025" />
     <param name="sensor_model/range" value="4.0" />

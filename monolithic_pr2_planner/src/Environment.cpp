@@ -33,6 +33,7 @@ bool Environment::plan(SearchRequestParamsPtr search_request_params){
     start_pose.printToInfo(INIT_LOG);
     obj_state.printToInfo(INIT_LOG);
     start_pose.visualize();
+
     m_hash_mgr.save(start_graph_state);
 
     return true;
