@@ -4,8 +4,7 @@ using namespace monolithic_pr2_planner;
 
 
 GraphState::GraphState(RobotPose robot_pose) : 
-m_robot_pose(robot_pose){
-    m_obj_state = m_robot_pose.getMapFrameObjectState();
+m_robot_pose(robot_pose), m_obj_state(m_robot_pose.getDiscMapFrameObjectState()){
 }
 
 bool GraphState::operator==(const GraphState& other){

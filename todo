@@ -12,3 +12,7 @@ deal with unsigned int stateid -> maybe change it to ints?
 set arm to map transform function in the collisionspaceinterface
 
 error check service request
+
+templatize state reps?
+
+fix ugly code in contarmstate

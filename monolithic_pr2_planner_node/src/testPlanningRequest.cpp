@@ -10,10 +10,10 @@ int main(int argc, char** argv){
     monolithic_pr2_planner_node::GetMobileArmPlan srv;
 
     std::vector<double> right_arm_start(7,0), left_arm_start(7,0), body_start(4,0);
-    body_start[0] = 1;
+    body_start[0] = 2;
     body_start[1] = 1;
-    body_start[2] = .5;
-    body_start[3] = 1;
+    body_start[2] = .1;
+    body_start[3] = 0;
 
     srv.request.rarm_start = right_arm_start;
     srv.request.larm_start = left_arm_start;

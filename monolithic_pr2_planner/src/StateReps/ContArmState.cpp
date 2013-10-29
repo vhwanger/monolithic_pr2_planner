@@ -8,7 +8,6 @@ using namespace angles;
 using namespace std;
 
 boost::shared_ptr<RobotResolutionParams> ContArmState::m_params;
-SBPLArmModelPtr ContArmState::m_arm_model;
 KDL::Frame ContArmState::m_object_offset;
 SBPLArmModelPtr LeftContArmState::m_arm_model;
 SBPLArmModelPtr RightContArmState::m_arm_model;
@@ -22,7 +21,7 @@ bool ContArmState::operator!=(const ContArmState& other){
 }
 
 ContArmState::ContArmState() : 
-    m_is_enforcing_joint_limits(true){
+    m_is_enforcing_joint_limits(true), m_angles(7,0){
     if (!m_params){
         ROS_ERROR("Robot resolution parameters were not statically initialized!");
     }

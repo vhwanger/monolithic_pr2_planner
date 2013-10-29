@@ -3,6 +3,7 @@
 #include <monolithic_pr2_planner/StateReps/ContBaseState.h>
 #include <monolithic_pr2_planner/StateReps/DiscBaseState.h>
 #include <monolithic_pr2_planner/StateReps/DiscObjectState.h>
+#include <pviz/pviz.h>
 #include <geometry_msgs/Pose.h>
 
 namespace monolithic_pr2_planner {
@@ -23,9 +24,15 @@ namespace monolithic_pr2_planner {
             void printToDebug(char* log_level);
             void printToInfo(char* log_level);
 
-            DiscObjectState getMapFrameObjectState();
+            static void setPViz(boost::shared_ptr<PViz> pviz);
+            void visualize();
+
+
+
+            ContObjectState getDiscMapFrameObjectState();
 
         private:
+            static boost::shared_ptr<PViz> m_pviz;
             DiscBaseState m_base_state;
             RightContArmState m_right_arm;
             LeftContArmState m_left_arm;

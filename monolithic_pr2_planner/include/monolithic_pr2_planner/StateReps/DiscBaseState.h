@@ -9,6 +9,7 @@ namespace monolithic_pr2_planner {
 
     class DiscBaseState : public OccupancyGridUser {
         public:
+            DiscBaseState():m_state(4,0){};
             DiscBaseState(unsigned int x, unsigned int y, 
                     unsigned int z, unsigned int theta);
             DiscBaseState(ContBaseState cont_body_state);

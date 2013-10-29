@@ -60,6 +60,16 @@ void setLoggersFromParamServer(ros::NodeHandle nh){
                                   std::string(".") + 
                                   std::string(CSPACE_LOG), level);
     ROS_INFO_NAMED(CONFIG_LOG, "collision space logging level set to %s", level.c_str());
+
+    nh.param<std::string>("debug/logging/kinematics", 
+                          level, "info");
+    changeLoggerLevel(std::string("ros.monolithic_pr2_planner") + 
+                                  std::string(".") + 
+                                  std::string(KIN_LOG), level);
+    changeLoggerLevel(std::string("ros.monolithic_pr2_planner_node") + 
+                                  std::string(".") + 
+                                  std::string(KIN_LOG), level);
+    ROS_INFO_NAMED(CONFIG_LOG, "collision space logging level set to %s", level.c_str());
 }
 
 int main(int argc, char** argv){

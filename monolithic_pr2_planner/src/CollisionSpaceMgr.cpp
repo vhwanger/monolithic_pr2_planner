@@ -9,9 +9,14 @@ using namespace std;
 
 CollisionSpaceMgr::CollisionSpaceMgr(SBPLArmModelPtr right_arm,
                                      SBPLArmModelPtr left_arm){
+    ROS_INFO("right arm %x", right_arm.get());
+    ROS_INFO("left arm %x", left_arm.get());
     m_cspace = make_shared<PR2CollisionSpace>(right_arm,
                                               left_arm,
                                               m_occupancy_grid);
+    if (!m_cspace->init()){
+        ROS_ERROR("cspace failed to initialize!");
+    }
     ROS_INFO_NAMED(INIT_LOG, "Launched collision space manager");
 }
 
@@ -30,25 +35,7 @@ bool CollisionSpaceMgr::isValid(RobotPose& robot_pose){
     double dist_temp;
     int debug_code;
     ROS_DEBUG_NAMED(CSPACE_LOG, "collision checking pose");
-    // TODO make a macro for this
-    ROS_DEBUG_NAMED(CSPACE_LOG, "\tbase: %f %f %f", body_pose.x, body_pose.y, 
-                                                body_pose.z);
-    ROS_DEBUG_NAMED(CSPACE_LOG, "\tleft arm: %f %f %f %f %f %f %f",
-                    l_arm[0],
-                    l_arm[1],
-                    l_arm[2],
-                    l_arm[3],
-                    l_arm[4],
-                    l_arm[5],
-                    l_arm[6]);
-    ROS_DEBUG_NAMED(CSPACE_LOG, "\tright arm: %f %f %f %f %f %f %f", 
-                    r_arm[0],
-                    r_arm[1],
-                    r_arm[2],
-                    r_arm[3],
-                    r_arm[4],
-                    r_arm[5],
-                    r_arm[6]);
+    robot_pose.printToDebug(CSPACE_LOG);
     return m_cspace->checkAllMotion(l_arm, r_arm, body_pose, true, dist_temp, 
                                     debug_code);
 }
