@@ -8,7 +8,7 @@ import geometry_msgs.msg
 import std_msgs.msg
 
 class GetMobileArmPlanRequest(genpy.Message):
-  _md5sum = "fed560522cabe43b5602366b861eca2c"
+  _md5sum = "f2f5d99d6fbf9e028d2e0b29efb5cd9f"
   _type = "monolithic_pr2_planner_node/GetMobileArmPlanRequest"
   _has_header = False #flag to mark the presence of a Header object
   _full_text = """
@@ -26,7 +26,10 @@ float64[] body_goal
 geometry_msgs/PoseStamped goal
 
 
-float64[] absolute_xyzrpy_tolerance
+float64 xyz_tolerance
+float64 roll_tolerance
+float64 pitch_tolerance
+float64 yaw_tolerance
 
 
 geometry_msgs/PoseStamped rarm_object
@@ -92,8 +95,8 @@ float64 z
 float64 w
 
 """
-  __slots__ = ['start','rarm_start','larm_start','body_start','rarm_goal','larm_goal','body_goal','goal','absolute_xyzrpy_tolerance','rarm_object','larm_object','egraph_eps','final_egraph_eps','dec_egraph_eps','initial_eps','final_eps','dec_eps','feedback_paths','save_egraph','use_egraph']
-  _slot_types = ['geometry_msgs/PoseStamped','float64[]','float64[]','float64[]','float64[]','float64[]','float64[]','geometry_msgs/PoseStamped','float64[]','geometry_msgs/PoseStamped','geometry_msgs/PoseStamped','float64','float64','float64','float64','float64','float64','bool','bool','bool']
+  __slots__ = ['start','rarm_start','larm_start','body_start','rarm_goal','larm_goal','body_goal','goal','xyz_tolerance','roll_tolerance','pitch_tolerance','yaw_tolerance','rarm_object','larm_object','egraph_eps','final_egraph_eps','dec_egraph_eps','initial_eps','final_eps','dec_eps','feedback_paths','save_egraph','use_egraph']
+  _slot_types = ['geometry_msgs/PoseStamped','float64[]','float64[]','float64[]','float64[]','float64[]','float64[]','geometry_msgs/PoseStamped','float64','float64','float64','float64','geometry_msgs/PoseStamped','geometry_msgs/PoseStamped','float64','float64','float64','float64','float64','float64','bool','bool','bool']
 
   def __init__(self, *args, **kwds):
     """
@@ -103,7 +106,7 @@ float64 w
     changes.  You cannot mix in-order arguments and keyword arguments.
 
     The available fields are:
-       start,rarm_start,larm_start,body_start,rarm_goal,larm_goal,body_goal,goal,absolute_xyzrpy_tolerance,rarm_object,larm_object,egraph_eps,final_egraph_eps,dec_egraph_eps,initial_eps,final_eps,dec_eps,feedback_paths,save_egraph,use_egraph
+       start,rarm_start,larm_start,body_start,rarm_goal,larm_goal,body_goal,goal,xyz_tolerance,roll_tolerance,pitch_tolerance,yaw_tolerance,rarm_object,larm_object,egraph_eps,final_egraph_eps,dec_egraph_eps,initial_eps,final_eps,dec_eps,feedback_paths,save_egraph,use_egraph
 
     :param args: complete set of field values, in .msg order
     :param kwds: use keyword arguments corresponding to message field names
@@ -128,8 +131,14 @@ float64 w
         self.body_goal = []
       if self.goal is None:
         self.goal = geometry_msgs.msg.PoseStamped()
-      if self.absolute_xyzrpy_tolerance is None:
-        self.absolute_xyzrpy_tolerance = []
+      if self.xyz_tolerance is None:
+        self.xyz_tolerance = 0.
+      if self.roll_tolerance is None:
+        self.roll_tolerance = 0.
+      if self.pitch_tolerance is None:
+        self.pitch_tolerance = 0.
+      if self.yaw_tolerance is None:
+        self.yaw_tolerance = 0.
       if self.rarm_object is None:
         self.rarm_object = geometry_msgs.msg.PoseStamped()
       if self.larm_object is None:
@@ -161,7 +170,10 @@ float64 w
       self.larm_goal = []
       self.body_goal = []
       self.goal = geometry_msgs.msg.PoseStamped()
-      self.absolute_xyzrpy_tolerance = []
+      self.xyz_tolerance = 0.
+      self.roll_tolerance = 0.
+      self.pitch_tolerance = 0.
+      self.yaw_tolerance = 0.
       self.rarm_object = geometry_msgs.msg.PoseStamped()
       self.larm_object = geometry_msgs.msg.PoseStamped()
       self.egraph_eps = 0.
@@ -229,13 +241,7 @@ float64 w
         length = len(_x)
       buff.write(struct.pack('<I%ss'%length, length, _x))
       _x = self
-      buff.write(_struct_7d.pack(_x.goal.pose.position.x, _x.goal.pose.position.y, _x.goal.pose.position.z, _x.goal.pose.orientation.x, _x.goal.pose.orientation.y, _x.goal.pose.orientation.z, _x.goal.pose.orientation.w))
-      length = len(self.absolute_xyzrpy_tolerance)
-      buff.write(_struct_I.pack(length))
-      pattern = '<%sd'%length
-      buff.write(struct.pack(pattern, *self.absolute_xyzrpy_tolerance))
-      _x = self
-      buff.write(_struct_3I.pack(_x.rarm_object.header.seq, _x.rarm_object.header.stamp.secs, _x.rarm_object.header.stamp.nsecs))
+      buff.write(_struct_11d3I.pack(_x.goal.pose.position.x, _x.goal.pose.position.y, _x.goal.pose.position.z, _x.goal.pose.orientation.x, _x.goal.pose.orientation.y, _x.goal.pose.orientation.z, _x.goal.pose.orientation.w, _x.xyz_tolerance, _x.roll_tolerance, _x.pitch_tolerance, _x.yaw_tolerance, _x.rarm_object.header.seq, _x.rarm_object.header.stamp.secs, _x.rarm_object.header.stamp.nsecs))
       _x = self.rarm_object.header.frame_id
       length = len(_x)
       if python3 or type(_x) == unicode:
@@ -344,19 +350,8 @@ float64 w
         self.goal.header.frame_id = str[start:end]
       _x = self
       start = end
-      end += 56
-      (_x.goal.pose.position.x, _x.goal.pose.position.y, _x.goal.pose.position.z, _x.goal.pose.orientation.x, _x.goal.pose.orientation.y, _x.goal.pose.orientation.z, _x.goal.pose.orientation.w,) = _struct_7d.unpack(str[start:end])
-      start = end
-      end += 4
-      (length,) = _struct_I.unpack(str[start:end])
-      pattern = '<%sd'%length
-      start = end
-      end += struct.calcsize(pattern)
-      self.absolute_xyzrpy_tolerance = struct.unpack(pattern, str[start:end])
-      _x = self
-      start = end
-      end += 12
-      (_x.rarm_object.header.seq, _x.rarm_object.header.stamp.secs, _x.rarm_object.header.stamp.nsecs,) = _struct_3I.unpack(str[start:end])
+      end += 100
+      (_x.goal.pose.position.x, _x.goal.pose.position.y, _x.goal.pose.position.z, _x.goal.pose.orientation.x, _x.goal.pose.orientation.y, _x.goal.pose.orientation.z, _x.goal.pose.orientation.w, _x.xyz_tolerance, _x.roll_tolerance, _x.pitch_tolerance, _x.yaw_tolerance, _x.rarm_object.header.seq, _x.rarm_object.header.stamp.secs, _x.rarm_object.header.stamp.nsecs,) = _struct_11d3I.unpack(str[start:end])
       start = end
       end += 4
       (length,) = _struct_I.unpack(str[start:end])
@@ -441,13 +436,7 @@ float64 w
         length = len(_x)
       buff.write(struct.pack('<I%ss'%length, length, _x))
       _x = self
-      buff.write(_struct_7d.pack(_x.goal.pose.position.x, _x.goal.pose.position.y, _x.goal.pose.position.z, _x.goal.pose.orientation.x, _x.goal.pose.orientation.y, _x.goal.pose.orientation.z, _x.goal.pose.orientation.w))
-      length = len(self.absolute_xyzrpy_tolerance)
-      buff.write(_struct_I.pack(length))
-      pattern = '<%sd'%length
-      buff.write(self.absolute_xyzrpy_tolerance.tostring())
-      _x = self
-      buff.write(_struct_3I.pack(_x.rarm_object.header.seq, _x.rarm_object.header.stamp.secs, _x.rarm_object.header.stamp.nsecs))
+      buff.write(_struct_11d3I.pack(_x.goal.pose.position.x, _x.goal.pose.position.y, _x.goal.pose.position.z, _x.goal.pose.orientation.x, _x.goal.pose.orientation.y, _x.goal.pose.orientation.z, _x.goal.pose.orientation.w, _x.xyz_tolerance, _x.roll_tolerance, _x.pitch_tolerance, _x.yaw_tolerance, _x.rarm_object.header.seq, _x.rarm_object.header.stamp.secs, _x.rarm_object.header.stamp.nsecs))
       _x = self.rarm_object.header.frame_id
       length = len(_x)
       if python3 or type(_x) == unicode:
@@ -557,19 +546,8 @@ float64 w
         self.goal.header.frame_id = str[start:end]
       _x = self
       start = end
-      end += 56
-      (_x.goal.pose.position.x, _x.goal.pose.position.y, _x.goal.pose.position.z, _x.goal.pose.orientation.x, _x.goal.pose.orientation.y, _x.goal.pose.orientation.z, _x.goal.pose.orientation.w,) = _struct_7d.unpack(str[start:end])
-      start = end
-      end += 4
-      (length,) = _struct_I.unpack(str[start:end])
-      pattern = '<%sd'%length
-      start = end
-      end += struct.calcsize(pattern)
-      self.absolute_xyzrpy_tolerance = numpy.frombuffer(str[start:end], dtype=numpy.float64, count=length)
-      _x = self
-      start = end
-      end += 12
-      (_x.rarm_object.header.seq, _x.rarm_object.header.stamp.secs, _x.rarm_object.header.stamp.nsecs,) = _struct_3I.unpack(str[start:end])
+      end += 100
+      (_x.goal.pose.position.x, _x.goal.pose.position.y, _x.goal.pose.position.z, _x.goal.pose.orientation.x, _x.goal.pose.orientation.y, _x.goal.pose.orientation.z, _x.goal.pose.orientation.w, _x.xyz_tolerance, _x.roll_tolerance, _x.pitch_tolerance, _x.yaw_tolerance, _x.rarm_object.header.seq, _x.rarm_object.header.stamp.secs, _x.rarm_object.header.stamp.nsecs,) = _struct_11d3I.unpack(str[start:end])
       start = end
       end += 4
       (length,) = _struct_I.unpack(str[start:end])
@@ -604,9 +582,10 @@ float64 w
       raise genpy.DeserializationError(e) #most likely buffer underfill
 
 _struct_I = genpy.struct_I
-_struct_13d3B = struct.Struct("<13d3B")
+_struct_11d3I = struct.Struct("<11d3I")
 _struct_3I = struct.Struct("<3I")
 _struct_7d = struct.Struct("<7d")
+_struct_13d3B = struct.Struct("<13d3B")
 _struct_7d3I = struct.Struct("<7d3I")
 """autogenerated by genpy from monolithic_pr2_planner_node/GetMobileArmPlanResponse.msg. Do not edit."""
 import sys
@@ -1206,6 +1185,6 @@ _struct_3I = struct.Struct("<3I")
 _struct_2i = struct.Struct("<2i")
 class GetMobileArmPlan(object):
   _type          = 'monolithic_pr2_planner_node/GetMobileArmPlan'
-  _md5sum = 'a5c2034a8db2f784ee5d200d64f65ee9'
+  _md5sum = '08d9bbcceea1f0a6c0e72f27a2f0cdde'
   _request_class  = GetMobileArmPlanRequest
   _response_class = GetMobileArmPlanResponse

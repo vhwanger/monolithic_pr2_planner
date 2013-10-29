@@ -103,7 +103,6 @@ ContObjectState RobotPose::getDiscMapFrameObjectState(){
 
     // don't remember what 10 is for. ask ben.
     KDL::Frame to_wrist;
-    ROS_DEBUG_NAMED(KIN_LOG, "computing fk");
     arm_model->computeFK(r_angles, m_base_state.getBodyPose(), 10, &to_wrist);
     double roll1,pitch1,yaw1;
     to_wrist.M.GetRPY(roll1,pitch1,yaw1);

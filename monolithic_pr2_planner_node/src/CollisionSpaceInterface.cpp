@@ -28,8 +28,9 @@ void CollisionSpaceInterface::mapCallback(
     ROS_DEBUG_NAMED(INIT_LOG, "map callback!");
     if(map->header.frame_id.compare(m_ref_frame) != 0)
     {
-        ROS_WARN_NAMED(INIT_LOG, "collision_map_occ is in %s not in %s", 
-                       map->header.frame_id.c_str(), m_ref_frame.c_str());
+        // TODO: fix this warning
+        //ROS_WARN_NAMED(INIT_LOG, "collision_map_occ is in %s not in %s", 
+        //               map->header.frame_id.c_str(), m_ref_frame.c_str());
         ROS_DEBUG_NAMED(INIT_LOG,"the collision map has %i cubic obstacles", 
                         int(map->boxes.size()));
     }

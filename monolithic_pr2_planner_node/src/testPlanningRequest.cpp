@@ -22,10 +22,18 @@ int main(int argc, char** argv){
     pose.pose.position.x = 1;
     pose.pose.position.y = 1;
     pose.pose.position.z = .5;
+    pose.pose.orientation.x = 0;
+    pose.pose.orientation.y = 0;
+    pose.pose.orientation.z = 0;
+    pose.pose.orientation.w = 1;
     srv.request.goal = pose;
     srv.request.initial_eps = 10;
     srv.request.final_eps = 9;
     srv.request.dec_eps = .1;
+    srv.request.xyz_tolerance = .1;
+    srv.request.roll_tolerance = .1;
+    srv.request.pitch_tolerance = .1;
+    srv.request.yaw_tolerance = .1;
     if (client.call(srv))
     {
         ROS_INFO("called service");

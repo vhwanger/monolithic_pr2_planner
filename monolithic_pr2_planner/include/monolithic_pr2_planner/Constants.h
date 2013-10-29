@@ -28,7 +28,12 @@ namespace monolithic_pr2_planner {
 
     class ObjectPose {
         public:
-            enum { X, Y, Z, ROLL, PITCH, YAW};
+            enum { X, Y, Z, ROLL, PITCH, YAW };
+    };
+
+    class Tolerances {
+        public:
+            enum { XYZ, ROLL, PITCH, YAW };
     };
 }
 

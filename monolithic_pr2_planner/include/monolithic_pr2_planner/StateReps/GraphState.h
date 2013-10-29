@@ -1,3 +1,4 @@
+#pragma once
 #include <monolithic_pr2_planner/StateReps/RobotPose.h>
 #include <monolithic_pr2_planner/StateReps/DiscObjectState.h>
 #include <monolithic_pr2_planner/StateReps/ContObjectState.h>
@@ -24,5 +25,6 @@ namespace monolithic_pr2_planner {
             RobotPose m_robot_pose;
             DiscObjectState m_obj_state;
     };
+    typedef boost::shared_ptr<GraphState> GraphStatePtr;
 
 };

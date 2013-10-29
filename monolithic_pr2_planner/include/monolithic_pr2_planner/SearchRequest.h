@@ -4,14 +4,19 @@
 #include <monolithic_pr2_planner/CollisionSpaceMgr.h>
 #include <monolithic_pr2_planner/StateReps/RobotPose.h>
 #include <kdl/frames.hpp>
+#include <vector>
 
 namespace monolithic_pr2_planner {
     typedef struct {
         double initial_epsilon;
         double final_epsilon;
         double decrement_epsilon;
-        ContObjectState obj_start_pose;
-        ContObjectState obj_goal_pose;
+        double xyz_tolerance;
+        double roll_tolerance;
+        double pitch_tolerance;
+        double yaw_tolerance;
+        ContObjectState obj_start;
+        ContObjectState obj_goal;
         ContBaseState base_start;
         LeftContArmState left_arm_start;
         RightContArmState right_arm_start;

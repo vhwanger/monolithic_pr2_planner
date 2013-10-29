@@ -42,7 +42,7 @@ bool EnvInterfaces::planPathCallback(GetMobileArmPlan::Request &req,
     search_request->initial_epsilon = req.initial_eps;
     search_request->final_epsilon = req.final_eps;
     search_request->decrement_epsilon = req.dec_eps;
-    search_request->obj_goal_pose = req.goal;
+    search_request->obj_goal= req.goal;
     search_request->base_start = req.body_start;
     search_request->left_arm_start = LeftContArmState(req.larm_start);
     search_request->right_arm_start = RightContArmState(req.rarm_start);
@@ -65,6 +65,10 @@ bool EnvInterfaces::planPathCallback(GetMobileArmPlan::Request &req,
                                          req.larm_object.pose.orientation.w);
     search_request->left_arm_object = larm_offset;
     search_request->right_arm_object = rarm_offset;
+    search_request->xyz_tolerance = req.xyz_tolerance;
+    search_request->roll_tolerance = req.roll_tolerance;
+    search_request->pitch_tolerance = req.pitch_tolerance;
+    search_request->yaw_tolerance = req.yaw_tolerance;
 
     res.stats_field_names.resize(18);
     res.stats.resize(18);

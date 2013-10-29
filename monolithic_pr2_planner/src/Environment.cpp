@@ -19,6 +19,13 @@ Environment::Environment(ros::NodeHandle nh) : m_nodehandle(nh){
 
 bool Environment::plan(SearchRequestParamsPtr search_request_params){
     SearchRequestPtr search_request = SearchRequestPtr(new SearchRequest(search_request_params));
+    if (!setStartGoal(search_request))
+        return false;
+
+    return true;
+}
+
+bool Environment::setStartGoal(SearchRequestPtr search_request){
     RobotPose start_pose(search_request->m_params->base_start, 
                          search_request->m_params->right_arm_start,
                          search_request->m_params->left_arm_start);
@@ -30,16 +37,29 @@ bool Environment::plan(SearchRequestParamsPtr search_request_params){
     }
     configureQuerySpecificParams(search_request);
     GraphStatePtr start_graph_state = make_shared<GraphState>(start_pose);
-    ROS_INFO("Start state set to:");
-    start_pose.printToInfo(INIT_LOG);
-    obj_state.printToInfo(INIT_LOG);
-    start_pose.visualize();
-
     m_hash_mgr.save(start_graph_state);
     assert(m_hash_mgr.getGraphState(start_graph_state->getID()) == start_graph_state);
 
+    ROS_INFO_NAMED(SEARCH_LOG, "Start state set to:");
+    start_pose.printToInfo(SEARCH_LOG);
+    obj_state.printToInfo(SEARCH_LOG);
+    start_pose.visualize();
+
+    GoalStateParams goal_params;
+    goal_params.goal_state = search_request->m_params->obj_goal;
+    goal_params.xyz_tolerance = search_request->m_params->xyz_tolerance;
+    goal_params.roll_tolerance = search_request->m_params->roll_tolerance;
+    goal_params.pitch_tolerance = search_request->m_params->pitch_tolerance;
+    goal_params.yaw_tolerance = search_request->m_params->yaw_tolerance;
+    GoalState goal(goal_params);
+    m_goals.push_back(goal);
+
+    ROS_INFO_NAMED(SEARCH_LOG, "Goal state created:");
+    goal_params.goal_state.printToInfo(SEARCH_LOG);
+
     return true;
 }
+
 
 // this sets up the environment for things that are query independent.
 void Environment::configurePlanningDomain(){

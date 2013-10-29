@@ -3,7 +3,6 @@
 #include <boost/shared_ptr.hpp>
 
 namespace monolithic_pr2_planner {
-    typedef boost::shared_ptr<GraphState> GraphStatePtr;
     class HashManager {
         public:
             HashManager();

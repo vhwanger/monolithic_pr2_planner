@@ -30,6 +30,7 @@ rosbuild_add_library(monolithic_pr2_planner src/StateReps/RobotPose.cpp
                                             src/StateReps/DiscObjectState.cpp
                                             src/StateReps/ContObjectState.cpp
                                             src/StateReps/GraphState.cpp
+                                            src/StateReps/GoalState.cpp
                                             src/SearchRequest.cpp
                                             src/Environment.cpp
                                             src/OccupancyGridUser.cpp

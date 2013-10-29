@@ -46,7 +46,11 @@ ContObjectState::ContObjectState(const geometry_msgs::PoseStamped& obj_pose):
     m_coord[ObjectPose::YAW] = yaw;
 }
 
-void ContObjectState::printToInfo(char* log_level){
+DiscObjectState ContObjectState::getDiscObjectState(){
+    return ContObjectState(*this); 
+}
+
+void ContObjectState::printToInfo(char* log_level) const {
     ROS_INFO_NAMED(log_level, "object state");
     ROS_INFO_NAMED(log_level, "\t%f %f %f %f %f %f",
                    m_coord[ObjectPose::X],
@@ -57,7 +61,7 @@ void ContObjectState::printToInfo(char* log_level){
                    m_coord[ObjectPose::YAW]);
 }
 
-void ContObjectState::printToDebug(char* log_level){
+void ContObjectState::printToDebug(char* log_level) const {
     ROS_DEBUG_NAMED(log_level, "object state");
     ROS_DEBUG_NAMED(log_level, "\t%f %f %f %f %f %f",
                     m_coord[ObjectPose::X],

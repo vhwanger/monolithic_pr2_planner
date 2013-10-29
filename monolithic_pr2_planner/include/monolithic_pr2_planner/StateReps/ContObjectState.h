@@ -21,8 +21,10 @@ namespace monolithic_pr2_planner {
             double getPitch() const { return m_coord[ObjectPose::PITCH]; };
             double getYaw() const { return m_coord[ObjectPose::YAW]; };
 
-            void printToInfo(char* log_level);
-            void printToDebug(char* log_level);
+            DiscObjectState getDiscObjectState();
+
+            void printToInfo(char* log_level) const;
+            void printToDebug(char* log_level) const;
         private:
             std::vector<double> m_coord;
     };

@@ -13,7 +13,10 @@ float64[] body_goal
 geometry_msgs/PoseStamped goal
 
 # tolerance
-float64[] absolute_xyzrpy_tolerance
+float64 xyz_tolerance
+float64 roll_tolerance
+float64 pitch_tolerance
+float64 yaw_tolerance
 
 # right arm position on the object (in the object frame)
 geometry_msgs/PoseStamped rarm_object

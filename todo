@@ -16,3 +16,5 @@ error check service request
 templatize state reps?
 
 fix ugly code in contarmstate
+
+maybe take out search request struct so it's a litle cleaner?

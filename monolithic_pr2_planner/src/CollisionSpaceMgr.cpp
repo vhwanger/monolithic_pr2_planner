@@ -10,8 +10,6 @@ using namespace std;
 
 CollisionSpaceMgr::CollisionSpaceMgr(SBPLArmModelPtr right_arm,
                                      SBPLArmModelPtr left_arm){
-    ROS_INFO("right arm %x", right_arm.get());
-    ROS_INFO("left arm %x", left_arm.get());
     m_cspace = make_shared<PR2CollisionSpace>(right_arm,
                                               left_arm,
                                               m_occupancy_grid);
@@ -23,7 +21,7 @@ CollisionSpaceMgr::CollisionSpaceMgr(SBPLArmModelPtr right_arm,
 
 void CollisionSpaceMgr::updateMap(const arm_navigation_msgs::CollisionMap& map){
     std::vector<Eigen::Vector3d> points;
-    for (int i=0; i < map.boxes.size(); i++){
+    for (int i=0; i < (int)map.boxes.size(); i++){
         Eigen::Vector3d vect;
         vect << map.boxes[i].center.x,
         map.boxes[i].center.y,
