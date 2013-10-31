@@ -11,6 +11,7 @@ using namespace monolithic_pr2_planner;
 HashManager::HashManager() : m_coord_to_state_id_table(HASH_TABLE_SIZE){
 }
 
+// Max's magic function for generating good hashes
 unsigned int HashManager::intHash(unsigned int key){
     key += (key << 12);
     key ^= (key >> 22);
@@ -24,7 +25,6 @@ unsigned int HashManager::intHash(unsigned int key){
 }
 
 
-// TODO: make sure to add the free angle hash!
 unsigned int HashManager::hash(const GraphStatePtr& graph_state){
     int val = 0;
     int counter = 0;
@@ -54,24 +54,22 @@ unsigned int HashManager::hash(const GraphStatePtr& graph_state){
 }
 
 GraphStatePtr HashManager::getGraphState(unsigned int state_id){
-    return m_state_id_to_graph_table.at(state_id);
+    return m_state_id_to_graph_table[state_id];
 }
 
 unsigned int HashManager::getStateID(const GraphStatePtr& graph_state){
-    int index = 0;
     unsigned int bin_idx = hash(graph_state);
     BOOST_FOREACH(auto g_s, m_coord_to_state_id_table[bin_idx]){
         if (*g_s == *graph_state){
-            return index;
+            return g_s->getID();
         }
-        index++;
     }
     throw std::out_of_range("Graph state does not exist");
 }
 
 bool HashManager::exists(const GraphStatePtr& graph_state){
     unsigned int bin_idx = hash(graph_state);
-    ROS_DEBUG_NAMED(HASH_LOG, "Hashed state to %du", bin_idx);
+    ROS_DEBUG_NAMED(HASH_LOG, "Hashed state to %d", bin_idx);
     m_coord_to_state_id_table[bin_idx];
     BOOST_FOREACH(auto g_s, m_coord_to_state_id_table[bin_idx]){
         if (*g_s == *graph_state){
@@ -89,10 +87,10 @@ bool HashManager::save(GraphStatePtr& graph_state){
     }
     ROS_DEBUG_NAMED(HASH_LOG, "This is a new graph state, adding to table");
     unsigned int bin_idx = hash(graph_state);
-    m_coord_to_state_id_table[bin_idx].push_back(graph_state);
-
     graph_state->setID(m_state_id_to_graph_table.size());
     m_state_id_to_graph_table.push_back(graph_state);
+    m_coord_to_state_id_table[bin_idx].push_back(graph_state);
+
     return true;
 }
 

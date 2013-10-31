@@ -1,7 +1,7 @@
 debug:
     logging:
-        configuration: warn
-        initialization: warn
+        configuration: debug
+        initialization: debug
         collision_space: debug
         kinematics: debug
         hashmanager: debug

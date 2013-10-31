@@ -1,10 +1,17 @@
 #pragma once
+#include <monolithic_pr2_planner/MotionPrimitives/ArmMotionPrimitive.h>
+#include <monolithic_pr2_planner/MotionPrimitives/BaseMotionPrimitive.h>
+#include <vector>
 namespace monolithic_pr2_planner {
     class MotionPrimitiveFileParser {
         public:
-            bool parseArmMotionPrimitives(FILE* mprim_file);
-            bool parseBaseMotionPrimitives(FILE* mprim_file);
+            bool parseArmMotionPrimitives(std::string filename,
+                                          std::vector<MotionPrimitivePtr>& prims);
+            bool parseBaseMotionPrimitives(std::string filename,
+                                          std::vector<MotionPrimitivePtr>& prims);
         private:
-            char[] getNextToken(FILE* mprim_file);
+            void getNextLine(ifstream& file, stringstream& ss, string& line);
+            bool ReadinMotionPrimitive(BaseMotionPrimitive* pMotPrim, FILE* fIn,
+                                       int num_base_dirs);
     };
 }

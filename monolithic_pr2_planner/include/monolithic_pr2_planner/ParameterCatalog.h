@@ -1,6 +1,9 @@
 #pragma once
 #include <geometry_msgs/Pose.h>
 #include <ros/ros.h>
+#include <sstream>
+#include <fstream>
+#include <string>
 
 /*
  * The parameter catalog is used to grab all parameters used by the planner and
@@ -61,6 +64,9 @@ namespace monolithic_pr2_planner {
         double obj_rpy_resolution;
         double arm_free_angle_resolution;
         double base_theta_resolution;
+        int num_base_dirs;
+        int ndof;
+        int num_base_prims;
     } RobotResolutionParams;
 
     class ParameterCatalog {
@@ -68,9 +74,10 @@ namespace monolithic_pr2_planner {
             ParameterCatalog();
             void fetch(ros::NodeHandle nh);
 
-            void setMotionPrimitiveFiles();
+            void setMotionPrimitiveFiles(MotionPrimitiveFiles& mprim);
             void setOccupancyGridParams(OccupancyGridParams& params);
-            void setRobotResolutionParams(RobotResolutionParams& params);
+            void setRobotResolutionParams(const MotionPrimitiveFiles& mprims,
+                                          RobotResolutionParams& params);
             void setLeftArmParams(ArmDescriptionParams& params);
             void setRightArmParams(ArmDescriptionParams& params);
 
@@ -81,9 +88,15 @@ namespace monolithic_pr2_planner {
             ArmDescriptionParams m_right_arm_params;
 
         private:
+            void parseArmMPrimFileHeader(const std::string& mprim_file, 
+                                         RobotResolutionParams& params);
+            bool parseBaseMPrimFileHeader(const std::string& mprim_file,
+                                          RobotResolutionParams& params);
             ros::NodeHandle m_nodehandle;
             bool setFileNameFromParamServer(const std::string param_name, 
                                             std::string* parameter);
         
+            void getNextLine(std::ifstream& file, std::stringstream& ss, 
+                             std::string& line);
     };
 }

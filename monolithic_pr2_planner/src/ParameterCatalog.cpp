@@ -5,6 +5,7 @@
 
 using namespace boost::filesystem;
 using namespace monolithic_pr2_planner;
+using namespace std;
 
 
 ParameterCatalog::ParameterCatalog() : m_nodehandle("~") {
@@ -13,18 +14,23 @@ ParameterCatalog::ParameterCatalog() : m_nodehandle("~") {
 void ParameterCatalog::fetch(ros::NodeHandle nh){
     ROS_INFO_NAMED(CONFIG_LOG, "fetching parameters");
     m_nodehandle = nh;
-    setMotionPrimitiveFiles();
+    // TODO clean this up!
+    setMotionPrimitiveFiles(m_motion_primitive_files);
+    parseArmMPrimFileHeader(m_motion_primitive_files.arm_motion_primitive_file,
+                            m_robot_resolution_params);
+    parseBaseMPrimFileHeader(m_motion_primitive_files.base_motion_primitive_file,
+                            m_robot_resolution_params);
     setOccupancyGridParams(m_occupancy_grid_params);
     setLeftArmParams(m_left_arm_params);
     setRightArmParams(m_right_arm_params);
     
 }
 
-void ParameterCatalog::setMotionPrimitiveFiles(){
+void ParameterCatalog::setMotionPrimitiveFiles(MotionPrimitiveFiles& params){
     setFileNameFromParamServer("planner/motion_primitive_file", 
-            &m_motion_primitive_files.arm_motion_primitive_file);
+            &params.arm_motion_primitive_file);
     setFileNameFromParamServer("planner/base_motion_primitive_file", 
-            &m_motion_primitive_files.base_motion_primitive_file);
+            &params.base_motion_primitive_file);
 }
 
 void ParameterCatalog::setLeftArmParams(ArmDescriptionParams& params){
@@ -69,11 +75,84 @@ void ParameterCatalog::setOccupancyGridParams(OccupancyGridParams& params){
 
 // currently just hard code these...maybe someone will want to retrieve them
 // from param server at some point.
-void ParameterCatalog::setRobotResolutionParams(RobotResolutionParams& params){
-    params.obj_xyz_resolution = 0.02;
-    params.obj_rpy_resolution = 2*M_PI/180;
-    params.arm_free_angle_resolution = 3*M_PI/180;
-    params.base_theta_resolution = 22.5*M_PI/180;
+void ParameterCatalog::setRobotResolutionParams(const MotionPrimitiveFiles& mprims,
+                                                RobotResolutionParams& params){
+    parseArmMPrimFileHeader(mprims.arm_motion_primitive_file, params);
+    parseBaseMPrimFileHeader(mprims.base_motion_primitive_file, params);
+    //params.obj_xyz_resolution = 0.02;
+    //params.obj_rpy_resolution = 2*M_PI/180;
+    //params.arm_free_angle_resolution = 3*M_PI/180;
+    //params.base_theta_resolution = 22.5*M_PI/180;
+}
+
+
+void ParameterCatalog::getNextLine(ifstream& file, stringstream& ss, 
+                                   string& line){
+    getline(file, line);
+    ss.str(line);
+    ss.clear();
+}
+
+void ParameterCatalog::parseArmMPrimFileHeader(const std::string& mprim_file,
+                             RobotResolutionParams& params){
+    ifstream file;
+    file.open(mprim_file);
+    string line, label;
+    double dvalue;
+    int ivalue;
+    stringstream ss;
+
+    getNextLine(file, ss, line);
+    ss >> label >> ivalue;
+    if (label == "degrees_of_freedom:"){
+        ROS_DEBUG_NAMED(CONFIG_LOG, "DOF set to %d", ivalue);
+    } 
+    getNextLine(file, ss, line);
+    ss >> label >> dvalue;
+    if (label == "xyz_resolution(meters):"){
+        ROS_DEBUG_NAMED(CONFIG_LOG, "xyz_resolution set to %f", dvalue);
+        params.obj_xyz_resolution = dvalue;
+    } 
+
+    getNextLine(file, ss, line);
+    ss >> label >> dvalue;
+    if (label == "rpy_resolution(degrees):"){
+        ROS_DEBUG_NAMED(CONFIG_LOG, "rpy_resolution set to %f", dvalue);
+        params.obj_rpy_resolution = dvalue;
+    } 
+
+    getNextLine(file, ss, line);
+    ss >> label >> dvalue;
+    if (label == "free_angle_resolution(degrees):"){
+        ROS_DEBUG_NAMED(CONFIG_LOG, "free_angle_resolution set to %f", dvalue);
+        params.arm_free_angle_resolution = dvalue;
+    } 
+    file.close();
+}
+
+bool ParameterCatalog::parseBaseMPrimFileHeader(const std::string& mprim_file, 
+                                                RobotResolutionParams& params){
+    ifstream file;
+    file.open(mprim_file);
+    string line, label;
+    double dvalue;
+    int ivalue;
+    stringstream ss;
+
+    // TODO get the next line, but we already have resolution? skip it
+    getNextLine(file, ss, line);
+    getNextLine(file, ss, line);
+    ss >> label >> ivalue;
+    if (label == "numberofangles:"){
+        params.base_theta_resolution = 2*M_PI/ivalue;
+
+        ROS_DEBUG_NAMED(CONFIG_LOG, "number of angles set to %d", 
+                        ivalue);
+        ROS_DEBUG_NAMED(CONFIG_LOG, "base_theta_resolution set to %f", 
+                        params.base_theta_resolution);
+    } 
+
+    return true;
 }
 
 bool ParameterCatalog::setFileNameFromParamServer(const std::string param_name, 

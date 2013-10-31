@@ -35,5 +35,10 @@ namespace monolithic_pr2_planner {
         public:
             enum { XYZ, ROLL, PITCH, YAW };
     };
+
+    class MPrim_Types {
+        public:
+            enum { BASE, ARM, ADAPTIVE };
+    };
 }
 

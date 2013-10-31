@@ -494,6 +494,126 @@ src/HashManager.cpp.s:
 	$(MAKE) -f CMakeFiles/monolithic_pr2_planner.dir/build.make CMakeFiles/monolithic_pr2_planner.dir/src/HashManager.cpp.s
 .PHONY : src/HashManager.cpp.s
 
+src/MotionPrimitives/ArmMotionPrimitive.o: src/MotionPrimitives/ArmMotionPrimitive.cpp.o
+.PHONY : src/MotionPrimitives/ArmMotionPrimitive.o
+
+# target to build an object file
+src/MotionPrimitives/ArmMotionPrimitive.cpp.o:
+	$(MAKE) -f CMakeFiles/monolithic_pr2_planner.dir/build.make CMakeFiles/monolithic_pr2_planner.dir/src/MotionPrimitives/ArmMotionPrimitive.cpp.o
+.PHONY : src/MotionPrimitives/ArmMotionPrimitive.cpp.o
+
+src/MotionPrimitives/ArmMotionPrimitive.i: src/MotionPrimitives/ArmMotionPrimitive.cpp.i
+.PHONY : src/MotionPrimitives/ArmMotionPrimitive.i
+
+# target to preprocess a source file
+src/MotionPrimitives/ArmMotionPrimitive.cpp.i:
+	$(MAKE) -f CMakeFiles/monolithic_pr2_planner.dir/build.make CMakeFiles/monolithic_pr2_planner.dir/src/MotionPrimitives/ArmMotionPrimitive.cpp.i
+.PHONY : src/MotionPrimitives/ArmMotionPrimitive.cpp.i
+
+src/MotionPrimitives/ArmMotionPrimitive.s: src/MotionPrimitives/ArmMotionPrimitive.cpp.s
+.PHONY : src/MotionPrimitives/ArmMotionPrimitive.s
+
+# target to generate assembly for a file
+src/MotionPrimitives/ArmMotionPrimitive.cpp.s:
+	$(MAKE) -f CMakeFiles/monolithic_pr2_planner.dir/build.make CMakeFiles/monolithic_pr2_planner.dir/src/MotionPrimitives/ArmMotionPrimitive.cpp.s
+.PHONY : src/MotionPrimitives/ArmMotionPrimitive.cpp.s
+
+src/MotionPrimitives/BaseMotionPrimitive.o: src/MotionPrimitives/BaseMotionPrimitive.cpp.o
+.PHONY : src/MotionPrimitives/BaseMotionPrimitive.o
+
+# target to build an object file
+src/MotionPrimitives/BaseMotionPrimitive.cpp.o:
+	$(MAKE) -f CMakeFiles/monolithic_pr2_planner.dir/build.make CMakeFiles/monolithic_pr2_planner.dir/src/MotionPrimitives/BaseMotionPrimitive.cpp.o
+.PHONY : src/MotionPrimitives/BaseMotionPrimitive.cpp.o
+
+src/MotionPrimitives/BaseMotionPrimitive.i: src/MotionPrimitives/BaseMotionPrimitive.cpp.i
+.PHONY : src/MotionPrimitives/BaseMotionPrimitive.i
+
+# target to preprocess a source file
+src/MotionPrimitives/BaseMotionPrimitive.cpp.i:
+	$(MAKE) -f CMakeFiles/monolithic_pr2_planner.dir/build.make CMakeFiles/monolithic_pr2_planner.dir/src/MotionPrimitives/BaseMotionPrimitive.cpp.i
+.PHONY : src/MotionPrimitives/BaseMotionPrimitive.cpp.i
+
+src/MotionPrimitives/BaseMotionPrimitive.s: src/MotionPrimitives/BaseMotionPrimitive.cpp.s
+.PHONY : src/MotionPrimitives/BaseMotionPrimitive.s
+
+# target to generate assembly for a file
+src/MotionPrimitives/BaseMotionPrimitive.cpp.s:
+	$(MAKE) -f CMakeFiles/monolithic_pr2_planner.dir/build.make CMakeFiles/monolithic_pr2_planner.dir/src/MotionPrimitives/BaseMotionPrimitive.cpp.s
+.PHONY : src/MotionPrimitives/BaseMotionPrimitive.cpp.s
+
+src/MotionPrimitives/FileParser.o: src/MotionPrimitives/FileParser.cpp.o
+.PHONY : src/MotionPrimitives/FileParser.o
+
+# target to build an object file
+src/MotionPrimitives/FileParser.cpp.o:
+	$(MAKE) -f CMakeFiles/monolithic_pr2_planner.dir/build.make CMakeFiles/monolithic_pr2_planner.dir/src/MotionPrimitives/FileParser.cpp.o
+.PHONY : src/MotionPrimitives/FileParser.cpp.o
+
+src/MotionPrimitives/FileParser.i: src/MotionPrimitives/FileParser.cpp.i
+.PHONY : src/MotionPrimitives/FileParser.i
+
+# target to preprocess a source file
+src/MotionPrimitives/FileParser.cpp.i:
+	$(MAKE) -f CMakeFiles/monolithic_pr2_planner.dir/build.make CMakeFiles/monolithic_pr2_planner.dir/src/MotionPrimitives/FileParser.cpp.i
+.PHONY : src/MotionPrimitives/FileParser.cpp.i
+
+src/MotionPrimitives/FileParser.s: src/MotionPrimitives/FileParser.cpp.s
+.PHONY : src/MotionPrimitives/FileParser.s
+
+# target to generate assembly for a file
+src/MotionPrimitives/FileParser.cpp.s:
+	$(MAKE) -f CMakeFiles/monolithic_pr2_planner.dir/build.make CMakeFiles/monolithic_pr2_planner.dir/src/MotionPrimitives/FileParser.cpp.s
+.PHONY : src/MotionPrimitives/FileParser.cpp.s
+
+src/MotionPrimitives/MotionPrimitive.o: src/MotionPrimitives/MotionPrimitive.cpp.o
+.PHONY : src/MotionPrimitives/MotionPrimitive.o
+
+# target to build an object file
+src/MotionPrimitives/MotionPrimitive.cpp.o:
+	$(MAKE) -f CMakeFiles/monolithic_pr2_planner.dir/build.make CMakeFiles/monolithic_pr2_planner.dir/src/MotionPrimitives/MotionPrimitive.cpp.o
+.PHONY : src/MotionPrimitives/MotionPrimitive.cpp.o
+
+src/MotionPrimitives/MotionPrimitive.i: src/MotionPrimitives/MotionPrimitive.cpp.i
+.PHONY : src/MotionPrimitives/MotionPrimitive.i
+
+# target to preprocess a source file
+src/MotionPrimitives/MotionPrimitive.cpp.i:
+	$(MAKE) -f CMakeFiles/monolithic_pr2_planner.dir/build.make CMakeFiles/monolithic_pr2_planner.dir/src/MotionPrimitives/MotionPrimitive.cpp.i
+.PHONY : src/MotionPrimitives/MotionPrimitive.cpp.i
+
+src/MotionPrimitives/MotionPrimitive.s: src/MotionPrimitives/MotionPrimitive.cpp.s
+.PHONY : src/MotionPrimitives/MotionPrimitive.s
+
+# target to generate assembly for a file
+src/MotionPrimitives/MotionPrimitive.cpp.s:
+	$(MAKE) -f CMakeFiles/monolithic_pr2_planner.dir/build.make CMakeFiles/monolithic_pr2_planner.dir/src/MotionPrimitives/MotionPrimitive.cpp.s
+.PHONY : src/MotionPrimitives/MotionPrimitive.cpp.s
+
+src/MotionPrimitives/MotionPrimitivesMgr.o: src/MotionPrimitives/MotionPrimitivesMgr.cpp.o
+.PHONY : src/MotionPrimitives/MotionPrimitivesMgr.o
+
+# target to build an object file
+src/MotionPrimitives/MotionPrimitivesMgr.cpp.o:
+	$(MAKE) -f CMakeFiles/monolithic_pr2_planner.dir/build.make CMakeFiles/monolithic_pr2_planner.dir/src/MotionPrimitives/MotionPrimitivesMgr.cpp.o
+.PHONY : src/MotionPrimitives/MotionPrimitivesMgr.cpp.o
+
+src/MotionPrimitives/MotionPrimitivesMgr.i: src/MotionPrimitives/MotionPrimitivesMgr.cpp.i
+.PHONY : src/MotionPrimitives/MotionPrimitivesMgr.i
+
+# target to preprocess a source file
+src/MotionPrimitives/MotionPrimitivesMgr.cpp.i:
+	$(MAKE) -f CMakeFiles/monolithic_pr2_planner.dir/build.make CMakeFiles/monolithic_pr2_planner.dir/src/MotionPrimitives/MotionPrimitivesMgr.cpp.i
+.PHONY : src/MotionPrimitives/MotionPrimitivesMgr.cpp.i
+
+src/MotionPrimitives/MotionPrimitivesMgr.s: src/MotionPrimitives/MotionPrimitivesMgr.cpp.s
+.PHONY : src/MotionPrimitives/MotionPrimitivesMgr.s
+
+# target to generate assembly for a file
+src/MotionPrimitives/MotionPrimitivesMgr.cpp.s:
+	$(MAKE) -f CMakeFiles/monolithic_pr2_planner.dir/build.make CMakeFiles/monolithic_pr2_planner.dir/src/MotionPrimitives/MotionPrimitivesMgr.cpp.s
+.PHONY : src/MotionPrimitives/MotionPrimitivesMgr.cpp.s
+
 src/OccupancyGridUser.o: src/OccupancyGridUser.cpp.o
 .PHONY : src/OccupancyGridUser.o
 
@@ -801,6 +921,21 @@ help:
 	@echo "... src/HashManager.o"
 	@echo "... src/HashManager.i"
 	@echo "... src/HashManager.s"
+	@echo "... src/MotionPrimitives/ArmMotionPrimitive.o"
+	@echo "... src/MotionPrimitives/ArmMotionPrimitive.i"
+	@echo "... src/MotionPrimitives/ArmMotionPrimitive.s"
+	@echo "... src/MotionPrimitives/BaseMotionPrimitive.o"
+	@echo "... src/MotionPrimitives/BaseMotionPrimitive.i"
+	@echo "... src/MotionPrimitives/BaseMotionPrimitive.s"
+	@echo "... src/MotionPrimitives/FileParser.o"
+	@echo "... src/MotionPrimitives/FileParser.i"
+	@echo "... src/MotionPrimitives/FileParser.s"
+	@echo "... src/MotionPrimitives/MotionPrimitive.o"
+	@echo "... src/MotionPrimitives/MotionPrimitive.i"
+	@echo "... src/MotionPrimitives/MotionPrimitive.s"
+	@echo "... src/MotionPrimitives/MotionPrimitivesMgr.o"
+	@echo "... src/MotionPrimitives/MotionPrimitivesMgr.i"
+	@echo "... src/MotionPrimitives/MotionPrimitivesMgr.s"
 	@echo "... src/OccupancyGridUser.o"
 	@echo "... src/OccupancyGridUser.i"
 	@echo "... src/OccupancyGridUser.s"

@@ -97,6 +97,7 @@ int main(int argc, char** argv){
     ros::NodeHandle nh("~");
     setLoggersFromParamServer(nh);
     Node node(nh);
+    ROS_INFO("Node is ready to receive planning requests.");
 
     ros::spin();
 }

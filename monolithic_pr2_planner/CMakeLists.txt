@@ -12,6 +12,11 @@ set(ROS_BUILD_TYPE Debug)
 rosbuild_init()
 SET(CMAKE_CXX_FLAGS "-std=c++0x")
 
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(SBPL REQUIRED sbpl)
+include_directories(${SBPL_INCLUDE_DIRS})
+link_directories(${SBPL_LIBRARY_DIRS})
+
 #set the default path for built executables to the "bin" directory
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 #set the default path for built libraries to the "lib" directory
@@ -31,6 +36,12 @@ rosbuild_add_library(monolithic_pr2_planner src/StateReps/RobotPose.cpp
                                             src/StateReps/ContObjectState.cpp
                                             src/StateReps/GraphState.cpp
                                             src/StateReps/GoalState.cpp
+                                            
+                                            src/MotionPrimitives/ArmMotionPrimitive.cpp
+                                            src/MotionPrimitives/BaseMotionPrimitive.cpp
+                                            src/MotionPrimitives/MotionPrimitive.cpp
+                                            src/MotionPrimitives/FileParser.cpp
+                                            src/MotionPrimitives/MotionPrimitivesMgr.cpp
                                             src/SearchRequest.cpp
                                             src/Environment.cpp
                                             src/OccupancyGridUser.cpp
@@ -38,7 +49,7 @@ rosbuild_add_library(monolithic_pr2_planner src/StateReps/RobotPose.cpp
                                             src/ParameterCatalog.cpp
                                             src/HashManager.cpp
                                             )
-#target_link_libraries(${PROJECT_NAME} another_library)
+target_link_libraries(monolithic_pr2_planner ${SBPL_LIBRARIES})
 #rosbuild_add_boost_directories()
 #rosbuild_link_boost(${PROJECT_NAME} thread)
 #target_link_libraries(example ${PROJECT_NAME})

@@ -73,6 +73,9 @@ void Environment::configurePlanningDomain(){
     m_collision_space_mgr = make_shared<CollisionSpaceMgr>(LeftContArmState::getArmModel(),
                                                            RightContArmState::getArmModel());
 
+    // load up motion primitives
+    m_mprims.loadMPrims(m_param_catalog.m_motion_primitive_files);
+
     // load up static pviz instance for visualizations. 
     boost::shared_ptr<PViz> pviz = boost::make_shared<PViz>();
     pviz->setReferenceFrame("map");

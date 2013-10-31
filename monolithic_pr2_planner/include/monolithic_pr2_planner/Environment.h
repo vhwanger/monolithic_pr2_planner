@@ -6,6 +6,7 @@
 #include <monolithic_pr2_planner/HashManager.h>
 #include <monolithic_pr2_planner/SearchRequest.h>
 #include <monolithic_pr2_planner/StateReps/GoalState.h>
+#include <monolithic_pr2_planner/MotionPrimitives/MotionPrimitivesMgr.h>
 #include <vector>
 
 namespace monolithic_pr2_planner {
@@ -25,6 +26,7 @@ namespace monolithic_pr2_planner {
             ArmModelPtr m_arm_model;
             CSpaceMgrPtr m_collision_space_mgr;
             HashManager m_hash_mgr;
+            MotionPrimitivesMgr m_mprims;
             ros::NodeHandle m_nodehandle;
     };
 }
