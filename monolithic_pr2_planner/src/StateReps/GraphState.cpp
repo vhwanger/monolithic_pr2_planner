@@ -4,7 +4,6 @@
 using namespace monolithic_pr2_planner;
 using namespace boost;
 
-
 GraphState::GraphState(RobotPose robot_pose) : m_robot_pose(robot_pose){ }
 
 GraphState::GraphState(DiscObjectState obj_state, RobotPose robot_pose):
@@ -27,6 +26,7 @@ bool GraphState::applyMPrim(const GraphStateMotion& mprim){
     obj_state.setX(obj_state.getX() + mprim[GraphStateElement::OBJ_X]);
     obj_state.setY(obj_state.getY() + mprim[GraphStateElement::OBJ_Y]);
     obj_state.setZ(obj_state.getZ() + mprim[GraphStateElement::OBJ_Z]);
+
     obj_state.setRoll(obj_state.getRoll() + mprim[GraphStateElement::OBJ_ROLL]);
     obj_state.setPitch(obj_state.getPitch() + mprim[GraphStateElement::OBJ_PITCH]);
     obj_state.setYaw(obj_state.getYaw() + mprim[GraphStateElement::OBJ_YAW]);

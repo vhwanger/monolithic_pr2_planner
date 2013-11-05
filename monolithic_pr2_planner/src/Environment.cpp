@@ -46,6 +46,7 @@ void Environment::GetSuccs(int sourceStateID, vector<int>* succIDs,
             successor->printToDebug(SEARCH_LOG);
 
             valid_successors.push_back(std::move(successor));
+            costs->push_back(mprim->getCost());
         } else {
             ROS_DEBUG_NAMED(SEARCH_LOG, "failed successor");
         }

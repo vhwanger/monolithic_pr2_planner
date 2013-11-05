@@ -20,10 +20,15 @@ namespace monolithic_pr2_planner {
 
             virtual int getMotionType() const = 0;
 
+            void setCost(double cost) { m_cost = cost; };
+            int getCost() const { return m_cost; };
+
         protected:
             int m_id;
+            double m_cost;
             GraphStateMotion m_end_coord;
             IntermSteps m_interm_steps;
+
     };
     typedef boost::shared_ptr<MotionPrimitive> MotionPrimitivePtr;
 }

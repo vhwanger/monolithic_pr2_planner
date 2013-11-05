@@ -19,6 +19,7 @@ namespace monolithic_pr2_planner {
             ContBaseState getContBaseState();
             RightContArmState getContRightArm() const { return m_right_arm; };
             LeftContArmState getContLeftArm() const { return m_left_arm; };
+
             unsigned int getLeftDiscFreeAngle() const { return m_left_arm.getDiscFreeAngle(); };
             unsigned int getRightDiscFreeAngle() const { return m_right_arm.getDiscFreeAngle(); };
             void setLeftDiscFreeAngle(int value) { m_left_arm.setDiscFreeAngle(value); };

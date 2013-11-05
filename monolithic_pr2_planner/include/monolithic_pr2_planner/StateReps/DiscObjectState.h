@@ -26,9 +26,9 @@ namespace monolithic_pr2_planner {
             void setX(int value) { m_coord[ObjectPose::X] = value; };
             void setY(int value) { m_coord[ObjectPose::Y] = value; };
             void setZ(int value) { m_coord[ObjectPose::Z] = value; };
-            void setRoll(int value) { m_coord[ObjectPose::ROLL] = value; };
-            void setPitch(int value) { m_coord[ObjectPose::PITCH] = value; };
-            void setYaw(int value) { m_coord[ObjectPose::YAW] = value; };
+            void setRoll(int value) { m_coord[ObjectPose::ROLL] = normalizeRPY(value); };
+            void setPitch(int value) { m_coord[ObjectPose::PITCH] = normalizeRPY(value); };
+            void setYaw(int value) { m_coord[ObjectPose::YAW] = normalizeRPY(value); };
 
 
             ContObjectState getContObjectState() const;
@@ -37,6 +37,13 @@ namespace monolithic_pr2_planner {
             void printToDebug(char* log_level);
             
         private:
+            inline int normalizeRPY(int theta){
+                int num_thetas = m_resolution_params.num_rpy_angles;
+                if (theta >=0) 
+                    return (theta % num_thetas);
+                else
+                    return (theta % num_thetas + num_thetas) % num_thetas;
+            }
             std::vector<unsigned int> m_coord;
     };
 }

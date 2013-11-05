@@ -29,11 +29,18 @@ namespace monolithic_pr2_planner {
             void setX(int x){ m_state[BodyDOF::X] = x; };
             void setY(int y){ m_state[BodyDOF::Y] = y; };
             void setZ(int z){ m_state[BodyDOF::Z] = z; };
-            void setTheta(int theta){ m_state[BodyDOF::THETA] = theta; };
+            void setTheta(int theta){ m_state[BodyDOF::THETA] = normalizeTheta(theta); };
 
             ContBaseState getContBaseState() const;
             BodyPose getBodyPose() const;
         private:
+            inline int normalizeTheta(int theta){
+                int num_thetas = m_resolution_params.num_base_angles;
+                if (theta >=0) 
+                    return (theta % num_thetas);
+                else
+                    return (theta % num_thetas + num_thetas) % num_thetas;
+            }
             std::vector<int> m_state;
     };
 }

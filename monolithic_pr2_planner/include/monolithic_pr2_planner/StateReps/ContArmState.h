@@ -43,7 +43,10 @@ namespace monolithic_pr2_planner {
 
 
 
-            double convertDiscFreeAngleToCont(int disc_angle) const;
+            inline double convertDiscFreeAngleToCont(int disc_angle) const {
+                double free_angle_res = m_params->arm_free_angle_resolution;
+                return normalize_angle_positive(double(disc_angle)*free_angle_res);
+            };
 
             void getAngles(std::vector<double>* angles) const; 
             std::vector<double>::const_iterator getAnglesBegin() const{return m_angles.begin();};

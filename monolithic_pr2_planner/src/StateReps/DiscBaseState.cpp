@@ -15,10 +15,7 @@ bool DiscBaseState::operator!=(const DiscBaseState& other){
 
 DiscBaseState::DiscBaseState(int x, int y, int z, 
                              int theta): m_state(4){
-    m_state[BodyDOF::X] = x;
-    m_state[BodyDOF::Y] = y;
-    m_state[BodyDOF::Z] = z;
-    m_state[BodyDOF::THETA] = theta;
+    setX(x); setY(y); setZ(z); setTheta(theta);
 }
 
 DiscBaseState::DiscBaseState(ContBaseState body_state): m_state(4){
@@ -30,9 +27,9 @@ DiscBaseState::DiscBaseState(ContBaseState body_state): m_state(4){
     double theta_res = m_resolution_params.base_theta_resolution;
     theta = static_cast<int>((normalize_angle_positive(body_state.getTheta() + theta_res*0.5))/theta_res);
 
-    m_state[BodyDOF::X] = static_cast<int>(x);
-    m_state[BodyDOF::Y] = static_cast<int>(y),
-    m_state[BodyDOF::Z] = static_cast<int>(z),
+    setX(static_cast<int>(x));
+    setY(static_cast<int>(y));
+    setZ(static_cast<int>(z));
     m_state[BodyDOF::THETA] = theta;
 }
 

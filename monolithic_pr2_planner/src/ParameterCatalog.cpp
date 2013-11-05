@@ -119,6 +119,7 @@ void ParameterCatalog::parseArmMPrimFileHeader(const std::string& mprim_file,
     if (label == "rpy_resolution(degrees):"){
         ROS_DEBUG_NAMED(CONFIG_LOG, "rpy_resolution set to %f", dvalue);
         params.obj_rpy_resolution = dvalue*M_PI/180;
+        params.num_rpy_angles = (2.0*M_PI) / dvalue + 0.5;
     } 
 
     getNextLine(file, ss, line);
@@ -126,6 +127,7 @@ void ParameterCatalog::parseArmMPrimFileHeader(const std::string& mprim_file,
     if (label == "free_angle_resolution(degrees):"){
         ROS_DEBUG_NAMED(CONFIG_LOG, "free_angle_resolution set to %f", dvalue);
         params.arm_free_angle_resolution = dvalue*M_PI/180;
+        params.num_free_angle_angles = (2.0*M_PI) / dvalue + 0.5;
     } 
     file.close();
 }
@@ -135,7 +137,6 @@ bool ParameterCatalog::parseBaseMPrimFileHeader(const std::string& mprim_file,
     ifstream file;
     file.open(mprim_file);
     string line, label;
-    double dvalue;
     int ivalue;
     stringstream ss;
 
@@ -144,6 +145,7 @@ bool ParameterCatalog::parseBaseMPrimFileHeader(const std::string& mprim_file,
     getNextLine(file, ss, line);
     ss >> label >> ivalue;
     if (label == "numberofangles:"){
+        params.num_base_angles = ivalue;
         params.base_theta_resolution = 2*M_PI/ivalue;
 
         ROS_DEBUG_NAMED(CONFIG_LOG, "number of angles set to %d", 

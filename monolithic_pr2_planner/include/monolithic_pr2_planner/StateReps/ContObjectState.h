@@ -7,6 +7,7 @@ namespace monolithic_pr2_planner {
     class DiscObjectState;
     class ContObjectState : public OccupancyGridUser {
         public:
+            // TODO: make setter functions that also normalize
             ContObjectState(); 
             ContObjectState(double x, double y, double z, double roll, double pitch, double yaw);
             ContObjectState(DiscObjectState obj_state); 

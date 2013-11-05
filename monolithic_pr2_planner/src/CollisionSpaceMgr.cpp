@@ -1,6 +1,7 @@
 #include <monolithic_pr2_planner/CollisionSpaceMgr.h>
 #include <monolithic_pr2_planner/LoggerNames.h>
 #include <monolithic_pr2_planner/Constants.h>
+#include <stdexcept>
 #include <vector>
 #include <Eigen/Core>
 
@@ -58,6 +59,8 @@ bool CollisionSpaceMgr::isValidMotion(const GraphState& source_state,
         return isValidAfterBaseMotion(successor, mprim);
     } else if (motion_type == MPrim_Types::ARM){
         return isValidAfterArmMotion(successor, mprim);
+    } else {
+        throw std::invalid_argument("not a valid motion primitive type");
     }
 }
 

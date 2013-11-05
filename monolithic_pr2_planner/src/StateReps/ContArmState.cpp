@@ -45,11 +45,6 @@ int ContArmState::getDiscFreeAngle() const {
     return disc_angle;
 }
 
-double ContArmState::convertDiscFreeAngleToCont(int disc_angle) const {
-    double free_angle_res = m_params->arm_free_angle_resolution;
-    return normalize_angle_positive(double(disc_angle)*free_angle_res);
-}
-
 void ContArmState::getAngles(std::vector<double>* angles) const {
     *angles = m_angles;
 }

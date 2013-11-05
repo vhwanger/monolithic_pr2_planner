@@ -21,7 +21,7 @@ namespace monolithic_pr2_planner {
             void setX(double x) { m_pose[BodyDOF::X] = x; };
             void setY(double y) { m_pose[BodyDOF::Y] = y; };
             void setZ(double z) { m_pose[BodyDOF::Z] = z; };
-            void setTheta(double theta) { m_pose[BodyDOF::THETA] = theta; };
+            void setTheta(double theta) { m_pose[BodyDOF::THETA] = normalize_angle_positive(theta); };
 
             DiscBaseState getDiscBaseState();
         private:

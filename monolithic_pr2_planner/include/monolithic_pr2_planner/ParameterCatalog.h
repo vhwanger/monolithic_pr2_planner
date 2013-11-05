@@ -64,7 +64,9 @@ namespace monolithic_pr2_planner {
         double obj_rpy_resolution;
         double arm_free_angle_resolution;
         double base_theta_resolution;
-        int num_base_dirs;
+        int num_free_angle_angles;
+        int num_rpy_angles;
+        int num_base_angles;
         int ndof;
         int num_base_prims;
     } RobotResolutionParams;
