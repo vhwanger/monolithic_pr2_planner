@@ -1,5 +1,6 @@
 #pragma once
 #include <monolithic_pr2_planner/MotionPrimitives/MotionPrimitive.h>
+#include <monolithic_pr2_planner/Constants.h>
 #include <boost/shared_ptr.hpp>
 
 namespace monolithic_pr2_planner {
@@ -14,6 +15,8 @@ namespace monolithic_pr2_planner {
             int getCost() const { return m_additional_action_cost_mult; };
             virtual std::unique_ptr<GraphState> apply(const GraphState& graph_state);
             virtual void print() const ;
+
+            virtual int getMotionType() const { return MPrim_Types::BASE; };
 
         private:
             int m_start_angle;

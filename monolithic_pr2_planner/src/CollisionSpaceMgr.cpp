@@ -1,5 +1,6 @@
 #include <monolithic_pr2_planner/CollisionSpaceMgr.h>
 #include <monolithic_pr2_planner/LoggerNames.h>
+#include <monolithic_pr2_planner/Constants.h>
 #include <vector>
 #include <Eigen/Core>
 
@@ -51,12 +52,46 @@ bool CollisionSpaceMgr::isValidMotion(const GraphState& source_state,
                                       const MotionPrimitivePtr& mprim,
                                       unique_ptr<GraphState>& successor){
     successor = mprim->apply(source_state);
-    ROS_DEBUG_NAMED(SEARCH_LOG, "source state:");
-    source_state.printToDebug(SEARCH_LOG);
-    ROS_DEBUG_NAMED(SEARCH_LOG, "successor state:");
-    successor->printToDebug(SEARCH_LOG);
 
-
-
-    return false;
+    int motion_type = mprim->getMotionType();
+    if (motion_type == MPrim_Types::BASE){
+        return isValidAfterBaseMotion(successor, mprim);
+    } else if (motion_type == MPrim_Types::ARM){
+        return isValidAfterArmMotion(successor, mprim);
+    }
 }
+
+bool CollisionSpaceMgr::isValidAfterArmMotion(unique_ptr<GraphState>& successor,
+                                              const MotionPrimitivePtr& mprim) const {
+    RobotPose pose = successor->getRobotPose();
+    vector<double> r_arm(7), l_arm(7);
+    pose.getContRightArm().getAngles(&r_arm);
+    pose.getContLeftArm().getAngles(&l_arm);
+    BodyPose body_pose = pose.getDiscBaseState().getBodyPose();
+    bool verbose = true;
+    double dist;
+    int debug;
+
+    return m_cspace->checkArmsMotion(l_arm, r_arm, body_pose, verbose, dist, debug);
+
+}
+
+bool CollisionSpaceMgr::isValidAfterBaseMotion(unique_ptr<GraphState>& successor,
+                                               const MotionPrimitivePtr& mprim) const {
+    RobotPose pose = successor->getRobotPose();
+    vector<double> r_arm(7), l_arm(7);
+    pose.getContRightArm().getAngles(&r_arm);
+    pose.getContLeftArm().getAngles(&l_arm);
+    BodyPose body_pose = pose.getDiscBaseState().getBodyPose();
+    bool verbose = true;
+    double dist;
+    int debug;
+
+    return m_cspace->checkBaseMotion(l_arm, r_arm, body_pose, verbose, dist, debug);
+}
+
+
+
+
+
+

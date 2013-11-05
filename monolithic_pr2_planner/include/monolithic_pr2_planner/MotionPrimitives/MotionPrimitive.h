@@ -18,6 +18,8 @@ namespace monolithic_pr2_planner {
             virtual void printIntermSteps() const;
             virtual void printEndCoord() const;
 
+            virtual int getMotionType() const = 0;
+
         protected:
             int m_id;
             GraphStateMotion m_end_coord;

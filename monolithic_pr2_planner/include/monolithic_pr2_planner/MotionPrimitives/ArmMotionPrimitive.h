@@ -1,6 +1,7 @@
 #pragma once
 #include <monolithic_pr2_planner/MotionPrimitives/MotionPrimitive.h>
 #include <monolithic_pr2_planner/StateReps/GraphState.h>
+#include <monolithic_pr2_planner/Constants.h>
 #include <vector>
 namespace monolithic_pr2_planner {
     class ArmMotionPrimitive : public MotionPrimitive {
@@ -9,6 +10,7 @@ namespace monolithic_pr2_planner {
             int getGroup() const { return m_group; };
             virtual std::unique_ptr<GraphState> apply(const GraphState& graph_state);
             virtual void print() const ;
+            virtual int getMotionType() const { return MPrim_Types::ARM; };
         private:
             int m_group;
     };

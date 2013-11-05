@@ -30,3 +30,5 @@ remove code duplication between computing the map frame object state and the
 body frame object state
 
 look for left arm motion primitive
+
+should all getter functions be duplicated in robot pose for ease?
