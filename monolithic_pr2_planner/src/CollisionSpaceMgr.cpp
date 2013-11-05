@@ -47,8 +47,16 @@ bool CollisionSpaceMgr::isValid(RobotPose& robot_pose){
                                     debug_code);
 }
 
-bool CollisionSpaceMgr::isValidMotion(GraphStatePtr source_state, 
-                                      GraphStatePtr successor){
-    ROS_INFO("not done");
+bool CollisionSpaceMgr::isValidMotion(const GraphState& source_state, 
+                                      const MotionPrimitivePtr& mprim,
+                                      unique_ptr<GraphState>& successor){
+    successor = mprim->apply(source_state);
+    ROS_DEBUG_NAMED(SEARCH_LOG, "source state:");
+    source_state.printToDebug(SEARCH_LOG);
+    ROS_DEBUG_NAMED(SEARCH_LOG, "successor state:");
+    successor->printToDebug(SEARCH_LOG);
+
+
+
     return false;
 }

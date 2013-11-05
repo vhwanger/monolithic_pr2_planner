@@ -36,9 +36,6 @@ bool GraphState::applyMPrim(const GraphStateMotion& mprim){
     base_state.setY(base_state.getY() + mprim[GraphStateElement::BASE_Y]);
     base_state.setTheta(base_state.getTheta() + mprim[GraphStateElement::BASE_THETA]);
     m_robot_pose.setDiscBaseState(base_state);
-    ROS_DEBUG_NAMED(KIN_LOG, "applied mprim robot state");
-    obj_state.printToDebug(KIN_LOG);
-    m_robot_pose.printToDebug(KIN_LOG);
 
     RobotPosePtr new_robot_pose;
     if (RobotPose::computeRobotPose(obj_state, m_robot_pose, new_robot_pose)){
@@ -49,8 +46,8 @@ bool GraphState::applyMPrim(const GraphStateMotion& mprim){
     return true;
 }
 
-void GraphState::printToDebug(char* logger){
-    DiscObjectState obj_state = m_robot_pose.getObjectStateRelMap();
+void GraphState::printToDebug(char* logger) const {
+    DiscObjectState obj_state = m_robot_pose.getObjectStateRelBody();
     ROS_DEBUG_NAMED(logger, "\t%d %d %d %d %d %d %d %d %d %d %d %d",
                     obj_state.getX(),
                     obj_state.getY(),

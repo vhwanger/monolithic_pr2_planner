@@ -2,6 +2,7 @@
 #include <boost/shared_ptr.hpp>
 #include <monolithic_pr2_planner/StateReps/GraphState.h>
 #include <monolithic_pr2_planner/StateReps/RobotPose.h>
+#include <monolithic_pr2_planner/MotionPrimitives/MotionPrimitive.h>
 #include <monolithic_pr2_planner/ParameterCatalog.h>
 #include <monolithic_pr2_planner/OccupancyGridUser.h>
 #include <pr2_collision_checker/pr2_collision_space.h>
@@ -17,7 +18,9 @@ namespace monolithic_pr2_planner {
                               SBPLArmModelPtr left_arm);
             bool isValid(DiscObjectState& obj_state);
             bool isValid(RobotPose& robot_pose);
-            bool isValidMotion(GraphStatePtr source_state, GraphStatePtr successor);
+            bool isValidMotion(const GraphState& source_state, 
+                               const MotionPrimitivePtr& mprim,
+                               unique_ptr<GraphState>& successor);
 
             void updateMap(const arm_navigation_msgs::CollisionMap& map);
             //bool readMapFromEigen(Eigen::Vector3d points);

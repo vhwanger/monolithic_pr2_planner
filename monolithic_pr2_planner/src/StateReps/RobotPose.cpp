@@ -105,7 +105,6 @@ bool RobotPose::computeRobotPose(const DiscObjectState& disc_obj_state,
                                  const RobotPose& seed_robot_pose,
                                  RobotPosePtr& new_robot_pose){
     ContObjectState obj_state = disc_obj_state.getContObjectState();
-    obj_state.printToDebug(KIN_LOG);
 
     KDL::Frame obj_frame;
     obj_frame.p.x(obj_state.getX());

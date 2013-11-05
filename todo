@@ -28,3 +28,5 @@ pointer due to fucking up the derived class and it holding the arm model pointer
 
 remove code duplication between computing the map frame object state and the
 body frame object state
+
+look for left arm motion primitive

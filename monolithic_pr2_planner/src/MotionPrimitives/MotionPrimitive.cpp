@@ -13,7 +13,7 @@ void MotionPrimitive::setEndCoord(GraphStateMotion& coord) {
     m_end_coord = coord; 
 }
 
-void MotionPrimitive::printIntermSteps(){
+void MotionPrimitive::printIntermSteps() const {
     BOOST_FOREACH(auto step, m_interm_steps){
         stringstream ss;
         ss << "\t";
@@ -24,7 +24,7 @@ void MotionPrimitive::printIntermSteps(){
     }
 }
 
-void MotionPrimitive::printEndCoord(){
+void MotionPrimitive::printEndCoord() const {
     stringstream ss;
     ss << "\t";
     BOOST_FOREACH(auto coord, m_end_coord){

@@ -2,8 +2,9 @@
 
 using namespace monolithic_pr2_planner;
 using namespace boost;
+using namespace std;
 
-void BaseMotionPrimitive::print(){
+void BaseMotionPrimitive::print() const {
     ROS_DEBUG_NAMED(CONFIG_LOG, "\tid: %d", getID());
     ROS_DEBUG_NAMED(CONFIG_LOG, "\tstart angle: %d", getStartAngle());
     ROS_DEBUG_NAMED(CONFIG_LOG, "\tcost: %d", getCost());
@@ -12,7 +13,8 @@ void BaseMotionPrimitive::print(){
 }
 
 
-GraphStatePtr BaseMotionPrimitive::apply(GraphStatePtr graph_state){
-    GraphStatePtr successor = make_shared<GraphState>(*graph_state);
+unique_ptr<GraphState> BaseMotionPrimitive::apply(const GraphState& graph_state){
+    unique_ptr<GraphState> successor (new GraphState(graph_state));
+    successor->applyMPrim(m_end_coord);
     return successor;
 }

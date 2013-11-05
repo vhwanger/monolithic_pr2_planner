@@ -9,14 +9,14 @@ namespace monolithic_pr2_planner {
         public:
             MotionPrimitive();
             void setID(int id) { m_id = id; };
-            int getID() { return m_id; };
+            int getID() const { return m_id; };
             virtual void setIntermSteps(IntermSteps& coord) { m_interm_steps = coord; };
             virtual void setEndCoord(GraphStateMotion& coord); 
-            virtual GraphStatePtr apply(GraphStatePtr graph_state) = 0;
+            virtual std::unique_ptr<GraphState> apply(const GraphState& graph_state) = 0;
             
-            virtual void print() = 0;
-            virtual void printIntermSteps();
-            virtual void printEndCoord();
+            virtual void print() const = 0;
+            virtual void printIntermSteps() const;
+            virtual void printEndCoord() const;
 
         protected:
             int m_id;

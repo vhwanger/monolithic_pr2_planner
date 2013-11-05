@@ -6,9 +6,9 @@ namespace monolithic_pr2_planner {
     class ArmMotionPrimitive : public MotionPrimitive {
         public:
             void setGroup(int group) { m_group = group; };
-            int getGroup() { return m_group; };
-            virtual GraphStatePtr apply(GraphStatePtr graph_state);
-            virtual void print();
+            int getGroup() const { return m_group; };
+            virtual std::unique_ptr<GraphState> apply(const GraphState& graph_state);
+            virtual void print() const ;
         private:
             int m_group;
     };

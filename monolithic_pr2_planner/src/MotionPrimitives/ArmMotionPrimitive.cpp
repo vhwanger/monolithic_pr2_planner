@@ -4,8 +4,9 @@
 
 using namespace monolithic_pr2_planner;
 using namespace boost;
+using namespace std;
 
-void ArmMotionPrimitive::print(){
+void ArmMotionPrimitive::print() const {
     ROS_DEBUG_NAMED(CONFIG_LOG, "\tgroup: %d", getGroup());
     ROS_DEBUG_NAMED(CONFIG_LOG, "\tid: %d", getID());
     printEndCoord();
@@ -13,10 +14,8 @@ void ArmMotionPrimitive::print(){
 }
 
 
-GraphStatePtr ArmMotionPrimitive::apply(GraphStatePtr graph_state){
-    GraphStatePtr successor = make_shared<GraphState>(*graph_state);
+unique_ptr<GraphState> ArmMotionPrimitive::apply(const GraphState& graph_state){
+    unique_ptr<GraphState> successor (new GraphState(graph_state));
     successor->applyMPrim(m_end_coord);
-    ROS_DEBUG_NAMED(SEARCH_LOG, "successor state:");
-    successor->printToDebug(SEARCH_LOG);
     return successor;
 }

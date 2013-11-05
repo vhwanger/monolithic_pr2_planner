@@ -37,13 +37,11 @@ void Environment::GetSuccs(int sourceStateID, vector<int>* succIDs,
                            vector<int>* costs, vector<int>* actions){
     GraphStatePtr source_state = m_hash_mgr.getGraphState(sourceStateID);
     vector<GraphStatePtr> all_successors;
-    ROS_DEBUG_NAMED(SEARCH_LOG, "source state:");
-    source_state->printToDebug(SEARCH_LOG);
     BOOST_FOREACH(auto mprim, m_mprims.getMotionPrims()){
-        GraphStatePtr successor = mprim->apply(source_state);
-        //if (m_cspace_mgr->isValidMotion(source_state, successor)){
+        unique_ptr<GraphState> successor;
+        if (m_cspace_mgr->isValidMotion(*source_state, mprim, successor)){
         //    all_successors.push_back(successor);
-        //}
+        }
     }
 }
 

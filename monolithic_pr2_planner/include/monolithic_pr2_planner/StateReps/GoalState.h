@@ -6,11 +6,13 @@
 
 namespace monolithic_pr2_planner {
     // TODO: generalize this state . also have free angle defaults?
+    // TODO: implement setgoal
     class GoalState {
         public:
             GoalState(SearchRequestPtr search_request);
             bool isGoal(GraphStatePtr graph_state) const;
             unsigned int getHeuristic(GraphStatePtr graph_state);
+            void setGoal();
             ContObjectState getContObjectState() const { return ContObjectState(m_goal_state); };
         private:
             DiscObjectState m_goal_state;
