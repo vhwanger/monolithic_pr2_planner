@@ -21,7 +21,7 @@ bool GoalState::isGoal(GraphStatePtr graph_state) const {
                           m_tolerances[Tolerances::PITCH],
                           m_tolerances[Tolerances::YAW]);
     DiscObjectState d_tol = c_tol.getDiscObjectState();
-    DiscObjectState obj = graph_state->getDiscObjectState();
+    DiscObjectState obj = graph_state->getObjectStateRelMap();
 
     bool within_xyz_tol = (abs(m_goal_state.getX()-obj.getX()) < d_tol.getX() &&
                            abs(m_goal_state.getY()-obj.getY()) < d_tol.getY() &&

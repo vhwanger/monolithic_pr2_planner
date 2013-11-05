@@ -5,6 +5,7 @@
 #include <pviz/pviz.h>
 #include <boost/shared_ptr.hpp>
 #include <boost/scoped_ptr.hpp>
+#include <boost/foreach.hpp>
 #include <assert.h>
 
 using namespace monolithic_pr2_planner;
@@ -23,20 +24,41 @@ bool Environment::plan(SearchRequestParamsPtr search_request_params){
     if (!setStartGoal(search_request)){
         return false;
     }
+    
+
+    // testing
+    vector<int> succ, costs, actions;
+    GetSuccs(0, &succ, &costs, &actions);
 
     return true;
+}
+
+void Environment::GetSuccs(int sourceStateID, vector<int>* succIDs, 
+                           vector<int>* costs, vector<int>* actions){
+    GraphStatePtr source_state = m_hash_mgr.getGraphState(sourceStateID);
+    vector<GraphStatePtr> all_successors;
+    ROS_DEBUG_NAMED(SEARCH_LOG, "source state:");
+    source_state->printToDebug(SEARCH_LOG);
+    BOOST_FOREACH(auto mprim, m_mprims.getMotionPrims()){
+        GraphStatePtr successor = mprim->apply(source_state);
+        //if (m_cspace_mgr->isValidMotion(source_state, successor)){
+        //    all_successors.push_back(successor);
+        //}
+    }
 }
 
 bool Environment::setStartGoal(SearchRequestPtr search_request){
     RobotPose start_pose(search_request->m_params->base_start, 
                          search_request->m_params->right_arm_start,
                          search_request->m_params->left_arm_start);
-    ContObjectState obj_state = start_pose.getDiscMapFrameObjectState();
-    if (!search_request->isValid(m_collision_space_mgr)){
+    ContObjectState obj_state = start_pose.getObjectStateRelMap();
+
+    if (!search_request->isValid(m_cspace_mgr)){
         obj_state.printToInfo(SEARCH_LOG);
         start_pose.visualize();
         return false;
     }
+
     GraphStatePtr start_graph_state = make_shared<GraphState>(start_pose);
     m_hash_mgr.save(start_graph_state);
     assert(m_hash_mgr.getGraphState(start_graph_state->getID()) == start_graph_state);
@@ -66,12 +88,16 @@ void Environment::configurePlanningDomain(){
     ContArmState::setRobotResolutionParams(m_param_catalog.m_robot_resolution_params);
 
     // used for arm kinematics
-    LeftContArmState::setArmModel(m_param_catalog.m_left_arm_params);
-    RightContArmState::setArmModel(m_param_catalog.m_right_arm_params);
+    LeftContArmState::initArmModel(m_param_catalog.m_left_arm_params);
+    RightContArmState::initArmModel(m_param_catalog.m_right_arm_params);
 
     // collision space mgr needs arm models in order to do collision checking
-    m_collision_space_mgr = make_shared<CollisionSpaceMgr>(LeftContArmState::getArmModel(),
-                                                           RightContArmState::getArmModel());
+    // have to do this funny thing  of initializing an object because of static
+    // variable + inheritance (see ContArmState for details)
+    LeftContArmState l_arm;
+    RightContArmState r_arm;
+    m_cspace_mgr = make_shared<CollisionSpaceMgr>(l_arm.getArmModel(),
+                                                  r_arm.getArmModel());
 
     // load up motion primitives
     m_mprims.loadMPrims(m_param_catalog.m_motion_primitive_files);
@@ -85,6 +111,10 @@ void Environment::configurePlanningDomain(){
 // sets parameters for query specific things
 void Environment::configureQuerySpecificParams(SearchRequestPtr search_request){
     // sets the location of the object in the frame of the wrist
-    LeftContArmState::setObjectOffset(search_request->m_params->left_arm_object);
-    RightContArmState::setObjectOffset(search_request->m_params->right_arm_object);
+    // have to do this funny thing  of initializing an object because of static
+    // variable + inheritance (see ContArmState for details)
+    LeftContArmState l_arm;
+    RightContArmState r_arm;
+    l_arm.setObjectOffset(search_request->m_params->left_arm_object);
+    r_arm.setObjectOffset(search_request->m_params->right_arm_object);
 }

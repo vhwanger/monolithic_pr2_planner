@@ -10,30 +10,30 @@ namespace monolithic_pr2_planner {
     class DiscBaseState : public OccupancyGridUser {
         public:
             DiscBaseState():m_state(4,0){};
-            DiscBaseState(unsigned int x, unsigned int y, 
-                    unsigned int z, unsigned int theta);
+            DiscBaseState(int x, int y, 
+                    int z, int theta);
             DiscBaseState(ContBaseState cont_body_state);
 
             bool operator==(const DiscBaseState& other);
             bool operator!=(const DiscBaseState& other);
 
-            unsigned int getX() const { return m_state[BodyDOF::X]; };
-            unsigned int getY() const { return m_state[BodyDOF::Y]; };
-            unsigned int getZ() const { return m_state[BodyDOF::Z]; };
-            unsigned int getTheta() const { return m_state[BodyDOF::THETA]; };
+            int getX() const { return m_state[BodyDOF::X]; };
+            int getY() const { return m_state[BodyDOF::Y]; };
+            int getZ() const { return m_state[BodyDOF::Z]; };
+            int getTheta() const { return m_state[BodyDOF::THETA]; };
 
-            void getValues(std::vector<unsigned int>* values);
-            std::vector<unsigned int>::const_iterator getCoordBegin(){ return m_state.begin(); };
-            std::vector<unsigned int>::const_iterator getCoordEnd(){ return m_state.end(); };
+            void getValues(std::vector<int>* values) const;
+            std::vector<int>::const_iterator getCoordBegin(){ return m_state.begin(); };
+            std::vector<int>::const_iterator getCoordEnd(){ return m_state.end(); };
 
-            void setX(unsigned int x);
-            void setY(unsigned int y);
-            void setZ(unsigned int z);
-            void setTheta(unsigned int theta);
+            void setX(int x){ m_state[BodyDOF::X] = x; };
+            void setY(int y){ m_state[BodyDOF::Y] = y; };
+            void setZ(int z){ m_state[BodyDOF::Z] = z; };
+            void setTheta(int theta){ m_state[BodyDOF::THETA] = theta; };
 
-            ContBaseState getContBaseState();
-            BodyPose getBodyPose();
+            ContBaseState getContBaseState() const;
+            BodyPose getBodyPose() const;
         private:
-            std::vector<unsigned int> m_state;
+            std::vector<int> m_state;
     };
 }

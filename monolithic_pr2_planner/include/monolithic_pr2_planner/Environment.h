@@ -13,8 +13,10 @@ namespace monolithic_pr2_planner {
     class Environment {
         public:
             Environment(ros::NodeHandle nh);
-            CSpaceMgrPtr getCollisionSpace(){ return m_collision_space_mgr; };
+            CSpaceMgrPtr getCollisionSpace(){ return m_cspace_mgr; };
             bool plan(SearchRequestParamsPtr search_request_params);
+            void GetSuccs(int sourceStateID, vector<int>* succIDs, 
+                          vector<int>* costs, vector<int>* actions);
 
         private:
             bool setStartGoal(SearchRequestPtr search_request);
@@ -24,7 +26,7 @@ namespace monolithic_pr2_planner {
             std::vector<GoalState> m_goals;
             ParameterCatalog m_param_catalog;
             ArmModelPtr m_arm_model;
-            CSpaceMgrPtr m_collision_space_mgr;
+            CSpaceMgrPtr m_cspace_mgr;
             HashManager m_hash_mgr;
             MotionPrimitivesMgr m_mprims;
             ros::NodeHandle m_nodehandle;

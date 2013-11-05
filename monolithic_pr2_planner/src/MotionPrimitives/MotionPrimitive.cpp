@@ -5,6 +5,13 @@
 using namespace monolithic_pr2_planner;
 using namespace std;
 
+MotionPrimitive::MotionPrimitive() : m_end_coord(GRAPH_STATE_SIZE,0){
+}
+
+void MotionPrimitive::setEndCoord(GraphStateMotion& coord) { 
+    assert((int)coord.size()==GRAPH_STATE_SIZE); 
+    m_end_coord = coord; 
+}
 
 void MotionPrimitive::printIntermSteps(){
     BOOST_FOREACH(auto step, m_interm_steps){

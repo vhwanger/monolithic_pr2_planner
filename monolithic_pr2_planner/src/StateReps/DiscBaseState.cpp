@@ -13,8 +13,8 @@ bool DiscBaseState::operator!=(const DiscBaseState& other){
     return !(*this == other);
 }
 
-DiscBaseState::DiscBaseState(unsigned int x, unsigned int y, unsigned int z, 
-                             unsigned int theta): m_state(4){
+DiscBaseState::DiscBaseState(int x, int y, int z, 
+                             int theta): m_state(4){
     m_state[BodyDOF::X] = x;
     m_state[BodyDOF::Y] = y;
     m_state[BodyDOF::Z] = z;
@@ -28,23 +28,23 @@ DiscBaseState::DiscBaseState(ContBaseState body_state): m_state(4){
                         body_state.getZ(),
                         x, y, z);
     double theta_res = m_resolution_params.base_theta_resolution;
-    theta = static_cast<unsigned int>((normalize_angle_positive(body_state.getTheta() + theta_res*0.5))/theta_res);
+    theta = static_cast<int>((normalize_angle_positive(body_state.getTheta() + theta_res*0.5))/theta_res);
 
-    m_state[BodyDOF::X] = static_cast<unsigned int>(x);
-    m_state[BodyDOF::Y] = static_cast<unsigned int>(y),
-    m_state[BodyDOF::Z] = static_cast<unsigned int>(z),
+    m_state[BodyDOF::X] = static_cast<int>(x);
+    m_state[BodyDOF::Y] = static_cast<int>(y),
+    m_state[BodyDOF::Z] = static_cast<int>(z),
     m_state[BodyDOF::THETA] = theta;
 }
 
-void DiscBaseState::getValues(vector<unsigned int>* values){
+void DiscBaseState::getValues(vector<int>* values) const {
     *values = m_state;
 }
 
-ContBaseState DiscBaseState::getContBaseState(){
+ContBaseState DiscBaseState::getContBaseState() const {
     return ContBaseState(*this);
 }
 
-BodyPose DiscBaseState::getBodyPose(){
+BodyPose DiscBaseState::getBodyPose() const{
     BodyPose body_pose;
     ContBaseState base_state = getContBaseState();
     body_pose.x = base_state.getX();

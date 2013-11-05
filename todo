@@ -18,3 +18,13 @@ templatize state reps?
 fix ugly code in contarmstate
 
 maybe take out search request struct so it's a litle cleaner?
+
+do something to enforce that graphstatemotion is 12 units
+
+move ik stuff into the cont arm class
+
+move fk stuff into cont arm class (stuck because i can't get the arm model
+pointer due to fucking up the derived class and it holding the arm model pointer
+
+remove code duplication between computing the map frame object state and the
+body frame object state

@@ -10,6 +10,17 @@ int main(int argc, char** argv){
     monolithic_pr2_planner_node::GetMobileArmPlan srv;
 
     std::vector<double> right_arm_start(7,0), left_arm_start(7,0), body_start(4,0);
+
+    right_arm_start[0] = 0.052858395281043;
+    right_arm_start[1] = 0.075369128335531;
+    right_arm_start[2] = 0.569623788333581;
+    right_arm_start[3] = -0.54373199879478;
+    right_arm_start[4] = -22.4372417947492;
+    right_arm_start[5] = -1.86517790099345;
+    right_arm_start[6] = 8.571527760711906;
+
+
+
     body_start[0] = 4;
     body_start[1] = 3;
     body_start[2] = .1;
@@ -26,6 +37,17 @@ int main(int argc, char** argv){
     pose.pose.orientation.y = 0;
     pose.pose.orientation.z = 0;
     pose.pose.orientation.w = 1;
+
+    geometry_msgs::PoseStamped rarm_offset;
+    rarm_offset.pose.position.x = 0;
+    rarm_offset.pose.position.y = 0;
+    rarm_offset.pose.orientation.z = 0;
+    rarm_offset.pose.orientation.x = 0;
+    rarm_offset.pose.orientation.y = 0;
+    rarm_offset.pose.orientation.z = 0;
+    rarm_offset.pose.orientation.w = 1;
+    srv.request.rarm_object = rarm_offset;
+
     srv.request.goal = pose;
     srv.request.initial_eps = 10;
     srv.request.final_eps = 9;

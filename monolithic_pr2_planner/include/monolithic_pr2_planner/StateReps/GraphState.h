@@ -4,9 +4,11 @@
 #include <monolithic_pr2_planner/StateReps/ContObjectState.h>
 
 namespace monolithic_pr2_planner {
+    typedef std::vector<int> GraphStateMotion;
     class GraphState {
         public:
             GraphState(RobotPose robot_pose);
+            GraphState(DiscObjectState obj_state, RobotPose robot_pose);
             // equality of graphstates is defined as:
             //      same discrete base state
             //      same discrete object state
@@ -17,13 +19,16 @@ namespace monolithic_pr2_planner {
             void setID(unsigned int id) { m_id = id; };
             RobotPose getRobotPose() const { return m_robot_pose; };
 
-            DiscObjectState getDiscObjectState() const { return m_obj_state;};
-            ContObjectState getContObjectState();
+            bool applyMPrim(const GraphStateMotion& mprim);
+
+            void printToDebug(char* logger);
+
+            DiscObjectState getObjectStateRelMap();
+            DiscObjectState getObjectStateRelBody();
 
         private:
             unsigned int m_id;
             RobotPose m_robot_pose;
-            DiscObjectState m_obj_state;
     };
     typedef boost::shared_ptr<GraphState> GraphStatePtr;
 

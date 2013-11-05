@@ -12,7 +12,7 @@ namespace monolithic_pr2_planner {
             int getStartAngle(){ return m_start_angle; };
 
             int getCost(){ return m_additional_action_cost_mult; };
-            virtual void apply(GraphStatePtr graph_state);
+            virtual GraphStatePtr apply(GraphStatePtr graph_state);
             virtual void print();
 
         private:

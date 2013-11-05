@@ -111,21 +111,21 @@ void ParameterCatalog::parseArmMPrimFileHeader(const std::string& mprim_file,
     ss >> label >> dvalue;
     if (label == "xyz_resolution(meters):"){
         ROS_DEBUG_NAMED(CONFIG_LOG, "xyz_resolution set to %f", dvalue);
-        params.obj_xyz_resolution = dvalue;
+        params.obj_xyz_resolution = dvalue*M_PI/180;
     } 
 
     getNextLine(file, ss, line);
     ss >> label >> dvalue;
     if (label == "rpy_resolution(degrees):"){
         ROS_DEBUG_NAMED(CONFIG_LOG, "rpy_resolution set to %f", dvalue);
-        params.obj_rpy_resolution = dvalue;
+        params.obj_rpy_resolution = dvalue*M_PI/180;
     } 
 
     getNextLine(file, ss, line);
     ss >> label >> dvalue;
     if (label == "free_angle_resolution(degrees):"){
         ROS_DEBUG_NAMED(CONFIG_LOG, "free_angle_resolution set to %f", dvalue);
-        params.arm_free_angle_resolution = dvalue;
+        params.arm_free_angle_resolution = dvalue*M_PI/180;
     } 
     file.close();
 }

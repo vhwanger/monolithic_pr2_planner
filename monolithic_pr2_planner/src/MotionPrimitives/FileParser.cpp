@@ -1,4 +1,5 @@
 #include <monolithic_pr2_planner/MotionPrimitives/FileParser.h>
+#include <monolithic_pr2_planner/Constants.h>
 #include <sbpl/headers.h>
 #include <boost/shared_ptr.hpp>
 #include <fstream>
@@ -13,7 +14,7 @@ void MotionPrimitiveFileParser::getNextLine(ifstream& file, stringstream& ss, st
     ss.clear();
 }
 
-// this is a very brittle function
+// this is a very brittle function because it needs exactly the right format.
 bool MotionPrimitiveFileParser::parseArmMotionPrimitives(string filename,
                                                          std::vector<MotionPrimitivePtr>& prims){
     ifstream file;
@@ -46,7 +47,17 @@ bool MotionPrimitiveFileParser::parseArmMotionPrimitives(string filename,
         while (ss >> ivalue){
             coord.push_back(ivalue);
         }
-        mprim->setEndCoord(coord);
+        GraphStateMotion motion(GRAPH_STATE_SIZE,0);
+        motion[GraphStateElement::OBJ_X] = coord[0];
+        motion[GraphStateElement::OBJ_Y] = coord[1];
+        motion[GraphStateElement::OBJ_Z] = coord[2];
+        motion[GraphStateElement::OBJ_ROLL] = coord[3];
+        motion[GraphStateElement::OBJ_PITCH] = coord[4];
+        motion[GraphStateElement::OBJ_YAW] = coord[5];
+        motion[GraphStateElement::R_FA] = coord[6];
+        motion[GraphStateElement::L_FA] = coord[7];
+
+        mprim->setEndCoord(motion);
 
         // gets num interm steps
         int num_interm_steps;
@@ -59,7 +70,17 @@ bool MotionPrimitiveFileParser::parseArmMotionPrimitives(string filename,
             while (ss >> dvalue){
                 step.push_back(dvalue);
             }
-            interm_steps.push_back(step);
+            std::vector<double> g_step(GRAPH_STATE_SIZE,0);
+            g_step[GraphStateElement::OBJ_X] = step[0];
+            g_step[GraphStateElement::OBJ_Y] = step[1];
+            g_step[GraphStateElement::OBJ_Z] = step[2];
+            g_step[GraphStateElement::OBJ_ROLL] = step[3];
+            g_step[GraphStateElement::OBJ_PITCH] = step[4];
+            g_step[GraphStateElement::OBJ_YAW] = step[5];
+            g_step[GraphStateElement::R_FA] = step[6];
+            g_step[GraphStateElement::L_FA] = step[7];
+
+            interm_steps.push_back(g_step);
         }
         mprim->setIntermSteps(interm_steps);
         // skip the last few lines
@@ -108,7 +129,12 @@ bool MotionPrimitiveFileParser::parseBaseMotionPrimitives(string filename,
         while (ss >> ivalue){
             coord.push_back(ivalue);
         }
-        mprim->setEndCoord(coord);
+        GraphStateMotion motion(GRAPH_STATE_SIZE,0);
+        motion[GraphStateElement::BASE_X] = coord[0];
+        motion[GraphStateElement::BASE_Y] = coord[1];
+        motion[GraphStateElement::BASE_THETA] = coord[2];
+
+        mprim->setEndCoord(motion);
         
         // cost
         getNextLine(file, ss, line);
@@ -127,7 +153,11 @@ bool MotionPrimitiveFileParser::parseBaseMotionPrimitives(string filename,
             while (ss >> dvalue){
                 step.push_back(dvalue);
             }
-            interm_steps.push_back(step);
+            std::vector<double> g_step(GRAPH_STATE_SIZE,0);
+            g_step[GraphStateElement::BASE_X] = step[0];
+            g_step[GraphStateElement::BASE_Y] = step[1];
+            g_step[GraphStateElement::BASE_THETA] = step[2];
+            interm_steps.push_back(g_step);
         }
         ROS_DEBUG_NAMED(CONFIG_LOG, "base motion primitive created:");
         mprim->setIntermSteps(interm_steps);

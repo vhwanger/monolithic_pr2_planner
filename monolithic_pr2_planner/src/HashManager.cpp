@@ -28,7 +28,7 @@ unsigned int HashManager::intHash(unsigned int key){
 unsigned int HashManager::hash(const GraphStatePtr& graph_state){
     int val = 0;
     int counter = 0;
-    auto obj_state = graph_state->getDiscObjectState();
+    auto obj_state = graph_state->getObjectStateRelBody();
     for (auto it=obj_state.getCoordBegin(); it!=obj_state.getCoordEnd();++it){
         val += intHash(*it) << counter;
         counter++;

@@ -11,9 +11,9 @@ bool DiscObjectState::operator!=(const DiscObjectState& other){
     return !(*this == other);
 }
 
-DiscObjectState::DiscObjectState(unsigned int x, unsigned int y, 
-                                 unsigned int z, unsigned int roll, 
-                                 unsigned int pitch, unsigned int yaw) : m_coord(6){
+DiscObjectState::DiscObjectState(int x, int y, 
+                                 int z, int roll, 
+                                 int pitch, int yaw) : m_coord(6){
     m_coord[ObjectPose::X] = x; 
     m_coord[ObjectPose::Y] = y; 
     m_coord[ObjectPose::Z] = z; 
@@ -29,9 +29,9 @@ DiscObjectState::DiscObjectState(ContObjectState obj_state): m_coord(6){
                         obj_state.getZ(),
                         x, y, z);
     double rpy_res = m_resolution_params.obj_rpy_resolution;
-    double roll = static_cast<unsigned int>((normalize_angle_positive(obj_state.getRoll() + rpy_res*0.5))/rpy_res);
-    double pitch = static_cast<unsigned int>((normalize_angle_positive(obj_state.getPitch() + rpy_res*0.5))/rpy_res);
-    double yaw = static_cast<unsigned int>((normalize_angle_positive(obj_state.getYaw() + rpy_res*0.5))/rpy_res);
+    double roll = static_cast<int>((normalize_angle_positive(obj_state.getRoll() + rpy_res*0.5))/rpy_res);
+    double pitch = static_cast<int>((normalize_angle_positive(obj_state.getPitch() + rpy_res*0.5))/rpy_res);
+    double yaw = static_cast<int>((normalize_angle_positive(obj_state.getYaw() + rpy_res*0.5))/rpy_res);
     m_coord[ObjectPose::X] = x; 
     m_coord[ObjectPose::Y] = y; 
     m_coord[ObjectPose::Z] = z; 
@@ -40,7 +40,7 @@ DiscObjectState::DiscObjectState(ContObjectState obj_state): m_coord(6){
     m_coord[ObjectPose::YAW] = yaw;
 }
 
-ContObjectState DiscObjectState::getContObjectState(){
+ContObjectState DiscObjectState::getContObjectState() const {
     return ContObjectState(*this);
 }
 

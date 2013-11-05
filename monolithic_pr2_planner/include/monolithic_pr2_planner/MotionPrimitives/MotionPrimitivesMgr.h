@@ -10,8 +10,9 @@ namespace monolithic_pr2_planner {
     class MotionPrimitivesMgr {
         public:
             bool loadMPrims(const MotionPrimitiveFiles& files);
+            std::vector<MotionPrimitivePtr> getMotionPrims() { return m_motprims; };
         private:
             MotionPrimitiveFileParser m_parser;
-            std::vector<MotionPrimitivePtr> m_motprim;
+            std::vector<MotionPrimitivePtr> m_motprims;
     };
 }

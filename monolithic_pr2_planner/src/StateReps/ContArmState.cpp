@@ -8,7 +8,8 @@ using namespace angles;
 using namespace std;
 
 boost::shared_ptr<RobotResolutionParams> ContArmState::m_params;
-KDL::Frame ContArmState::m_object_offset;
+KDL::Frame LeftContArmState::m_object_offset;
+KDL::Frame RightContArmState::m_object_offset;
 SBPLArmModelPtr LeftContArmState::m_arm_model;
 SBPLArmModelPtr RightContArmState::m_arm_model;
 
@@ -35,39 +36,72 @@ void ContArmState::setRobotResolutionParams(const RobotResolutionParams& params)
     m_params = boost::make_shared<RobotResolutionParams>(params);
 }
 
-unsigned int ContArmState::getDiscFreeAngle() const {
+int ContArmState::getDiscFreeAngle() const {
     double free_angle_res = m_params->arm_free_angle_resolution;
     double free_angle = m_angles[Joints::UPPER_ARM_ROLL];
-    unsigned int disc_angle = (unsigned int)((normalize_angle_positive(free_angle + 
+    int disc_angle = static_cast<int>((normalize_angle_positive(free_angle + 
                                               free_angle_res*0.5))/free_angle_res);
-    assert(free_angle == convertDiscFreeAngleToCont(disc_angle));
+    assert(free_angle-convertDiscFreeAngleToCont(disc_angle)<free_angle_res);
     return disc_angle;
 }
 
-double ContArmState::convertDiscFreeAngleToCont(unsigned int disc_angle) const {
+double ContArmState::convertDiscFreeAngleToCont(int disc_angle) const {
     double free_angle_res = m_params->arm_free_angle_resolution;
     return normalize_angle_positive(double(disc_angle)*free_angle_res);
 }
 
-void ContArmState::getAngles(std::vector<double>* angles){
+void ContArmState::getAngles(std::vector<double>* angles) const {
     *angles = m_angles;
 }
 
-//template<class Derived>
-//void BaseX<Derived>::setArmModel(ArmDescriptionParams& params){
-//    FILE* fp_arm= fopen(params.arm_file.c_str(), "r");
-//    if (!fp_arm){
-//        ROS_ERROR("Couldn't open right arm model file (%s)!",
-//                   params.arm_file.c_str());
-//    }
-//    m_arm_model = boost::make_shared<sbpl_arm_planner::SBPLArmModel>(fp_arm);
-//    m_arm_model->setResolution(params.env_resolution);
-//    if (!params.robot_description_string.compare("ROS_PARAM")){
-//        ROS_INFO("getting kdl chain from paramserver");
-//        m_arm_model->initKDLChainFromParamServer();
-//    } else {
-//        ROS_INFO("getting kdl chain from string");
-//        m_arm_model->initKDLChain(params.robot_description_string);
-//    }
-//}
 
+void LeftContArmState::initArmModel(ArmDescriptionParams& params){
+    FILE* fp_arm= fopen(params.arm_file.c_str(), "r");
+    if (!fp_arm){
+        ROS_ERROR("Couldn't open right arm model file (%s)!",
+                   params.arm_file.c_str());
+    }
+    SBPLArmModelPtr arm_model = boost::make_shared<sbpl_arm_planner::SBPLArmModel>(fp_arm);
+    arm_model->setResolution(params.env_resolution);
+    if (!params.robot_description_string.compare("ROS_PARAM")){
+        ROS_INFO("getting kdl chain from paramserver");
+        arm_model->initKDLChainFromParamServer();
+    } else {
+        ROS_INFO("getting kdl chain from string");
+        arm_model->initKDLChain(params.robot_description_string);
+    }
+    m_arm_model = arm_model;
+}
+
+void RightContArmState::initArmModel(ArmDescriptionParams& params){
+    FILE* fp_arm= fopen(params.arm_file.c_str(), "r");
+    if (!fp_arm){
+        ROS_ERROR("Couldn't open right arm model file (%s)!",
+                   params.arm_file.c_str());
+    }
+    SBPLArmModelPtr arm_model = boost::make_shared<sbpl_arm_planner::SBPLArmModel>(fp_arm);
+    arm_model->setResolution(params.env_resolution);
+    if (!params.robot_description_string.compare("ROS_PARAM")){
+        ROS_INFO("getting kdl chain from paramserver");
+        arm_model->initKDLChainFromParamServer();
+    } else {
+        ROS_INFO("getting kdl chain from string");
+        arm_model->initKDLChain(params.robot_description_string);
+    }
+    m_arm_model = arm_model;
+}
+
+DiscObjectState ContArmState::getObjectStateRelBody(){
+    // don't remember what 10 is for. ask ben.
+    KDL::Frame to_wrist;
+    getArmModel()->computeArmFK(m_angles, 10, &to_wrist);
+    double roll1,pitch1,yaw1;
+    to_wrist.M.GetRPY(roll1,pitch1,yaw1);
+    KDL::Frame f = to_wrist * getObjectOffset().Inverse();
+
+    double wr,wp,wy;
+    f.M.GetRPY(wr,wp,wy);
+
+    ContObjectState cont_obj_state(f.p.x(), f.p.y(), f.p.z(), wr, wp, wy);
+    return DiscObjectState(cont_obj_state);
+}

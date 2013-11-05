@@ -46,3 +46,9 @@ bool CollisionSpaceMgr::isValid(RobotPose& robot_pose){
     return m_cspace->checkAllMotion(l_arm, r_arm, body_pose, true, dist_temp, 
                                     debug_code);
 }
+
+bool CollisionSpaceMgr::isValidMotion(GraphStatePtr source_state, 
+                                      GraphStatePtr successor){
+    ROS_INFO("not done");
+    return false;
+}
