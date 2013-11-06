@@ -7,15 +7,20 @@ using namespace boost;
 using namespace std;
 
 void ArmMotionPrimitive::print() const {
+    ROS_DEBUG_NAMED(CONFIG_LOG, "Arm Primitive");
     ROS_DEBUG_NAMED(CONFIG_LOG, "\tgroup: %d", getGroup());
     ROS_DEBUG_NAMED(CONFIG_LOG, "\tid: %d", getID());
+    ROS_DEBUG_NAMED(CONFIG_LOG, "\tcost: %d", getCost());
     printEndCoord();
     printIntermSteps();
 }
 
+bool ArmMotionPrimitive::apply(const GraphState& graph_state, 
+                           unique_ptr<GraphState>& successor){
+    successor.reset(new GraphState(graph_state));
+    return successor->applyMPrim(m_end_coord);
+}
 
-unique_ptr<GraphState> ArmMotionPrimitive::apply(const GraphState& graph_state){
-    unique_ptr<GraphState> successor (new GraphState(graph_state));
-    successor->applyMPrim(m_end_coord);
-    return successor;
+void ArmMotionPrimitive::computeCost(const MotionPrimitiveParams& params){
+    m_cost = 1;
 }

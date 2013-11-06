@@ -44,7 +44,9 @@ namespace monolithic_pr2_planner {
     typedef struct {
         std::string arm_motion_primitive_file;
         std::string base_motion_primitive_file;
-    } MotionPrimitiveFiles;
+        double nominal_vel; // m/s
+        double turn_45_deg_in_place_time; // sec
+    } MotionPrimitiveParams;
 
     typedef struct {
         std::string arm_file;
@@ -76,15 +78,15 @@ namespace monolithic_pr2_planner {
             ParameterCatalog();
             void fetch(ros::NodeHandle nh);
 
-            void setMotionPrimitiveFiles(MotionPrimitiveFiles& mprim);
+            void setMotionPrimitiveParams(MotionPrimitiveParams& mprim);
             void setOccupancyGridParams(OccupancyGridParams& params);
-            void setRobotResolutionParams(const MotionPrimitiveFiles& mprims,
+            void setRobotResolutionParams(const MotionPrimitiveParams& mprims,
                                           RobotResolutionParams& params);
             void setLeftArmParams(ArmDescriptionParams& params);
             void setRightArmParams(ArmDescriptionParams& params);
 
             RobotResolutionParams m_robot_resolution_params;
-            MotionPrimitiveFiles m_motion_primitive_files;
+            MotionPrimitiveParams m_motion_primitive_params;
             OccupancyGridParams m_occupancy_grid_params;
             ArmDescriptionParams m_left_arm_params;
             ArmDescriptionParams m_right_arm_params;

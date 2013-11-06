@@ -7,14 +7,14 @@ namespace monolithic_pr2_planner {
     class BaseMotionPrimitive : public MotionPrimitive { 
         public:
             void setStartAngle(int start_angle) { m_start_angle = start_angle; };
-
-
             int getStartAngle() const { return m_start_angle; };
 
-            virtual std::unique_ptr<GraphState> apply(const GraphState& graph_state);
+            virtual bool apply(const GraphState& graph_state,
+                               std::unique_ptr<GraphState>& successor);
             virtual void print() const ;
 
             virtual int getMotionType() const { return MPrim_Types::BASE; };
+            virtual void computeCost(const MotionPrimitiveParams& params);
 
         private:
             int m_start_angle;

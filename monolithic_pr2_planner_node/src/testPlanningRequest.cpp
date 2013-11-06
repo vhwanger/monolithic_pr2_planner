@@ -24,7 +24,7 @@ int main(int argc, char** argv){
     body_start[0] = 4;
     body_start[1] = 3;
     body_start[2] = .1;
-    body_start[3] = 0;
+    body_start[3] = .4;
 
     srv.request.rarm_start = right_arm_start;
     srv.request.larm_start = left_arm_start;

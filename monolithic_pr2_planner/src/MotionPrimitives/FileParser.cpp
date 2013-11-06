@@ -64,6 +64,8 @@ bool MotionPrimitiveFileParser::parseArmMotionPrimitives(string filename,
         getNextLine(file, ss, line);
         ss >> label >> num_interm_steps;
         IntermSteps interm_steps;
+        std::vector<double> init_step(GRAPH_STATE_SIZE,0);
+        interm_steps.push_back(init_step);
         for (int i=0; i < num_interm_steps; i++){
             vector<double> step;
             getNextLine(file, ss, line);
@@ -87,8 +89,6 @@ bool MotionPrimitiveFileParser::parseArmMotionPrimitives(string filename,
         for (int i=0; i < 3; i++){
             getNextLine(file, ss, line);
         }
-        ROS_DEBUG_NAMED(CONFIG_LOG, "arm mprim created:");
-        mprim->print();
         prims.push_back(mprim);
     }
     return true;
@@ -139,7 +139,7 @@ bool MotionPrimitiveFileParser::parseBaseMotionPrimitives(string filename,
         // cost
         getNextLine(file, ss, line);
         ss >> label >> ivalue;
-        mprim->setCost(ivalue);
+        mprim->setAdditionalCostMult(ivalue);
        
         // gets num interm steps
         int num_interm_steps;
@@ -157,11 +157,10 @@ bool MotionPrimitiveFileParser::parseBaseMotionPrimitives(string filename,
             g_step[GraphStateElement::BASE_X] = step[0];
             g_step[GraphStateElement::BASE_Y] = step[1];
             g_step[GraphStateElement::BASE_THETA] = step[2];
+
             interm_steps.push_back(g_step);
         }
-        ROS_DEBUG_NAMED(CONFIG_LOG, "base motion primitive created:");
         mprim->setIntermSteps(interm_steps);
-        mprim->print();
         prims.push_back(mprim);
         getNextLine(file, ss, line);
     }

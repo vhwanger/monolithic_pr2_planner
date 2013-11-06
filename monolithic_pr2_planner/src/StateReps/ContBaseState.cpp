@@ -18,6 +18,6 @@ ContBaseState::ContBaseState(const DiscBaseState& base_pose) :
                                   m_pose[BodyDOF::Y],
                                   m_pose[BodyDOF::Z]);
     double theta_res = m_resolution_params.base_theta_resolution;
-    m_pose[BodyDOF::THETA] = normalize_angle_positive(double(base_pose.getTheta())*theta_res);
+    m_pose[BodyDOF::THETA] = normalize_angle_positive(static_cast<double>(base_pose.getTheta())*theta_res);
 }
 

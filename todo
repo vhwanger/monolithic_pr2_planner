@@ -34,3 +34,7 @@ look for left arm motion primitive
 should all getter functions be duplicated in robot pose for ease?
 
 should the setter functions for xyz check bounds?
+
+collisionmgr is getting unwieldy. break it up?
+
+move the prints in robotstate into their composed objects

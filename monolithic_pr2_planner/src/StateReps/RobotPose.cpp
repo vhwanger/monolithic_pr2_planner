@@ -34,10 +34,11 @@ ContBaseState RobotPose::getContBaseState(){
 
 void RobotPose::printToDebug(char* log_level) const {
     ContBaseState base_state = m_base_state.getContBaseState();
-    ROS_DEBUG_NAMED(log_level, "\tbase: %f %f %f", 
+    ROS_DEBUG_NAMED(log_level, "\tbase: %f %f %f %f", 
                    base_state.getX(),
                    base_state.getY(),
-                   base_state.getZ());
+                   base_state.getZ(),
+                   base_state.getTheta());
     std::vector<double> l_arm, r_arm;
     m_right_arm.getAngles(&r_arm);
     m_left_arm.getAngles(&l_arm);
@@ -61,10 +62,11 @@ void RobotPose::printToDebug(char* log_level) const {
 
 void RobotPose::printToInfo(char* log_level) const {
     ContBaseState base_state = m_base_state.getContBaseState();
-    ROS_INFO_NAMED(log_level, "\tbase: %f %f %f", 
+    ROS_INFO_NAMED(log_level, "\tbase: %f %f %f %f", 
                    base_state.getX(),
                    base_state.getY(),
-                   base_state.getZ());
+                   base_state.getZ(),
+                   base_state.getTheta());
     std::vector<double> l_arm, r_arm;
     m_right_arm.getAngles(&r_arm);
     m_left_arm.getAngles(&l_arm);

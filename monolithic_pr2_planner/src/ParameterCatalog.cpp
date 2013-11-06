@@ -14,11 +14,12 @@ ParameterCatalog::ParameterCatalog() : m_nodehandle("~") {
 void ParameterCatalog::fetch(ros::NodeHandle nh){
     ROS_INFO_NAMED(CONFIG_LOG, "fetching parameters");
     m_nodehandle = nh;
-    // TODO clean this up!
-    setMotionPrimitiveFiles(m_motion_primitive_files);
-    parseArmMPrimFileHeader(m_motion_primitive_files.arm_motion_primitive_file,
+    // TODO clean this up, setmotionprimitive needs to be run before parse
+    // stuff!
+    setMotionPrimitiveParams(m_motion_primitive_params);
+    parseArmMPrimFileHeader(m_motion_primitive_params.arm_motion_primitive_file,
                             m_robot_resolution_params);
-    parseBaseMPrimFileHeader(m_motion_primitive_files.base_motion_primitive_file,
+    parseBaseMPrimFileHeader(m_motion_primitive_params.base_motion_primitive_file,
                             m_robot_resolution_params);
     setOccupancyGridParams(m_occupancy_grid_params);
     setLeftArmParams(m_left_arm_params);
@@ -26,11 +27,16 @@ void ParameterCatalog::fetch(ros::NodeHandle nh){
     
 }
 
-void ParameterCatalog::setMotionPrimitiveFiles(MotionPrimitiveFiles& params){
+void ParameterCatalog::setMotionPrimitiveParams(MotionPrimitiveParams& params){
     setFileNameFromParamServer("planner/motion_primitive_file", 
             &params.arm_motion_primitive_file);
     setFileNameFromParamServer("planner/base_motion_primitive_file", 
             &params.base_motion_primitive_file);
+    m_nodehandle.param("planner/nominalvel_mpersecs", params.nominal_vel, 
+             0.5);
+    m_nodehandle.param("planner/timetoturn45degsinplace_secs",
+             params.turn_45_deg_in_place_time,
+             0.5);
 }
 
 void ParameterCatalog::setLeftArmParams(ArmDescriptionParams& params){
@@ -75,7 +81,7 @@ void ParameterCatalog::setOccupancyGridParams(OccupancyGridParams& params){
 
 // currently just hard code these...maybe someone will want to retrieve them
 // from param server at some point.
-void ParameterCatalog::setRobotResolutionParams(const MotionPrimitiveFiles& mprims,
+void ParameterCatalog::setRobotResolutionParams(const MotionPrimitiveParams& mprims,
                                                 RobotResolutionParams& params){
     parseArmMPrimFileHeader(mprims.arm_motion_primitive_file, params);
     parseBaseMPrimFileHeader(mprims.base_motion_primitive_file, params);

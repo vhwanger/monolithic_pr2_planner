@@ -4,17 +4,21 @@
 using namespace monolithic_pr2_planner;
 using namespace std;
 
-bool MotionPrimitivesMgr::loadMPrims(const MotionPrimitiveFiles& files){
-    m_parser.parseArmMotionPrimitives(files.arm_motion_primitive_file, m_motprims);
-    m_parser.parseBaseMotionPrimitives(files.base_motion_primitive_file, m_motprims);
+bool MotionPrimitivesMgr::loadMPrims(const MotionPrimitiveParams& params){
+    m_params = params;
+    m_parser.parseArmMotionPrimitives(params.arm_motion_primitive_file, m_motprims);
+    m_parser.parseBaseMotionPrimitives(params.base_motion_primitive_file, m_motprims);
+    setCosts();
 
+    BOOST_FOREACH(auto mprim, m_motprims){    
+        mprim->print();
+    }
 
     return true;
 }
 
 void MotionPrimitivesMgr::setCosts(){
     BOOST_FOREACH(auto mprim, m_motprims){
-        // TODO: AHHHH fix this later
-        mprim->setCost(1);
+        mprim->computeCost(m_params);
     }
 }

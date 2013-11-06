@@ -106,7 +106,7 @@ void Environment::configurePlanningDomain(){
                                                   r_arm.getArmModel());
 
     // load up motion primitives
-    m_mprims.loadMPrims(m_param_catalog.m_motion_primitive_files);
+    m_mprims.loadMPrims(m_param_catalog.m_motion_primitive_params);
 
     // load up static pviz instance for visualizations. 
     boost::shared_ptr<PViz> pviz = boost::make_shared<PViz>();

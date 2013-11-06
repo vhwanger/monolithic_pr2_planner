@@ -3,14 +3,18 @@
 #include <monolithic_pr2_planner/StateReps/GraphState.h>
 #include <monolithic_pr2_planner/Constants.h>
 #include <vector>
+#include <memory>
+
 namespace monolithic_pr2_planner {
     class ArmMotionPrimitive : public MotionPrimitive {
         public:
             void setGroup(int group) { m_group = group; };
             int getGroup() const { return m_group; };
-            virtual std::unique_ptr<GraphState> apply(const GraphState& graph_state);
+            virtual bool apply(const GraphState& graph_state, 
+                               std::unique_ptr<GraphState>& successor);
             virtual void print() const ;
             virtual int getMotionType() const { return MPrim_Types::ARM; };
+            virtual void computeCost(const MotionPrimitiveParams& params);
         private:
             int m_group;
     };

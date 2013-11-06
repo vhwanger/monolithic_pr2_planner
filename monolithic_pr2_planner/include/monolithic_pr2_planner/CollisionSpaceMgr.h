@@ -28,15 +28,24 @@ namespace monolithic_pr2_planner {
 
         private:
             // only need to check arms-arms, arms-world, arms-body
+            // we first check the final coord, then check the intermediates
             bool isValidAfterArmMotion(std::unique_ptr<GraphState>& successor,
                                         const MotionPrimitivePtr& mprim) const;
 
             // only need to check base, both arms against world (not against each other),
             // torso, head
+            // we first check the final coord, then check the intermediates
             bool isValidAfterBaseMotion(std::unique_ptr<GraphState>& successor,
                                         const MotionPrimitivePtr& mprim) const;
             bool isValidAfterAnyMotion(std::unique_ptr<GraphState>& successor,
                                         const MotionPrimitivePtr& mprim) const;
+
+            bool isBaseIntermStatesValid(const GraphState& source_state,
+                                         const MotionPrimitivePtr& mprim);
+            //bool isArmsIntermStatesValid(const GraphState& source_state,
+            //                             const MotionPrimitivePtr& mprim);
+
+
             boost::shared_ptr<pr2_collision_checker::PR2CollisionSpace> m_cspace;
     };
     typedef boost::shared_ptr<CollisionSpaceMgr> CSpaceMgrPtr;
