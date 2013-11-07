@@ -19,6 +19,5 @@ namespace monolithic_pr2_planner {
             std::vector<double> m_tolerances;
             double l_free_angle;
             double r_free_angle;
-            
     };
 }

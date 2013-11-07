@@ -5,11 +5,11 @@ using namespace monolithic_pr2_planner;
 using namespace std;
 using namespace angles;
 
-bool DiscBaseState::operator==(const DiscBaseState& other){
+bool DiscBaseState::operator==(const DiscBaseState& other) const {
     return (m_state == other.m_state);
 }
 
-bool DiscBaseState::operator!=(const DiscBaseState& other){
+bool DiscBaseState::operator!=(const DiscBaseState& other) const {
     return !(*this == other);
 }
 
@@ -50,3 +50,4 @@ BodyPose DiscBaseState::getBodyPose() const{
     body_pose.theta = base_state.getTheta();
     return body_pose;
 }
+

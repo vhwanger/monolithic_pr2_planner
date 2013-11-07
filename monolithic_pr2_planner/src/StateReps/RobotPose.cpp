@@ -138,6 +138,23 @@ bool RobotPose::computeRobotPose(const DiscObjectState& disc_obj_state,
     return true;
 }
 
+// TODO only does base interpolation right now
+//bool RobotPose::interpolateRobotPose(const RobotPose& start, const RobotPose& end,
+//                                     int num_steps, vector<RobotPose>* interp_steps){
+//    vector<ContBaseState> base_states;
+//    if (start.m_base_state != end.m_base_state){
+//        ContBaseState::interpolate(start.m_base_state, end.m_base_state, 
+//                                   num_steps, &base_states);
+//    }
+//
+//    for (auto& base_state : base_states){
+//        RobotPose robot_state(base_state, start.getContRightArm(), 
+//                              start.getContLeftArm());
+//        interp_steps->push_back(robot_state);
+//    }
+//    return true;
+//}
+
 ContObjectState RobotPose::getObjectStateRelMap() const {
     // This is an adaptation of computeContinuousObjectPose from the old
     // planner.  TODO: make this arm agnostic?

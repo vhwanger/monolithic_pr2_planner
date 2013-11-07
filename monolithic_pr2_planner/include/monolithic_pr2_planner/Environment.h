@@ -8,6 +8,7 @@
 #include <monolithic_pr2_planner/StateReps/GoalState.h>
 #include <monolithic_pr2_planner/MotionPrimitives/MotionPrimitivesMgr.h>
 #include <vector>
+#include <memory>
 
 namespace monolithic_pr2_planner {
     class Environment {
@@ -23,12 +24,12 @@ namespace monolithic_pr2_planner {
             void configurePlanningDomain();
             void configureQuerySpecificParams(SearchRequestPtr search_request);
 
-            std::vector<GoalState> m_goals;
             ParameterCatalog m_param_catalog;
             ArmModelPtr m_arm_model;
             CSpaceMgrPtr m_cspace_mgr;
             HashManager m_hash_mgr;
-            MotionPrimitivesMgr m_mprims;
             ros::NodeHandle m_nodehandle;
+            boost::shared_ptr<std::vector<GoalState> > m_goals;
+            MotionPrimitivesMgr m_mprims;
     };
 }

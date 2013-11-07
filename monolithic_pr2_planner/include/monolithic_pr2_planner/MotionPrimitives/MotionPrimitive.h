@@ -16,14 +16,11 @@ namespace monolithic_pr2_planner {
             virtual void setEndCoord(GraphStateMotion& coord); 
             virtual bool apply(const GraphState& graph_state, 
                                std::unique_ptr<GraphState>& successor) = 0;
-            
             virtual void print() const = 0;
+            virtual int getMotionType() const = 0;
+            virtual void computeCost(const MotionPrimitiveParams& params) = 0;
             virtual void printIntermSteps() const;
             virtual void printEndCoord() const;
-
-            virtual int getMotionType() const = 0;
-
-            virtual void computeCost(const MotionPrimitiveParams& params) = 0;
             virtual int getCost() const { return m_cost; };
             virtual void setAdditionalCostMult(double cost) { m_additional_cost = cost; };
             virtual int getAdditionalCostMult() { return m_additional_cost; };

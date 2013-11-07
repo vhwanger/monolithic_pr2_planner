@@ -49,8 +49,8 @@ unsigned int HashManager::hash(const GraphStatePtr& graph_state){
 
     // should have used 12 values during the hash function
     // xyzrpy(obj pose) fa1 fa2 (arm) xyzyaw(base)
-
-    return val & HASH_TABLE_SIZE;
+    int hash_table_size = HASH_TABLE_SIZE;
+    return intHash(val) & (hash_table_size-1);
 }
 
 GraphStatePtr HashManager::getGraphState(unsigned int state_id){

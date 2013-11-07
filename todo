@@ -38,3 +38,7 @@ should the setter functions for xyz check bounds?
 collisionmgr is getting unwieldy. break it up?
 
 move the prints in robotstate into their composed objects
+
+change getter/setter to just x() and x(value)
+
+make it clear which frame object is in for computeRobotPose

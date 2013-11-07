@@ -6,3 +6,4 @@ debug:
         kinematics: debug
         hashmanager: debug
         search: debug
+        motionprimitves: info

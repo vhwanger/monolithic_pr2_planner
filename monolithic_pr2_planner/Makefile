@@ -518,6 +518,30 @@ src/MotionPrimitives/ArmMotionPrimitive.cpp.s:
 	$(MAKE) -f CMakeFiles/monolithic_pr2_planner.dir/build.make CMakeFiles/monolithic_pr2_planner.dir/src/MotionPrimitives/ArmMotionPrimitive.cpp.s
 .PHONY : src/MotionPrimitives/ArmMotionPrimitive.cpp.s
 
+src/MotionPrimitives/BaseAdaptiveMotionPrimitive.o: src/MotionPrimitives/BaseAdaptiveMotionPrimitive.cpp.o
+.PHONY : src/MotionPrimitives/BaseAdaptiveMotionPrimitive.o
+
+# target to build an object file
+src/MotionPrimitives/BaseAdaptiveMotionPrimitive.cpp.o:
+	$(MAKE) -f CMakeFiles/monolithic_pr2_planner.dir/build.make CMakeFiles/monolithic_pr2_planner.dir/src/MotionPrimitives/BaseAdaptiveMotionPrimitive.cpp.o
+.PHONY : src/MotionPrimitives/BaseAdaptiveMotionPrimitive.cpp.o
+
+src/MotionPrimitives/BaseAdaptiveMotionPrimitive.i: src/MotionPrimitives/BaseAdaptiveMotionPrimitive.cpp.i
+.PHONY : src/MotionPrimitives/BaseAdaptiveMotionPrimitive.i
+
+# target to preprocess a source file
+src/MotionPrimitives/BaseAdaptiveMotionPrimitive.cpp.i:
+	$(MAKE) -f CMakeFiles/monolithic_pr2_planner.dir/build.make CMakeFiles/monolithic_pr2_planner.dir/src/MotionPrimitives/BaseAdaptiveMotionPrimitive.cpp.i
+.PHONY : src/MotionPrimitives/BaseAdaptiveMotionPrimitive.cpp.i
+
+src/MotionPrimitives/BaseAdaptiveMotionPrimitive.s: src/MotionPrimitives/BaseAdaptiveMotionPrimitive.cpp.s
+.PHONY : src/MotionPrimitives/BaseAdaptiveMotionPrimitive.s
+
+# target to generate assembly for a file
+src/MotionPrimitives/BaseAdaptiveMotionPrimitive.cpp.s:
+	$(MAKE) -f CMakeFiles/monolithic_pr2_planner.dir/build.make CMakeFiles/monolithic_pr2_planner.dir/src/MotionPrimitives/BaseAdaptiveMotionPrimitive.cpp.s
+.PHONY : src/MotionPrimitives/BaseAdaptiveMotionPrimitive.cpp.s
+
 src/MotionPrimitives/BaseMotionPrimitive.o: src/MotionPrimitives/BaseMotionPrimitive.cpp.o
 .PHONY : src/MotionPrimitives/BaseMotionPrimitive.o
 
@@ -924,6 +948,9 @@ help:
 	@echo "... src/MotionPrimitives/ArmMotionPrimitive.o"
 	@echo "... src/MotionPrimitives/ArmMotionPrimitive.i"
 	@echo "... src/MotionPrimitives/ArmMotionPrimitive.s"
+	@echo "... src/MotionPrimitives/BaseAdaptiveMotionPrimitive.o"
+	@echo "... src/MotionPrimitives/BaseAdaptiveMotionPrimitive.i"
+	@echo "... src/MotionPrimitives/BaseAdaptiveMotionPrimitive.s"
 	@echo "... src/MotionPrimitives/BaseMotionPrimitive.o"
 	@echo "... src/MotionPrimitives/BaseMotionPrimitive.i"
 	@echo "... src/MotionPrimitives/BaseMotionPrimitive.s"

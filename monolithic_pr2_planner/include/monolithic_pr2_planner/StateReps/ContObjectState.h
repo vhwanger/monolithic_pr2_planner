@@ -2,6 +2,7 @@
 #include <monolithic_pr2_planner/StateReps/DiscObjectState.h>
 #include <monolithic_pr2_planner/OccupancyGridUser.h>
 #include <geometry_msgs/PoseStamped.h>
+#include <vector>
 
 namespace monolithic_pr2_planner {
     class DiscObjectState;
@@ -12,8 +13,8 @@ namespace monolithic_pr2_planner {
             ContObjectState(double x, double y, double z, double roll, double pitch, double yaw);
             ContObjectState(DiscObjectState obj_state); 
             ContObjectState(const geometry_msgs::PoseStamped& obj_pose); 
-            std::vector<double>::const_iterator getCoordBegin(){ return m_coord.begin(); };
-            std::vector<double>::const_iterator getCoordEnd(){ return m_coord.end(); };
+
+            void getValues(std::vector<double>* values){ *values = m_coord; };
 
             double getX() const { return m_coord[ObjectPose::X]; };
             double getY() const { return m_coord[ObjectPose::Y]; };

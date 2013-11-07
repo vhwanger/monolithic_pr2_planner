@@ -90,6 +90,16 @@ void setLoggersFromParamServer(ros::NodeHandle nh){
                                   std::string(".") + 
                                   std::string(SEARCH_LOG), level);
     ROS_INFO_NAMED(CONFIG_LOG, "search logging level set to %s", level.c_str());
+
+    nh.param<std::string>("debug/logging/motionprimitives", 
+                          level, "info");
+    changeLoggerLevel(std::string("ros.monolithic_pr2_planner") + 
+                                  std::string(".") + 
+                                  std::string(MPRIM_LOG), level);
+    changeLoggerLevel(std::string("ros.monolithic_pr2_planner_node") + 
+                                  std::string(".") + 
+                                  std::string(MPRIM_LOG), level);
+    ROS_INFO_NAMED(CONFIG_LOG, "search logging level set to %s", level.c_str());
 }
 
 int main(int argc, char** argv){

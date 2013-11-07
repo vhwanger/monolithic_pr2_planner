@@ -23,8 +23,8 @@ namespace monolithic_pr2_planner {
 
             void printToDebug(char* logger) const ;
 
-            DiscObjectState getObjectStateRelMap();
-            DiscObjectState getObjectStateRelBody();
+            DiscObjectState getObjectStateRelMap() const;
+            DiscObjectState getObjectStateRelBody() const;
 
         private:
             unsigned int m_id;

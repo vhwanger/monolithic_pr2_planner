@@ -32,11 +32,16 @@ namespace monolithic_pr2_planner {
             static void setPViz(boost::shared_ptr<PViz> pviz);
             void visualize();
 
+            ContObjectState getObjectStateRelMap() const;
+            DiscObjectState getObjectStateRelBody() const;
+
             static bool computeRobotPose(const DiscObjectState& disc_obj_state,
                                          const RobotPose& robot_pose,
                                          boost::shared_ptr<RobotPose>& new_robot_pose);
-            ContObjectState getObjectStateRelMap() const;
-            DiscObjectState getObjectStateRelBody() const;
+            //static bool interpolateRobotPose(const RobotPose& start, const RobotPose& end,
+            //                                 int num_steps, std::vector<RobotPose>* interp_steps);
+
+
 
 
         private:

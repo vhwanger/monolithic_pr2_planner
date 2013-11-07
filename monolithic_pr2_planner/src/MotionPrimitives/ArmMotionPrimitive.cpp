@@ -7,10 +7,10 @@ using namespace boost;
 using namespace std;
 
 void ArmMotionPrimitive::print() const {
-    ROS_DEBUG_NAMED(CONFIG_LOG, "Arm Primitive");
-    ROS_DEBUG_NAMED(CONFIG_LOG, "\tgroup: %d", getGroup());
-    ROS_DEBUG_NAMED(CONFIG_LOG, "\tid: %d", getID());
-    ROS_DEBUG_NAMED(CONFIG_LOG, "\tcost: %d", getCost());
+    ROS_DEBUG_NAMED(MPRIM_LOG, "Arm Primitive");
+    ROS_DEBUG_NAMED(MPRIM_LOG, "\tgroup: %d", getGroup());
+    ROS_DEBUG_NAMED(MPRIM_LOG, "\tid: %d", getID());
+    ROS_DEBUG_NAMED(MPRIM_LOG, "\tcost: %d", getCost());
     printEndCoord();
     printIntermSteps();
 }

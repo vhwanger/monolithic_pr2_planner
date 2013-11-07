@@ -5,7 +5,6 @@
 #include <pviz/pviz.h>
 #include <boost/shared_ptr.hpp>
 #include <boost/scoped_ptr.hpp>
-#include <boost/foreach.hpp>
 #include <assert.h>
 
 using namespace monolithic_pr2_planner;
@@ -13,7 +12,8 @@ using namespace boost;
 
 
 typedef scoped_ptr<SearchRequest> SearchRequestPtr;
-Environment::Environment(ros::NodeHandle nh) : m_nodehandle(nh){
+Environment::Environment(ros::NodeHandle nh) : 
+    m_nodehandle(nh), m_goals(new vector<GoalState>), m_mprims(m_goals){
     m_param_catalog.fetch(nh);
     configurePlanningDomain();
 }
@@ -37,19 +37,19 @@ void Environment::GetSuccs(int sourceStateID, vector<int>* succIDs,
                            vector<int>* costs, vector<int>* actions){
     GraphStatePtr source_state = m_hash_mgr.getGraphState(sourceStateID);
     vector<unique_ptr<GraphState> > valid_successors;
-    BOOST_FOREACH(auto mprim, m_mprims.getMotionPrims()){
+    for (auto mprim : m_mprims.getMotionPrims()){
         unique_ptr<GraphState> successor;
         if (m_cspace_mgr->isValidMotion(*source_state, mprim, successor)){
-            ROS_DEBUG_NAMED(SEARCH_LOG, "source state:");
-            source_state->printToDebug(SEARCH_LOG);
-            ROS_DEBUG_NAMED(SEARCH_LOG, "successor state:");
-            successor->printToDebug(SEARCH_LOG);
-
+            ROS_DEBUG_NAMED(MPRIM_LOG, "source state:");
+            source_state->printToDebug(MPRIM_LOG);
+            ROS_DEBUG_NAMED(MPRIM_LOG, "successor state:");
+            successor->printToDebug(MPRIM_LOG);
+            GraphStatePtr successor_t;
+            successor_t.reset(successor.release());
             valid_successors.push_back(std::move(successor));
+            m_hash_mgr.save(successor_t);
             costs->push_back(mprim->getCost());
-        } else {
-            ROS_DEBUG_NAMED(SEARCH_LOG, "failed successor");
-        }
+        } 
     }
 }
 
@@ -75,7 +75,7 @@ bool Environment::setStartGoal(SearchRequestPtr search_request){
     start_pose.visualize();
 
     GoalState goal(search_request);
-    m_goals.push_back(goal);
+    m_goals->push_back(goal);
 
     ROS_INFO_NAMED(SEARCH_LOG, "Goal state created:");
     goal.getContObjectState().printToInfo(SEARCH_LOG);

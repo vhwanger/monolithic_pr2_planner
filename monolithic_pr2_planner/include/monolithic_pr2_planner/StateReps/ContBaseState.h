@@ -13,6 +13,7 @@ namespace monolithic_pr2_planner {
             ContBaseState(std::vector<double> base_pose);
             ContBaseState(const DiscBaseState& base_pose);
 
+            void getValues(std::vector<double>* values) { *values = m_pose; };
             double getX() const { return m_pose[BodyDOF::X]; };
             double getY() const { return m_pose[BodyDOF::Y]; };
             double getZ() const { return m_pose[BodyDOF::Z]; };
@@ -24,6 +25,9 @@ namespace monolithic_pr2_planner {
             void setTheta(double theta) { m_pose[BodyDOF::THETA] = normalize_angle_positive(theta); };
 
             DiscBaseState getDiscBaseState();
+
+            static bool interpolate(const ContBaseState& start, const ContBaseState& end,
+                                    int num_steps, std::vector<ContBaseState>* interp_steps);
         private:
             std::vector<double> m_pose;
     };

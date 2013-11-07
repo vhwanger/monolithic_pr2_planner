@@ -20,7 +20,7 @@ void MotionPrimitive::printIntermSteps() const {
         BOOST_FOREACH(auto coord, step){
             ss << coord << " ";
         }
-        ROS_DEBUG_NAMED(CONFIG_LOG, "\tinterm steps %s", ss.str().c_str());
+        ROS_DEBUG_NAMED(MPRIM_LOG, "\tinterm steps %s", ss.str().c_str());
     }
 }
 
@@ -30,5 +30,5 @@ void MotionPrimitive::printEndCoord() const {
     BOOST_FOREACH(auto coord, m_end_coord){
         ss << coord << " ";
     }
-    ROS_DEBUG_NAMED(CONFIG_LOG, "\tend coord %s", ss.str().c_str());
+    ROS_DEBUG_NAMED(MPRIM_LOG, "\tend coord %s", ss.str().c_str());
 }

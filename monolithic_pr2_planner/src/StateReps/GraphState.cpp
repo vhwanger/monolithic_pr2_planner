@@ -63,10 +63,10 @@ void GraphState::printToDebug(char* logger) const {
                     m_robot_pose.getDiscBaseState().getTheta());
 }
 
-DiscObjectState GraphState::getObjectStateRelMap(){
+DiscObjectState GraphState::getObjectStateRelMap() const {
     return m_robot_pose.getObjectStateRelMap();
 }
 
-DiscObjectState GraphState::getObjectStateRelBody(){
+DiscObjectState GraphState::getObjectStateRelBody() const {
     return m_robot_pose.getObjectStateRelBody();
 }

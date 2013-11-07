@@ -14,8 +14,8 @@ namespace monolithic_pr2_planner {
                     int z, int theta);
             DiscBaseState(ContBaseState cont_body_state);
 
-            bool operator==(const DiscBaseState& other);
-            bool operator!=(const DiscBaseState& other);
+            bool operator==(const DiscBaseState& other) const ;
+            bool operator!=(const DiscBaseState& other) const ;
 
             int getX() const { return m_state[BodyDOF::X]; };
             int getY() const { return m_state[BodyDOF::Y]; };
@@ -33,6 +33,7 @@ namespace monolithic_pr2_planner {
 
             ContBaseState getContBaseState() const;
             BodyPose getBodyPose() const;
+
         private:
             inline int normalizeTheta(int theta){
                 int num_thetas = m_resolution_params.num_base_angles;

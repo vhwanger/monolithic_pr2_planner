@@ -12,10 +12,10 @@ using namespace std;
 using namespace angles;
 
 void BaseMotionPrimitive::print() const {
-    ROS_DEBUG_NAMED(CONFIG_LOG, "Base Primitive");
-    ROS_DEBUG_NAMED(CONFIG_LOG, "\tid: %d", getID());
-    ROS_DEBUG_NAMED(CONFIG_LOG, "\tstart angle: %d", getStartAngle());
-    ROS_DEBUG_NAMED(CONFIG_LOG, "\tcost: %d", getCost());
+    ROS_DEBUG_NAMED(MPRIM_LOG, "Base Primitive");
+    ROS_DEBUG_NAMED(MPRIM_LOG, "\tid: %d", getID());
+    ROS_DEBUG_NAMED(MPRIM_LOG, "\tstart angle: %d", getStartAngle());
+    ROS_DEBUG_NAMED(MPRIM_LOG, "\tcost: %d", getCost());
     printEndCoord();
     printIntermSteps();
 }
@@ -66,7 +66,6 @@ void BaseMotionPrimitive::computeCost(const MotionPrimitiveParams& params){
     m_cost = ceil(static_cast<double>(METER_TO_MM_MULT)*(max(linear_time, angular_time)));
     //use any additional cost multiplier
     m_cost *= getAdditionalCostMult();
-    ROS_INFO("mcost %d", m_cost);
     assert(m_cost != 0.0);
 }
 
