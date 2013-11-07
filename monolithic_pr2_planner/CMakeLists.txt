@@ -44,11 +44,13 @@ rosbuild_add_library(monolithic_pr2_planner src/StateReps/RobotPose.cpp
                                             src/MotionPrimitives/MotionPrimitivesMgr.cpp
                                             src/MotionPrimitives/BaseAdaptiveMotionPrimitive.cpp
                                             src/SearchRequest.cpp
+                                            src/SBPLEnv.cpp
                                             src/Environment.cpp
                                             src/OccupancyGridUser.cpp
                                             src/CollisionSpaceMgr.cpp
                                             src/ParameterCatalog.cpp
                                             src/HashManager.cpp
+
                                             )
 target_link_libraries(monolithic_pr2_planner ${SBPL_LIBRARIES})
 #rosbuild_add_boost_directories()

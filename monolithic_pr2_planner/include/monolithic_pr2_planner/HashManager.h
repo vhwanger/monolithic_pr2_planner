@@ -10,6 +10,7 @@ namespace monolithic_pr2_planner {
             unsigned int getStateID(const GraphStatePtr& graph_state);
             bool exists(const GraphStatePtr& graph_state);
             bool save(GraphStatePtr& graph_state);
+            int size() { return static_cast<int>(m_state_id_to_graph_table.size()); } ;
 
         private:
             unsigned int hash(const GraphStatePtr& graph_state);

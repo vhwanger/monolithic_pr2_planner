@@ -1,5 +1,5 @@
 #include <ros/ros.h>
-#include <monolithic_pr2_planner/Environment.h>
+#include <monolithic_pr2_planner/SBPLEnv.h>
 #include <monolithic_pr2_planner_node/EnvInterfaces.h>
 #include <boost/shared_ptr.hpp>
 
@@ -8,7 +8,7 @@ namespace monolithic_pr2_planner_node {
         public:
             Node(ros::NodeHandle nh);
         private:
-            monolithic_pr2_planner::Environment m_env;
+            boost::shared_ptr<monolithic_pr2_planner::SBPLEnv> m_env;
             EnvInterfaces m_env_interface;
     };
 } 

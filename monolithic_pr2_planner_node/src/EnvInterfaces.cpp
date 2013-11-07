@@ -19,9 +19,8 @@ using namespace KDL;
 // constructor automatically launches the collision space interface, which only
 // loads it up with a pointer to the collision space mgr. it doesn't bind to any
 // topic.
-EnvInterfaces::EnvInterfaces(Environment& env) : 
-    m_env(boost::make_shared<Environment>(env)),
-    m_collision_space_interface(env.getCollisionSpace()){
+EnvInterfaces::EnvInterfaces(boost::shared_ptr<monolithic_pr2_planner::SBPLEnv> env) : 
+    m_env(env), m_collision_space_interface(env->getCollisionSpace()){
         getParams();
 }
 

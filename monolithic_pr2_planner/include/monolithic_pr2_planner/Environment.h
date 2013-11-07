@@ -19,7 +19,7 @@ namespace monolithic_pr2_planner {
             void GetSuccs(int sourceStateID, vector<int>* succIDs, 
                           vector<int>* costs, vector<int>* actions);
 
-        private:
+        protected:
             bool setStartGoal(SearchRequestPtr search_request);
             void configurePlanningDomain();
             void configureQuerySpecificParams(SearchRequestPtr search_request);

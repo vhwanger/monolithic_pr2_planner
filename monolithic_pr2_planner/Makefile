@@ -686,6 +686,30 @@ src/ParameterCatalog.cpp.s:
 	$(MAKE) -f CMakeFiles/monolithic_pr2_planner.dir/build.make CMakeFiles/monolithic_pr2_planner.dir/src/ParameterCatalog.cpp.s
 .PHONY : src/ParameterCatalog.cpp.s
 
+src/SBPLEnv.o: src/SBPLEnv.cpp.o
+.PHONY : src/SBPLEnv.o
+
+# target to build an object file
+src/SBPLEnv.cpp.o:
+	$(MAKE) -f CMakeFiles/monolithic_pr2_planner.dir/build.make CMakeFiles/monolithic_pr2_planner.dir/src/SBPLEnv.cpp.o
+.PHONY : src/SBPLEnv.cpp.o
+
+src/SBPLEnv.i: src/SBPLEnv.cpp.i
+.PHONY : src/SBPLEnv.i
+
+# target to preprocess a source file
+src/SBPLEnv.cpp.i:
+	$(MAKE) -f CMakeFiles/monolithic_pr2_planner.dir/build.make CMakeFiles/monolithic_pr2_planner.dir/src/SBPLEnv.cpp.i
+.PHONY : src/SBPLEnv.cpp.i
+
+src/SBPLEnv.s: src/SBPLEnv.cpp.s
+.PHONY : src/SBPLEnv.s
+
+# target to generate assembly for a file
+src/SBPLEnv.cpp.s:
+	$(MAKE) -f CMakeFiles/monolithic_pr2_planner.dir/build.make CMakeFiles/monolithic_pr2_planner.dir/src/SBPLEnv.cpp.s
+.PHONY : src/SBPLEnv.cpp.s
+
 src/SearchRequest.o: src/SearchRequest.cpp.o
 .PHONY : src/SearchRequest.o
 
@@ -969,6 +993,9 @@ help:
 	@echo "... src/ParameterCatalog.o"
 	@echo "... src/ParameterCatalog.i"
 	@echo "... src/ParameterCatalog.s"
+	@echo "... src/SBPLEnv.o"
+	@echo "... src/SBPLEnv.i"
+	@echo "... src/SBPLEnv.s"
 	@echo "... src/SearchRequest.o"
 	@echo "... src/SearchRequest.i"
 	@echo "... src/SearchRequest.s"
