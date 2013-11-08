@@ -14,7 +14,7 @@ BaseAdaptiveMotionPrimitive::BaseAdaptiveMotionPrimitive(int direction,
     m_direction(direction), m_params(params){ }
 
 bool BaseAdaptiveMotionPrimitive::apply(const GraphState& source_state, 
-                                         std::unique_ptr<GraphState>& successor){
+                                         GraphStatePtr& successor){
     ROS_INFO("generating base adaptive mprim stuff");
     DiscBaseState base_state = source_state.getRobotPose().getDiscBaseState();
     ROS_INFO("base state theta %d", base_state.getTheta());
@@ -30,7 +30,7 @@ bool BaseAdaptiveMotionPrimitive::apply(const GraphState& source_state,
                                     after_orbit_pose, successor_robot_pose)){
         return false;
     } else {
-        successor = unique_ptr<GraphState>(new GraphState(*successor_robot_pose));
+        successor = make_shared<GraphState>(*successor_robot_pose);
         computeIntermSteps(source_state, *successor);
     }
     print();

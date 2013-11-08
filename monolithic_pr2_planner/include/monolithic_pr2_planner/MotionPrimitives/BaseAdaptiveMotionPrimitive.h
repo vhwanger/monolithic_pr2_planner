@@ -10,7 +10,7 @@ namespace monolithic_pr2_planner {
             BaseAdaptiveMotionPrimitive(int direction,
                                         const MotionPrimitiveParams& params);
             virtual bool apply(const GraphState& graph_state, 
-                               std::unique_ptr<GraphState>& successor);
+                               GraphStatePtr& successor);
             virtual void print() const;
 
             //TODO this isn't the correct thing to do, but this is used as a
