@@ -21,7 +21,7 @@ namespace monolithic_pr2_planner {
             bool isValid(RobotPose& robot_pose);
             bool isValidMotion(const GraphState& source_state, 
                                const MotionPrimitivePtr& mprim,
-                               std::unique_ptr<GraphState>& successor);
+                               GraphStatePtr& successor);
 
             void updateMap(const arm_navigation_msgs::CollisionMap& map);
             //bool readMapFromEigen(Eigen::Vector3d points);
@@ -29,15 +29,15 @@ namespace monolithic_pr2_planner {
         private:
             // only need to check arms-arms, arms-world, arms-body
             // we first check the final coord, then check the intermediates
-            bool isValidAfterArmMotion(std::unique_ptr<GraphState>& successor,
+            bool isValidAfterArmMotion(GraphStatePtr& successor,
                                         const MotionPrimitivePtr& mprim) const;
 
             // only need to check base, both arms against world (not against each other),
             // torso, head
             // we first check the final coord, then check the intermediates
-            bool isValidAfterBaseMotion(std::unique_ptr<GraphState>& successor,
+            bool isValidAfterBaseMotion(GraphStatePtr& successor,
                                         const MotionPrimitivePtr& mprim) const;
-            bool isValidAfterAnyMotion(std::unique_ptr<GraphState>& successor,
+            bool isValidAfterAnyMotion(GraphStatePtr& successor,
                                         const MotionPrimitivePtr& mprim) const;
 
             bool isBaseIntermStatesValid(const GraphState& source_state,

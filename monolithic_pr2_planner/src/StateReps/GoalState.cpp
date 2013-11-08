@@ -2,17 +2,18 @@
 
 using namespace monolithic_pr2_planner;
 
-GoalState::GoalState(SearchRequestPtr search_request):
-    m_goal_state(search_request->m_params->obj_goal), m_tolerances(4,0){
+GoalState::GoalState(SearchRequestPtr search_request, HeuristicPtr heur):
+    m_goal_state(search_request->m_params->obj_goal), m_tolerances(4,0),
+    m_heur(heur) {
     // TODO: should i run an IK check here just to test feasibility?
-
+    heur->setGoal(m_goal_state); 
     m_tolerances[Tolerances::XYZ] = search_request->m_params->xyz_tolerance;
     m_tolerances[Tolerances::ROLL] = search_request->m_params->roll_tolerance;
     m_tolerances[Tolerances::PITCH] = search_request->m_params->pitch_tolerance;
     m_tolerances[Tolerances::YAW] = search_request->m_params->yaw_tolerance;
 }
 
-bool GoalState::isGoal(GraphStatePtr graph_state) const {
+bool GoalState::isSatisfiedBy(const GraphStatePtr& graph_state){
     // not sure why there's a .005 here. ask ben
     ContObjectState c_tol(m_tolerances[Tolerances::XYZ]-.005, 
                           m_tolerances[Tolerances::XYZ]-.005, 
@@ -35,4 +36,16 @@ bool GoalState::isGoal(GraphStatePtr graph_state) const {
     } else {
         return false;
     }
+}
+
+bool GoalState::isSolnStateID(int state_id){
+    for (auto& goal : m_possible_goals){
+        if (goal == state_id){
+            return true;
+        }
+    }
+    return false;
+}
+void GoalState::addPotentialSolnState(const GraphStatePtr& graph_state) { 
+    m_possible_goals.push_back(graph_state->getID());
 }

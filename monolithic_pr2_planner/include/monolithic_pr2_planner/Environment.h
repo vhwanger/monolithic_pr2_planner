@@ -7,6 +7,7 @@
 #include <monolithic_pr2_planner/SearchRequest.h>
 #include <monolithic_pr2_planner/StateReps/GoalState.h>
 #include <monolithic_pr2_planner/MotionPrimitives/MotionPrimitivesMgr.h>
+#include <monolithic_pr2_planner/Heuristic.h>
 #include <vector>
 #include <memory>
 
@@ -17,7 +18,7 @@ namespace monolithic_pr2_planner {
             CSpaceMgrPtr getCollisionSpace(){ return m_cspace_mgr; };
             bool plan(SearchRequestParamsPtr search_request_params);
             void GetSuccs(int sourceStateID, vector<int>* succIDs, 
-                          vector<int>* costs, vector<int>* actions);
+                          vector<int>* costs);
 
         protected:
             bool setStartGoal(SearchRequestPtr search_request);
@@ -31,5 +32,6 @@ namespace monolithic_pr2_planner {
             ros::NodeHandle m_nodehandle;
             boost::shared_ptr<std::vector<GoalState> > m_goals;
             MotionPrimitivesMgr m_mprims;
+            HeuristicPtr m_heur;
     };
 }

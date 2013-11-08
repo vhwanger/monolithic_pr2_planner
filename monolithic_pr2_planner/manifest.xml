@@ -11,6 +11,7 @@
   <depend package="pr2_collision_checker"/>
   <depend package="angles"/>
   <depend package="pviz"/>
+  <depend package="bfs3d"/>
 
   <export>
       <cpp cflags="-I${prefix}/include" lflags="-L${prefix}/lib -lmonolithic_pr2_planner"/>

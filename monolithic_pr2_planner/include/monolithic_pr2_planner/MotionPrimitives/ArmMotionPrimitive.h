@@ -11,7 +11,7 @@ namespace monolithic_pr2_planner {
             void setGroup(int group) { m_group = group; };
             int getGroup() const { return m_group; };
             virtual bool apply(const GraphState& graph_state, 
-                               std::unique_ptr<GraphState>& successor);
+                               GraphStatePtr& successor);
             virtual void print() const ;
             virtual int getMotionType() const { return MPrim_Types::ARM; };
             virtual void computeCost(const MotionPrimitiveParams& params);

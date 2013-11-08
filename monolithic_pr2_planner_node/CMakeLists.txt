@@ -28,7 +28,8 @@ rosbuild_add_boost_directories()
 #rosbuild_link_boost(${PROJECT_NAME} thread)
 rosbuild_add_executable(node src/node.cpp src/EnvInterfaces.cpp
     src/CollisionSpaceInterface.cpp)
-target_link_libraries(node monolithic_pr2_planner)
+# TODO figure out why i have to include bfs3d here
+target_link_libraries(node monolithic_pr2_planner bfs3d)
 
 rosbuild_add_executable(testPlanningRequest src/testPlanningRequest.cpp)
 target_link_libraries(testPlanningRequest monolithic_pr2_planner)

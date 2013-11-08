@@ -10,7 +10,7 @@ namespace monolithic_pr2_planner {
             int getStartAngle() const { return m_start_angle; };
 
             virtual bool apply(const GraphState& graph_state,
-                               std::unique_ptr<GraphState>& successor);
+                               GraphStatePtr& successor);
             virtual void print() const ;
 
             virtual int getMotionType() const { return MPrim_Types::BASE; };

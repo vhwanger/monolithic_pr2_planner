@@ -22,7 +22,7 @@ void BaseMotionPrimitive::print() const {
 
 
 bool BaseMotionPrimitive::apply(const GraphState& source_state, 
-                           unique_ptr<GraphState>& successor){
+                           GraphStatePtr& successor){
     // since the base motion primitive list contains motion primitives for every
     // possible base theta, let's only use the one corresponding to our
     // particular angle.

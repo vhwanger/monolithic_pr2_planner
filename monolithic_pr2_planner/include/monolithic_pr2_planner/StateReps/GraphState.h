@@ -15,7 +15,7 @@ namespace monolithic_pr2_planner {
             //      same left and right arm discrete free angles
             bool operator==(const GraphState& other);
             bool operator!=(const GraphState& other);
-            unsigned int getID() const { return m_id; };
+            int getID() const { return m_id; };
             void setID(unsigned int id) { m_id = id; };
             RobotPose getRobotPose() const { return m_robot_pose; };
 
@@ -27,7 +27,7 @@ namespace monolithic_pr2_planner {
             DiscObjectState getObjectStateRelBody() const;
 
         private:
-            unsigned int m_id;
+            int m_id;
             RobotPose m_robot_pose;
     };
     typedef boost::shared_ptr<GraphState> GraphStatePtr;

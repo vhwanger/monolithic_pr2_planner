@@ -52,7 +52,7 @@ bool CollisionSpaceMgr::isValid(RobotPose& robot_pose){
 
 bool CollisionSpaceMgr::isValidMotion(const GraphState& source_state, 
                                       const MotionPrimitivePtr& mprim,
-                                      unique_ptr<GraphState>& successor){
+                                      GraphStatePtr& successor){
     // couldn't generate a graph state for the successor
     if (!mprim->apply(source_state, successor)){
         return false;
@@ -79,7 +79,7 @@ bool CollisionSpaceMgr::isValidMotion(const GraphState& source_state,
     return true;
 }
 
-bool CollisionSpaceMgr::isValidAfterArmMotion(unique_ptr<GraphState>& successor,
+bool CollisionSpaceMgr::isValidAfterArmMotion(GraphStatePtr& successor,
                                               const MotionPrimitivePtr& mprim) const {
     RobotPose pose = successor->getRobotPose();
     vector<double> r_arm(7), l_arm(7);
@@ -93,7 +93,7 @@ bool CollisionSpaceMgr::isValidAfterArmMotion(unique_ptr<GraphState>& successor,
     return m_cspace->checkArmsMotion(l_arm, r_arm, body_pose, verbose, dist, debug);
 }
 
-bool CollisionSpaceMgr::isValidAfterBaseMotion(unique_ptr<GraphState>& successor,
+bool CollisionSpaceMgr::isValidAfterBaseMotion(GraphStatePtr& successor,
                                                const MotionPrimitivePtr& mprim) const {
     RobotPose pose = successor->getRobotPose();
     vector<double> r_arm(7), l_arm(7);

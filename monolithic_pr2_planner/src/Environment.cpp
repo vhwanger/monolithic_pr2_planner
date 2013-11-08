@@ -27,27 +27,41 @@ bool Environment::plan(SearchRequestParamsPtr search_request_params){
     
 
     // testing
-    vector<int> succ, costs, actions;
-    GetSuccs(0, &succ, &costs, &actions);
+    vector<int> succ, costs;
+    GetSuccs(0, &succ, &costs);
 
     return true;
 }
 
 void Environment::GetSuccs(int sourceStateID, vector<int>* succIDs, 
-                           vector<int>* costs, vector<int>* actions){
+                           vector<int>* costs){
+    // TODO probably should get rid of multiple goals for now
+    for (auto& goal: *m_goals){
+        if (goal.isSolnStateID(sourceStateID)){
+            goal.storeAsSolnState(m_hash_mgr.getGraphState(sourceStateID));
+            return;
+        }
+    }
+
     GraphStatePtr source_state = m_hash_mgr.getGraphState(sourceStateID);
-    vector<unique_ptr<GraphState> > valid_successors;
+
     for (auto mprim : m_mprims.getMotionPrims()){
-        unique_ptr<GraphState> successor;
+        GraphStatePtr successor;
         if (m_cspace_mgr->isValidMotion(*source_state, mprim, successor)){
             ROS_DEBUG_NAMED(MPRIM_LOG, "source state:");
             source_state->printToDebug(MPRIM_LOG);
             ROS_DEBUG_NAMED(MPRIM_LOG, "successor state:");
             successor->printToDebug(MPRIM_LOG);
-            GraphStatePtr successor_t;
-            successor_t.reset(successor.release());
-            valid_successors.push_back(std::move(successor));
-            m_hash_mgr.save(successor_t);
+            m_hash_mgr.save(successor);
+
+            for (auto& goal : *m_goals){
+                if (goal.isSatisfiedBy(successor)){
+                    goal.addPotentialSolnState(successor);
+                    ROS_INFO_NAMED(SEARCH_LOG, "Found potential goal");
+                }
+            }
+
+            succIDs->push_back(successor->getID());
             costs->push_back(mprim->getCost());
         } 
     }
@@ -74,7 +88,7 @@ bool Environment::setStartGoal(SearchRequestPtr search_request){
     obj_state.printToInfo(SEARCH_LOG);
     start_pose.visualize();
 
-    GoalState goal(search_request);
+    GoalState goal(search_request, m_heur);
     m_goals->push_back(goal);
 
     ROS_INFO_NAMED(SEARCH_LOG, "Goal state created:");
@@ -104,6 +118,9 @@ void Environment::configurePlanningDomain(){
     RightContArmState r_arm;
     m_cspace_mgr = make_shared<CollisionSpaceMgr>(l_arm.getArmModel(),
                                                   r_arm.getArmModel());
+    
+    // load heuristic
+    m_heur = make_shared<Heuristic>(m_cspace_mgr);
 
     // load up motion primitives
     m_mprims.loadMPrims(m_param_catalog.m_motion_primitive_params);
@@ -112,6 +129,7 @@ void Environment::configurePlanningDomain(){
     boost::shared_ptr<PViz> pviz = boost::make_shared<PViz>();
     pviz->setReferenceFrame("map");
     RobotPose::setPViz(pviz);
+
 }
 
 // sets parameters for query specific things

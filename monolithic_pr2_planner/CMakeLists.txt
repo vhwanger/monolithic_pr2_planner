@@ -50,9 +50,10 @@ rosbuild_add_library(monolithic_pr2_planner src/StateReps/RobotPose.cpp
                                             src/CollisionSpaceMgr.cpp
                                             src/ParameterCatalog.cpp
                                             src/HashManager.cpp
+                                            src/Heuristic.cpp
 
                                             )
-target_link_libraries(monolithic_pr2_planner ${SBPL_LIBRARIES})
+target_link_libraries(monolithic_pr2_planner ${SBPL_LIBRARIES} bfs3d)
 #rosbuild_add_boost_directories()
 #rosbuild_link_boost(${PROJECT_NAME} thread)
 #target_link_libraries(example ${PROJECT_NAME})

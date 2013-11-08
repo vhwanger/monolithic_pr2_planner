@@ -494,6 +494,30 @@ src/HashManager.cpp.s:
 	$(MAKE) -f CMakeFiles/monolithic_pr2_planner.dir/build.make CMakeFiles/monolithic_pr2_planner.dir/src/HashManager.cpp.s
 .PHONY : src/HashManager.cpp.s
 
+src/Heuristic.o: src/Heuristic.cpp.o
+.PHONY : src/Heuristic.o
+
+# target to build an object file
+src/Heuristic.cpp.o:
+	$(MAKE) -f CMakeFiles/monolithic_pr2_planner.dir/build.make CMakeFiles/monolithic_pr2_planner.dir/src/Heuristic.cpp.o
+.PHONY : src/Heuristic.cpp.o
+
+src/Heuristic.i: src/Heuristic.cpp.i
+.PHONY : src/Heuristic.i
+
+# target to preprocess a source file
+src/Heuristic.cpp.i:
+	$(MAKE) -f CMakeFiles/monolithic_pr2_planner.dir/build.make CMakeFiles/monolithic_pr2_planner.dir/src/Heuristic.cpp.i
+.PHONY : src/Heuristic.cpp.i
+
+src/Heuristic.s: src/Heuristic.cpp.s
+.PHONY : src/Heuristic.s
+
+# target to generate assembly for a file
+src/Heuristic.cpp.s:
+	$(MAKE) -f CMakeFiles/monolithic_pr2_planner.dir/build.make CMakeFiles/monolithic_pr2_planner.dir/src/Heuristic.cpp.s
+.PHONY : src/Heuristic.cpp.s
+
 src/MotionPrimitives/ArmMotionPrimitive.o: src/MotionPrimitives/ArmMotionPrimitive.cpp.o
 .PHONY : src/MotionPrimitives/ArmMotionPrimitive.o
 
@@ -969,6 +993,9 @@ help:
 	@echo "... src/HashManager.o"
 	@echo "... src/HashManager.i"
 	@echo "... src/HashManager.s"
+	@echo "... src/Heuristic.o"
+	@echo "... src/Heuristic.i"
+	@echo "... src/Heuristic.s"
 	@echo "... src/MotionPrimitives/ArmMotionPrimitive.o"
 	@echo "... src/MotionPrimitives/ArmMotionPrimitive.i"
 	@echo "... src/MotionPrimitives/ArmMotionPrimitive.s"

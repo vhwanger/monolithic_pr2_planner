@@ -16,7 +16,7 @@ void ArmMotionPrimitive::print() const {
 }
 
 bool ArmMotionPrimitive::apply(const GraphState& graph_state, 
-                           unique_ptr<GraphState>& successor){
+                           GraphStatePtr& successor){
     successor.reset(new GraphState(graph_state));
     return successor->applyMPrim(m_end_coord);
 }

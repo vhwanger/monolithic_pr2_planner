@@ -85,6 +85,7 @@ void ParameterCatalog::setRobotResolutionParams(const MotionPrimitiveParams& mpr
                                                 RobotResolutionParams& params){
     parseArmMPrimFileHeader(mprims.arm_motion_primitive_file, params);
     parseBaseMPrimFileHeader(mprims.base_motion_primitive_file, params);
+    m_nodehandle.param("planner/gripper_sphere_radius/", params.gripper_sphere_radius,0.08);
     //params.obj_xyz_resolution = 0.02;
     //params.obj_rpy_resolution = 2*M_PI/180;
     //params.arm_free_angle_resolution = 3*M_PI/180;

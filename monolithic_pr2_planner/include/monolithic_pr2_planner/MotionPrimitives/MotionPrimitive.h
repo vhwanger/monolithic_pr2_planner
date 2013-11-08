@@ -15,7 +15,7 @@ namespace monolithic_pr2_planner {
             virtual IntermSteps getIntermSteps(){ return m_interm_steps; };
             virtual void setEndCoord(GraphStateMotion& coord); 
             virtual bool apply(const GraphState& graph_state, 
-                               std::unique_ptr<GraphState>& successor) = 0;
+                               GraphStatePtr& successor) = 0;
             virtual void print() const = 0;
             virtual int getMotionType() const = 0;
             virtual void computeCost(const MotionPrimitiveParams& params) = 0;
