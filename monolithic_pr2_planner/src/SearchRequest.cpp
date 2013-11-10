@@ -9,7 +9,7 @@ SearchRequest::SearchRequest(SearchRequestParamsPtr params){
 }
 
 bool SearchRequest::isValid(CSpaceMgrPtr& cspace){
-    RobotPose robot_start_pose(m_params->base_start,
+    RobotState robot_start_pose(m_params->base_start,
                                m_params->right_arm_start,
                                m_params->left_arm_start);
     if (m_params->initial_epsilon < 1 || 

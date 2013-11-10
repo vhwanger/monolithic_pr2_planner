@@ -120,7 +120,7 @@ bool MotionPrimitiveFileParser::parseBaseMotionPrimitives(string filename,
         // start angle
         getNextLine(file, ss, line);
         ss >> label >> ivalue;
-        mprim->setStartAngle(ivalue);
+        mprim->start_angle(ivalue);
 
         // end pose
         getNextLine(file, ss, line);

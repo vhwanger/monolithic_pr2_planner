@@ -17,7 +17,7 @@ namespace monolithic_pr2_planner {
             virtual bool apply(const GraphState& graph_state, 
                                GraphStatePtr& successor) = 0;
             virtual void print() const = 0;
-            virtual int getMotionType() const = 0;
+            virtual int motion_type() const = 0;
             virtual void computeCost(const MotionPrimitiveParams& params) = 0;
             virtual void printIntermSteps() const;
             virtual void printEndCoord() const;

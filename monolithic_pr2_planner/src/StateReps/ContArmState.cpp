@@ -7,7 +7,7 @@ using namespace monolithic_pr2_planner;
 using namespace angles;
 using namespace std;
 
-boost::shared_ptr<RobotResolutionParams> ContArmState::m_params;
+RobotResolutionParams ContArmState::m_params;
 KDL::Frame LeftContArmState::m_object_offset;
 KDL::Frame RightContArmState::m_object_offset;
 SBPLArmModelPtr LeftContArmState::m_arm_model;
@@ -23,9 +23,9 @@ bool ContArmState::operator!=(const ContArmState& other){
 
 ContArmState::ContArmState() : 
     m_is_enforcing_joint_limits(true), m_angles(7,0){
-    if (!m_params){
-        ROS_ERROR("Robot resolution parameters were not statically initialized!");
-    }
+    //if (!m_params){
+    //    ROS_ERROR("Robot resolution parameters were not statically initialized!");
+    //}
 }
 
 ContArmState::ContArmState(vector<double> arm_state) : 
@@ -33,11 +33,11 @@ ContArmState::ContArmState(vector<double> arm_state) :
 }
 
 void ContArmState::setRobotResolutionParams(const RobotResolutionParams& params){
-    m_params = boost::make_shared<RobotResolutionParams>(params);
+    m_params = params;
 }
 
 int ContArmState::getDiscFreeAngle() const {
-    double free_angle_res = m_params->arm_free_angle_resolution;
+    double free_angle_res = m_params.arm_free_angle_resolution;
     double free_angle = m_angles[Joints::UPPER_ARM_ROLL];
     int disc_angle = static_cast<int>((normalize_angle_positive(free_angle + 
                                               free_angle_res*0.5))/free_angle_res);

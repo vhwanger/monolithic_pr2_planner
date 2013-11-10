@@ -15,7 +15,7 @@ namespace monolithic_pr2_planner {
 
             //TODO this isn't the correct thing to do, but this is used as a
             //clue for the collision checker
-            virtual int getMotionType() const { return MPrim_Types::BASE; }; 
+            virtual int motion_type() const { return MPrim_Types::BASE; }; 
             virtual void computeCost(const MotionPrimitiveParams& params);
         private:
             void computeIntermSteps(const GraphState& source_state,

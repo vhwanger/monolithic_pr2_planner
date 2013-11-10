@@ -34,17 +34,18 @@ void CollisionSpaceMgr::updateMap(const arm_navigation_msgs::CollisionMap& map){
     m_occupancy_grid->addPointsToField(points);
 }
 
-bool CollisionSpaceMgr::isValid(RobotPose& robot_pose){
+bool CollisionSpaceMgr::isValid(RobotState& robot_pose){
     vector<double> l_arm;
     vector<double> r_arm;
-    robot_pose.getContLeftArm().getAngles(&l_arm);
-    robot_pose.getContRightArm().getAngles(&r_arm);
-    DiscBaseState discbody_pose = robot_pose.getDiscBaseState();
-    BodyPose body_pose = robot_pose.getDiscBaseState().getBodyPose();
+    robot_pose.left_arm().getAngles(&l_arm);
+    robot_pose.right_arm().getAngles(&r_arm);
+    DiscBaseState discbody_pose = robot_pose.base_state();
+    BodyPose body_pose = robot_pose.base_state().getBodyPose();
 
     double dist_temp;
     int debug_code;
     ROS_DEBUG_NAMED(CSPACE_LOG, "collision checking pose");
+    ROS_DEBUG_NAMED(CSPACE_LOG, "body pose is %f %f %f", body_pose.x, body_pose.y, body_pose.z);
     robot_pose.printToDebug(CSPACE_LOG);
     return m_cspace->checkAllMotion(l_arm, r_arm, body_pose, true, dist_temp, 
                                     debug_code);
@@ -59,9 +60,12 @@ bool CollisionSpaceMgr::isValidMotion(const GraphState& source_state,
     }
 
     // now let's check the validity of the new graph state
-    int motion_type = mprim->getMotionType();
+    int motion_type = mprim->motion_type();
     if (motion_type == MPrim_Types::BASE){
-        if (!isValidAfterBaseMotion(successor, mprim)) return false;
+        if (!isValidAfterBaseMotion(successor, mprim)){
+            ROS_DEBUG_NAMED(SEARCH_LOG, "invalid after base motion");
+            return false;
+        }
     } else if (motion_type == MPrim_Types::ARM){
         if (!isValidAfterArmMotion(successor, mprim)) return false;
     } else {
@@ -81,11 +85,11 @@ bool CollisionSpaceMgr::isValidMotion(const GraphState& source_state,
 
 bool CollisionSpaceMgr::isValidAfterArmMotion(GraphStatePtr& successor,
                                               const MotionPrimitivePtr& mprim) const {
-    RobotPose pose = successor->getRobotPose();
+    RobotState pose = successor->robot_pose();
     vector<double> r_arm(7), l_arm(7);
-    pose.getContRightArm().getAngles(&r_arm);
-    pose.getContLeftArm().getAngles(&l_arm);
-    BodyPose body_pose = pose.getDiscBaseState().getBodyPose();
+    pose.right_arm().getAngles(&r_arm);
+    pose.left_arm().getAngles(&l_arm);
+    BodyPose body_pose = pose.base_state().getBodyPose();
     bool verbose = true;
     double dist;
     int debug;
@@ -95,11 +99,11 @@ bool CollisionSpaceMgr::isValidAfterArmMotion(GraphStatePtr& successor,
 
 bool CollisionSpaceMgr::isValidAfterBaseMotion(GraphStatePtr& successor,
                                                const MotionPrimitivePtr& mprim) const {
-    RobotPose pose = successor->getRobotPose();
+    RobotState pose = successor->robot_pose();
     vector<double> r_arm(7), l_arm(7);
-    pose.getContRightArm().getAngles(&r_arm);
-    pose.getContLeftArm().getAngles(&l_arm);
-    BodyPose body_pose = pose.getDiscBaseState().getBodyPose();
+    pose.right_arm().getAngles(&r_arm);
+    pose.left_arm().getAngles(&l_arm);
+    BodyPose body_pose = pose.base_state().getBodyPose();
     bool verbose = true;
     double dist;
     int debug;
@@ -110,11 +114,11 @@ bool CollisionSpaceMgr::isValidAfterBaseMotion(GraphStatePtr& successor,
 bool CollisionSpaceMgr::isBaseIntermStatesValid(const GraphState& source_state,
                                                 const MotionPrimitivePtr& mprim){
 
-    RobotPose pose = source_state.getRobotPose();
+    RobotState pose = source_state.robot_pose();
     vector<double> r_arm(7), l_arm(7);
-    pose.getContRightArm().getAngles(&r_arm);
-    pose.getContLeftArm().getAngles(&l_arm);
-    BodyPose body_pose = pose.getDiscBaseState().getBodyPose();
+    pose.right_arm().getAngles(&r_arm);
+    pose.left_arm().getAngles(&l_arm);
+    BodyPose body_pose = pose.base_state().getBodyPose();
     bool verbose = true;
     double dist;
     int debug;

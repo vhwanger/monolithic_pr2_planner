@@ -28,7 +28,7 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #rosbuild_gensrv()
 
 #common commands for building c++ executables and libraries
-rosbuild_add_library(monolithic_pr2_planner src/StateReps/RobotPose.cpp
+rosbuild_add_library(monolithic_pr2_planner src/StateReps/RobotState.cpp
                                             src/StateReps/ContArmState.cpp
                                             src/StateReps/ContBaseState.cpp
                                             src/StateReps/DiscBaseState.cpp
@@ -44,13 +44,13 @@ rosbuild_add_library(monolithic_pr2_planner src/StateReps/RobotPose.cpp
                                             src/MotionPrimitives/MotionPrimitivesMgr.cpp
                                             src/MotionPrimitives/BaseAdaptiveMotionPrimitive.cpp
                                             src/SearchRequest.cpp
-                                            src/SBPLEnv.cpp
                                             src/Environment.cpp
                                             src/OccupancyGridUser.cpp
                                             src/CollisionSpaceMgr.cpp
                                             src/ParameterCatalog.cpp
                                             src/HashManager.cpp
                                             src/Heuristic.cpp
+                                            src/Visualizer.cpp
 
                                             )
 target_link_libraries(monolithic_pr2_planner ${SBPL_LIBRARIES} bfs3d)

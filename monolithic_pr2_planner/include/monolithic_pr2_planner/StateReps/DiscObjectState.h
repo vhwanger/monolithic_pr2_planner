@@ -16,19 +16,19 @@ namespace monolithic_pr2_planner {
             std::vector<unsigned int>::const_iterator getCoordBegin(){ return m_coord.begin(); };
             std::vector<unsigned int>::const_iterator getCoordEnd(){ return m_coord.end(); };
 
-            int getX() const { return m_coord[ObjectPose::X]; };
-            int getY() const { return m_coord[ObjectPose::Y]; };
-            int getZ() const { return m_coord[ObjectPose::Z]; };
-            int getRoll() const { return m_coord[ObjectPose::ROLL]; };
-            int getPitch() const { return m_coord[ObjectPose::PITCH]; };
-            int getYaw() const { return m_coord[ObjectPose::YAW]; };
+            int x() const { return m_coord[ObjectPose::X]; };
+            int y() const { return m_coord[ObjectPose::Y]; };
+            int z() const { return m_coord[ObjectPose::Z]; };
+            int roll() const { return m_coord[ObjectPose::ROLL]; };
+            int pitch() const { return m_coord[ObjectPose::PITCH]; };
+            int yaw() const { return m_coord[ObjectPose::YAW]; };
 
-            void setX(int value) { m_coord[ObjectPose::X] = value; };
-            void setY(int value) { m_coord[ObjectPose::Y] = value; };
-            void setZ(int value) { m_coord[ObjectPose::Z] = value; };
-            void setRoll(int value) { m_coord[ObjectPose::ROLL] = normalizeRPY(value); };
-            void setPitch(int value) { m_coord[ObjectPose::PITCH] = normalizeRPY(value); };
-            void setYaw(int value) { m_coord[ObjectPose::YAW] = normalizeRPY(value); };
+            void x(int value) { m_coord[ObjectPose::X] = value; };
+            void y(int value) { m_coord[ObjectPose::Y] = value; };
+            void z(int value) { m_coord[ObjectPose::Z] = value; };
+            void roll(int value) { m_coord[ObjectPose::ROLL] = normalizeRPY(value); };
+            void pitch(int value) { m_coord[ObjectPose::PITCH] = normalizeRPY(value); };
+            void yaw(int value) { m_coord[ObjectPose::YAW] = normalizeRPY(value); };
 
 
             ContObjectState getContObjectState() const;

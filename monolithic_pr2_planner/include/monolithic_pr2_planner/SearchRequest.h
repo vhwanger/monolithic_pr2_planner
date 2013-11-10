@@ -2,7 +2,7 @@
 #include <monolithic_pr2_planner/StateReps/ContObjectState.h>
 #include <monolithic_pr2_planner/StateReps/ContArmState.h>
 #include <monolithic_pr2_planner/CollisionSpaceMgr.h>
-#include <monolithic_pr2_planner/StateReps/RobotPose.h>
+#include <monolithic_pr2_planner/StateReps/RobotState.h>
 #include <kdl/frames.hpp>
 #include <vector>
 

@@ -17,19 +17,19 @@ namespace monolithic_pr2_planner {
             bool operator==(const DiscBaseState& other) const ;
             bool operator!=(const DiscBaseState& other) const ;
 
-            int getX() const { return m_state[BodyDOF::X]; };
-            int getY() const { return m_state[BodyDOF::Y]; };
-            int getZ() const { return m_state[BodyDOF::Z]; };
-            int getTheta() const { return m_state[BodyDOF::THETA]; };
+            int x() const { return m_state[BodyDOF::X]; };
+            int y() const { return m_state[BodyDOF::Y]; };
+            int z() const { return m_state[BodyDOF::Z]; };
+            int theta() const { return m_state[BodyDOF::THETA]; };
 
-            void getValues(std::vector<int>* values) const;
+            void geStateValues(std::vector<int>* values) const;
             std::vector<int>::const_iterator getCoordBegin(){ return m_state.begin(); };
             std::vector<int>::const_iterator getCoordEnd(){ return m_state.end(); };
 
-            void setX(int x){ m_state[BodyDOF::X] = x; };
-            void setY(int y){ m_state[BodyDOF::Y] = y; };
-            void setZ(int z){ m_state[BodyDOF::Z] = z; };
-            void setTheta(int theta){ m_state[BodyDOF::THETA] = normalizeTheta(theta); };
+            void x(int x){ m_state[BodyDOF::X] = x; };
+            void y(int y){ m_state[BodyDOF::Y] = y; };
+            void z(int z){ m_state[BodyDOF::Z] = z; };
+            void theta(int theta){ m_state[BodyDOF::THETA] = normalizeTheta(theta); };
 
             ContBaseState getContBaseState() const;
             BodyPose getBodyPose() const;

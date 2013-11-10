@@ -17,6 +17,8 @@ namespace monolithic_pr2_planner {
             bool isSolnStateID(int state_id);
             void addPotentialSolnState(const GraphStatePtr& graph_state);
             ContObjectState getContObjectState() const { return ContObjectState(m_goal_state); };
+
+            void visualize();
         private:
             vector<int> m_possible_goals;
             DiscObjectState m_goal_state;

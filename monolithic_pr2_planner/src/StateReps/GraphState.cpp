@@ -4,16 +4,16 @@
 using namespace monolithic_pr2_planner;
 using namespace boost;
 
-GraphState::GraphState(RobotPose robot_pose) : m_robot_pose(robot_pose){ }
+GraphState::GraphState(RobotState robot_pose) : m_robot_pose(robot_pose){ }
 
-GraphState::GraphState(DiscObjectState obj_state, RobotPose robot_pose):
+GraphState::GraphState(DiscObjectState obj_state, RobotState robot_pose):
  m_robot_pose(robot_pose){ }
 
 bool GraphState::operator==(const GraphState& other){
-    return (m_robot_pose.getDiscBaseState() == other.m_robot_pose.getDiscBaseState() &&
+    return (m_robot_pose.base_state() == other.m_robot_pose.base_state() &&
             m_robot_pose.getObjectStateRelBody() == other.m_robot_pose.getObjectStateRelBody() &&
-            m_robot_pose.getLeftDiscFreeAngle() == other.m_robot_pose.getLeftDiscFreeAngle() &&
-            m_robot_pose.getRightDiscFreeAngle() == other.m_robot_pose.getRightDiscFreeAngle());
+            m_robot_pose.left_free_angle() == other.m_robot_pose.left_free_angle() &&
+            m_robot_pose.right_free_angle() == other.m_robot_pose.right_free_angle());
 }
 
 bool GraphState::operator!=(const GraphState& other){
@@ -22,24 +22,28 @@ bool GraphState::operator!=(const GraphState& other){
 
 
 bool GraphState::applyMPrim(const GraphStateMotion& mprim){
+    ROS_DEBUG_NAMED(MPRIM_LOG, "before mprim applied");
+    m_robot_pose.printToDebug(MPRIM_LOG);
     DiscObjectState obj_state = m_robot_pose.getObjectStateRelBody();
-    obj_state.setX(obj_state.getX() + mprim[GraphStateElement::OBJ_X]);
-    obj_state.setY(obj_state.getY() + mprim[GraphStateElement::OBJ_Y]);
-    obj_state.setZ(obj_state.getZ() + mprim[GraphStateElement::OBJ_Z]);
+    obj_state.x(obj_state.x() + mprim[GraphStateElement::OBJ_X]);
+    obj_state.y(obj_state.y() + mprim[GraphStateElement::OBJ_Y]);
+    obj_state.z(obj_state.z() + mprim[GraphStateElement::OBJ_Z]);
 
-    obj_state.setRoll(obj_state.getRoll() + mprim[GraphStateElement::OBJ_ROLL]);
-    obj_state.setPitch(obj_state.getPitch() + mprim[GraphStateElement::OBJ_PITCH]);
-    obj_state.setYaw(obj_state.getYaw() + mprim[GraphStateElement::OBJ_YAW]);
+    obj_state.roll(obj_state.roll() + mprim[GraphStateElement::OBJ_ROLL]);
+    obj_state.pitch(obj_state.pitch() + mprim[GraphStateElement::OBJ_PITCH]);
+    obj_state.yaw(obj_state.yaw() + mprim[GraphStateElement::OBJ_YAW]);
 
-    DiscBaseState base_state = m_robot_pose.getDiscBaseState();
-    base_state.setX(base_state.getX() + mprim[GraphStateElement::BASE_X]);
-    base_state.setY(base_state.getY() + mprim[GraphStateElement::BASE_Y]);
-    base_state.setTheta(base_state.getTheta() + mprim[GraphStateElement::BASE_THETA]);
-    m_robot_pose.setDiscBaseState(base_state);
+    DiscBaseState base_state = m_robot_pose.base_state();
+    base_state.x(base_state.x() + mprim[GraphStateElement::BASE_X]);
+    base_state.y(base_state.y() + mprim[GraphStateElement::BASE_Y]);
+    base_state.theta(base_state.theta() + mprim[GraphStateElement::BASE_THETA]);
+    m_robot_pose.base_state(base_state);
 
     RobotPosePtr new_robot_pose;
-    if (RobotPose::computeRobotPose(obj_state, m_robot_pose, new_robot_pose)){
+    if (RobotState::computeRobotPose(obj_state, m_robot_pose, new_robot_pose)){
         m_robot_pose = *new_robot_pose;
+        ROS_DEBUG_NAMED(MPRIM_LOG, "after mprim applied");
+        m_robot_pose.printToDebug(MPRIM_LOG);
     } else {
         return false;
     }
@@ -49,18 +53,18 @@ bool GraphState::applyMPrim(const GraphStateMotion& mprim){
 void GraphState::printToDebug(char* logger) const {
     DiscObjectState obj_state = m_robot_pose.getObjectStateRelBody();
     ROS_DEBUG_NAMED(logger, "\t%d %d %d %d %d %d %d %d %d %d %d %d",
-                    obj_state.getX(),
-                    obj_state.getY(),
-                    obj_state.getZ(),
-                    obj_state.getRoll(),
-                    obj_state.getPitch(),
-                    obj_state.getYaw(),
-                    m_robot_pose.getRightDiscFreeAngle(),
-                    m_robot_pose.getLeftDiscFreeAngle(),
-                    m_robot_pose.getDiscBaseState().getX(),
-                    m_robot_pose.getDiscBaseState().getY(),
-                    m_robot_pose.getDiscBaseState().getZ(),
-                    m_robot_pose.getDiscBaseState().getTheta());
+                    obj_state.x(),
+                    obj_state.y(),
+                    obj_state.z(),
+                    obj_state.roll(),
+                    obj_state.pitch(),
+                    obj_state.yaw(),
+                    m_robot_pose.right_free_angle(),
+                    m_robot_pose.left_free_angle(),
+                    m_robot_pose.base_state().x(),
+                    m_robot_pose.base_state().y(),
+                    m_robot_pose.base_state().z(),
+                    m_robot_pose.base_state().theta());
 }
 
 DiscObjectState GraphState::getObjectStateRelMap() const {

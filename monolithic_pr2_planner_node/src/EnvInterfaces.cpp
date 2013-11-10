@@ -19,9 +19,11 @@ using namespace KDL;
 // constructor automatically launches the collision space interface, which only
 // loads it up with a pointer to the collision space mgr. it doesn't bind to any
 // topic.
-EnvInterfaces::EnvInterfaces(boost::shared_ptr<monolithic_pr2_planner::SBPLEnv> env) : 
+EnvInterfaces::EnvInterfaces(boost::shared_ptr<monolithic_pr2_planner::Environment> env) : 
     m_env(env), m_collision_space_interface(env->getCollisionSpace()){
         getParams();
+    bool forward_search = true;
+    m_planner.reset(new ARAPlanner(m_env.get(), forward_search));
 }
 
 void EnvInterfaces::getParams(){
@@ -71,7 +73,19 @@ bool EnvInterfaces::planPathCallback(GetMobileArmPlan::Request &req,
 
     res.stats_field_names.resize(18);
     res.stats.resize(18);
-    bool retVal = m_env->plan(search_request);
+    int start_id, goal_id;
+    bool retVal = m_env->configureRequest(search_request, start_id, goal_id);
+
+    m_planner->set_initialsolution_eps(search_request->initial_epsilon);
+    bool return_first_soln = true;
+    m_planner->set_search_mode(return_first_soln);
+    m_planner->set_start(start_id);
+    m_planner->set_goal(goal_id);
+    m_planner->force_planning_from_scratch();
+    vector<int> soln;
+    int soln_cost;
+    m_planner->replan(60.0, &soln, &soln_cost);
+
     return retVal;
 
 }

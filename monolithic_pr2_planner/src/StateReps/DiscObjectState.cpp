@@ -24,14 +24,14 @@ DiscObjectState::DiscObjectState(int x, int y,
 
 DiscObjectState::DiscObjectState(ContObjectState obj_state): m_coord(6){
     int x, y, z;
-    m_occupancy_grid->worldToGrid(obj_state.getX(), 
-                        obj_state.getY(), 
-                        obj_state.getZ(),
+    m_occupancy_grid->worldToGrid(obj_state.x(), 
+                        obj_state.y(), 
+                        obj_state.z(),
                         x, y, z);
     double rpy_res = m_resolution_params.obj_rpy_resolution;
-    double roll = static_cast<int>((normalize_angle_positive(obj_state.getRoll() + rpy_res*0.5))/rpy_res);
-    double pitch = static_cast<int>((normalize_angle_positive(obj_state.getPitch() + rpy_res*0.5))/rpy_res);
-    double yaw = static_cast<int>((normalize_angle_positive(obj_state.getYaw() + rpy_res*0.5))/rpy_res);
+    double roll = static_cast<int>((normalize_angle_positive(obj_state.roll() + rpy_res*0.5))/rpy_res);
+    double pitch = static_cast<int>((normalize_angle_positive(obj_state.pitch() + rpy_res*0.5))/rpy_res);
+    double yaw = static_cast<int>((normalize_angle_positive(obj_state.yaw() + rpy_res*0.5))/rpy_res);
     m_coord[ObjectPose::X] = x; 
     m_coord[ObjectPose::Y] = y; 
     m_coord[ObjectPose::Z] = z; 

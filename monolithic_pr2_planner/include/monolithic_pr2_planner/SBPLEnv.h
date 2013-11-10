@@ -7,9 +7,9 @@ namespace monolithic_pr2_planner {
     class SBPLEnv : public DiscreteSpaceInformation, public Environment {
         public:
             SBPLEnv(ros::NodeHandle nh);
-            bool InitializeEnv(const char* sEnvFile){};
+            bool InitializeEnv(const char* sEnvFile){return false;};
             bool InitializeMDPCfg(MDPConfig *MDPCfg);
-            int  GetFromToHeuristic(int FromStateID, int ToStateID){};
+            int  GetFromToHeuristic(int FromStateID, int ToStateID){ return -1; };
             int  GetGoalHeuristic(int stateID) { return -1; };
             int  GetStartHeuristic(int stateID) { return -1; };
             void GetSuccs(int SourceStateID, std::vector<int>* SuccIDV, std::vector<int>* CostV);

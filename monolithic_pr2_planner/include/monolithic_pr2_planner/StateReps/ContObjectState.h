@@ -14,14 +14,14 @@ namespace monolithic_pr2_planner {
             ContObjectState(DiscObjectState obj_state); 
             ContObjectState(const geometry_msgs::PoseStamped& obj_pose); 
 
-            void getValues(std::vector<double>* values){ *values = m_coord; };
+            void getStateValues(std::vector<double>* values){ *values = m_coord; };
 
-            double getX() const { return m_coord[ObjectPose::X]; };
-            double getY() const { return m_coord[ObjectPose::Y]; };
-            double getZ() const { return m_coord[ObjectPose::Z]; };
-            double getRoll() const { return m_coord[ObjectPose::ROLL]; };
-            double getPitch() const { return m_coord[ObjectPose::PITCH]; };
-            double getYaw() const { return m_coord[ObjectPose::YAW]; };
+            double x() const { return m_coord[ObjectPose::X]; };
+            double y() const { return m_coord[ObjectPose::Y]; };
+            double z() const { return m_coord[ObjectPose::Z]; };
+            double roll() const { return m_coord[ObjectPose::ROLL]; };
+            double pitch() const { return m_coord[ObjectPose::PITCH]; };
+            double yaw() const { return m_coord[ObjectPose::YAW]; };
 
             DiscObjectState getDiscObjectState();
 

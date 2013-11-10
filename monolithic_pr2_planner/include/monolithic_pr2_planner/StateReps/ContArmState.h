@@ -44,7 +44,7 @@ namespace monolithic_pr2_planner {
 
 
             inline double convertDiscFreeAngleToCont(int disc_angle) const {
-                double free_angle_res = m_params->arm_free_angle_resolution;
+                double free_angle_res = m_params.arm_free_angle_resolution;
                 return normalize_angle_positive(double(disc_angle)*free_angle_res);
             };
 
@@ -67,7 +67,7 @@ namespace monolithic_pr2_planner {
             //static SBPLArmModelPtr m_arm_model;
             //static KDL::Frame m_object_offset;
             virtual void setArmModel(SBPLArmModelPtr arm_model) = 0;
-            static boost::shared_ptr<RobotResolutionParams> m_params;
+            static RobotResolutionParams m_params;
 
             bool m_is_enforcing_joint_limits;
             std::vector<double> m_angles;

@@ -6,9 +6,12 @@
 #include <assert.h>
 
 #define HASH_TABLE_SIZE (32*1024)
+#define NUMOFINDICES_STATEID2IND 2
 using namespace monolithic_pr2_planner;
 
-HashManager::HashManager() : m_coord_to_state_id_table(HASH_TABLE_SIZE){
+HashManager::HashManager(std::vector<int*>* stateID2Mapping) : 
+    m_stateID2Mapping(stateID2Mapping),
+    m_coord_to_state_id_table(HASH_TABLE_SIZE){
 }
 
 // Max's magic function for generating good hashes
@@ -34,17 +37,17 @@ unsigned int HashManager::hash(const GraphStatePtr& graph_state){
         counter++;
     }
 
-    auto robot_pose = graph_state->getRobotPose();
-    auto base_state = robot_pose.getDiscBaseState();
+    auto robot_pose = graph_state->robot_pose();
+    auto base_state = robot_pose.base_state();
     for (auto it=base_state.getCoordBegin(); it!=base_state.getCoordEnd();++it){
         val += intHash(*it) << counter;
         counter++;
     }
 
-    val += intHash(robot_pose.getRightDiscFreeAngle()) << counter;
+    val += intHash(robot_pose.right_free_angle()) << counter;
     counter++;
 
-    val += intHash(robot_pose.getLeftDiscFreeAngle()) << counter;
+    val += intHash(robot_pose.left_free_angle()) << counter;
     counter++;
 
     // should have used 12 values during the hash function
@@ -61,7 +64,7 @@ unsigned int HashManager::getStateID(const GraphStatePtr& graph_state){
     unsigned int bin_idx = hash(graph_state);
     BOOST_FOREACH(auto g_s, m_coord_to_state_id_table[bin_idx]){
         if (*g_s == *graph_state){
-            return g_s->getID();
+            return g_s->id();
         }
     }
     throw std::out_of_range("Graph state does not exist");
@@ -87,9 +90,18 @@ bool HashManager::save(GraphStatePtr& graph_state){
     }
     ROS_DEBUG_NAMED(HASH_LOG, "This is a new graph state, adding to table");
     unsigned int bin_idx = hash(graph_state);
-    graph_state->setID(m_state_id_to_graph_table.size());
+    graph_state->id(m_state_id_to_graph_table.size());
     m_state_id_to_graph_table.push_back(graph_state);
     m_coord_to_state_id_table[bin_idx].push_back(graph_state);
+
+
+    // the planner needs this to happen. i have no idea what it's supposed to
+    // do.
+    int* entry = new int [NUMOFINDICES_STATEID2IND];
+    m_stateID2Mapping->push_back(entry);
+    for(int i = 0; i < NUMOFINDICES_STATEID2IND; i++){
+        (*m_stateID2Mapping)[graph_state->id()][i] = -1;
+    }
 
     return true;
 }

@@ -1,4 +1,5 @@
 #include <monolithic_pr2_planner/StateReps/GoalState.h>
+#include <monolithic_pr2_planner/Visualizer.h>
 
 using namespace monolithic_pr2_planner;
 
@@ -24,12 +25,12 @@ bool GoalState::isSatisfiedBy(const GraphStatePtr& graph_state){
     DiscObjectState d_tol = c_tol.getDiscObjectState();
     DiscObjectState obj = graph_state->getObjectStateRelMap();
 
-    bool within_xyz_tol = (abs(m_goal_state.getX()-obj.getX()) < d_tol.getX() &&
-                           abs(m_goal_state.getY()-obj.getY()) < d_tol.getY() &&
-                           abs(m_goal_state.getZ()-obj.getZ()) < d_tol.getZ());
-    bool within_rpy_tol = (abs(m_goal_state.getRoll()-obj.getRoll()) < d_tol.getRoll() &&
-                           abs(m_goal_state.getPitch()-obj.getPitch()) < d_tol.getPitch() &&
-                           abs(m_goal_state.getYaw()-obj.getYaw()) < d_tol.getYaw());
+    bool within_xyz_tol = (abs(m_goal_state.x()-obj.x()) < d_tol.x() &&
+                           abs(m_goal_state.y()-obj.y()) < d_tol.y() &&
+                           abs(m_goal_state.z()-obj.z()) < d_tol.z());
+    bool within_rpy_tol = (abs(m_goal_state.roll()-obj.roll()) < d_tol.roll() &&
+                           abs(m_goal_state.pitch()-obj.pitch()) < d_tol.pitch() &&
+                           abs(m_goal_state.yaw()-obj.yaw()) < d_tol.yaw());
 
     if (within_xyz_tol && within_rpy_tol){
         return true;
@@ -47,5 +48,17 @@ bool GoalState::isSolnStateID(int state_id){
     return false;
 }
 void GoalState::addPotentialSolnState(const GraphStatePtr& graph_state) { 
-    m_possible_goals.push_back(graph_state->getID());
+    m_possible_goals.push_back(graph_state->id());
+}
+
+void GoalState::visualize(){
+    double radius = .02;
+    int hue = 150;
+    std::string ns = "goal";
+    int id = 0;
+    ContObjectState cont_goal = ContObjectState(m_goal_state);
+    Visualizer::pviz->visualizeSphere(cont_goal.x(),
+                                      cont_goal.y(),
+                                      cont_goal.z(),
+                                      radius, hue, ns, id);
 }

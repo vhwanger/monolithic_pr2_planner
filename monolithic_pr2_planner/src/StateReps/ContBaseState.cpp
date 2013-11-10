@@ -6,8 +6,8 @@ using namespace std;
 
 ContBaseState::ContBaseState(){};
 
-ContBaseState::ContBaseState(double x, double y, double z, double theta){
-    setX(x); setY(y); setZ(z); setTheta(theta);
+ContBaseState::ContBaseState(double vx, double vy, double vz, double vtheta){
+    x(vx); y(vy); z(vz); theta(vtheta);
 }
 
 ContBaseState::ContBaseState(vector<double> base_pose) : 
@@ -15,14 +15,14 @@ ContBaseState::ContBaseState(vector<double> base_pose) :
 }
 ContBaseState::ContBaseState(const DiscBaseState& base_pose) :
     m_pose(4){
-    m_occupancy_grid->gridToWorld(static_cast<int>(base_pose.getX()),
-                                  static_cast<int>(base_pose.getY()),
-                                  static_cast<int>(base_pose.getZ()),
+    m_occupancy_grid->gridToWorld(static_cast<int>(base_pose.x()),
+                                  static_cast<int>(base_pose.y()),
+                                  static_cast<int>(base_pose.z()),
                                   m_pose[BodyDOF::X],
                                   m_pose[BodyDOF::Y],
                                   m_pose[BodyDOF::Z]);
     double theta_res = m_resolution_params.base_theta_resolution;
-    m_pose[BodyDOF::THETA] = normalize_angle_positive(static_cast<double>(base_pose.getTheta())*theta_res);
+    m_pose[BodyDOF::THETA] = normalize_angle_positive(static_cast<double>(base_pose.theta())*theta_res);
 }
 
 bool ContBaseState::interpolate(const ContBaseState& start, const ContBaseState& end,

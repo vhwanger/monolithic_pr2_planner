@@ -17,10 +17,8 @@ void ParameterCatalog::fetch(ros::NodeHandle nh){
     // TODO clean this up, setmotionprimitive needs to be run before parse
     // stuff!
     setMotionPrimitiveParams(m_motion_primitive_params);
-    parseArmMPrimFileHeader(m_motion_primitive_params.arm_motion_primitive_file,
-                            m_robot_resolution_params);
-    parseBaseMPrimFileHeader(m_motion_primitive_params.base_motion_primitive_file,
-                            m_robot_resolution_params);
+    setRobotResolutionParams(m_motion_primitive_params, 
+                             m_robot_resolution_params);
     setOccupancyGridParams(m_occupancy_grid_params);
     setLeftArmParams(m_left_arm_params);
     setRightArmParams(m_right_arm_params);
@@ -86,6 +84,7 @@ void ParameterCatalog::setRobotResolutionParams(const MotionPrimitiveParams& mpr
     parseArmMPrimFileHeader(mprims.arm_motion_primitive_file, params);
     parseBaseMPrimFileHeader(mprims.base_motion_primitive_file, params);
     m_nodehandle.param("planner/gripper_sphere_radius/", params.gripper_sphere_radius,0.08);
+    ROS_DEBUG_NAMED(CONFIG_LOG, "gripper sphere is %f", params.gripper_sphere_radius);
     //params.obj_xyz_resolution = 0.02;
     //params.obj_rpy_resolution = 2*M_PI/180;
     //params.arm_free_angle_resolution = 3*M_PI/180;
@@ -103,7 +102,7 @@ void ParameterCatalog::getNextLine(ifstream& file, stringstream& ss,
 void ParameterCatalog::parseArmMPrimFileHeader(const std::string& mprim_file,
                              RobotResolutionParams& params){
     ifstream file;
-    file.open(mprim_file);
+    file.open(mprim_file.c_str(), ios_base::in);
     string line, label;
     double dvalue;
     int ivalue;
@@ -142,7 +141,7 @@ void ParameterCatalog::parseArmMPrimFileHeader(const std::string& mprim_file,
 bool ParameterCatalog::parseBaseMPrimFileHeader(const std::string& mprim_file, 
                                                 RobotResolutionParams& params){
     ifstream file;
-    file.open(mprim_file);
+    file.open(mprim_file.c_str(), ios_base::in);
     string line, label;
     int ivalue;
     stringstream ss;

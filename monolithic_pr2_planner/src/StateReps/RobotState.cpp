@@ -1,6 +1,7 @@
-#include <monolithic_pr2_planner/StateReps/RobotPose.h>
+#include <monolithic_pr2_planner/StateReps/RobotState.h>
 #include <monolithic_pr2_planner/LoggerNames.h>
 #include <monolithic_pr2_planner/Constants.h>
+#include <monolithic_pr2_planner/Visualizer.h>
 #include <pr2_collision_checker/pr2_collision_space.h>
 #include <kdl/frames.hpp>
 #include <vector>
@@ -8,19 +9,18 @@
 using namespace monolithic_pr2_planner;
 using namespace boost;
 
-boost::shared_ptr<PViz> RobotPose::m_pviz;
 
-bool RobotPose::operator==(const RobotPose& other){
+bool RobotState::operator==(const RobotState& other){
     return (m_base_state == other.m_base_state &&
             m_right_arm == other.m_right_arm &&
             m_left_arm == other.m_left_arm);
 }
 
-bool RobotPose::operator!=(const RobotPose& other){
+bool RobotState::operator!=(const RobotState& other){
     return !(*this == other);
 }
 
-RobotPose::RobotPose(ContBaseState base_state, RightContArmState r_arm, 
+RobotState::RobotState(ContBaseState base_state, RightContArmState r_arm, 
                      LeftContArmState l_arm):
     m_base_state(base_state), 
     m_right_arm(r_arm), 
@@ -28,17 +28,17 @@ RobotPose::RobotPose(ContBaseState base_state, RightContArmState r_arm,
     m_obj_state(r_arm.getObjectStateRelBody()){
 }
 
-ContBaseState RobotPose::getContBaseState(){
+ContBaseState RobotState::getContBaseState(){
     return ContBaseState(m_base_state);    
 }
 
-void RobotPose::printToDebug(char* log_level) const {
+void RobotState::printToDebug(char* log_level) const {
     ContBaseState base_state = m_base_state.getContBaseState();
     ROS_DEBUG_NAMED(log_level, "\tbase: %f %f %f %f", 
-                   base_state.getX(),
-                   base_state.getY(),
-                   base_state.getZ(),
-                   base_state.getTheta());
+                   base_state.x(),
+                   base_state.y(),
+                   base_state.z(),
+                   base_state.theta());
     std::vector<double> l_arm, r_arm;
     m_right_arm.getAngles(&r_arm);
     m_left_arm.getAngles(&l_arm);
@@ -60,13 +60,13 @@ void RobotPose::printToDebug(char* log_level) const {
                     r_arm[Joints::WRIST_ROLL]);
 }
 
-void RobotPose::printToInfo(char* log_level) const {
+void RobotState::printToInfo(char* log_level) const {
     ContBaseState base_state = m_base_state.getContBaseState();
     ROS_INFO_NAMED(log_level, "\tbase: %f %f %f %f", 
-                   base_state.getX(),
-                   base_state.getY(),
-                   base_state.getZ(),
-                   base_state.getTheta());
+                   base_state.x(),
+                   base_state.y(),
+                   base_state.z(),
+                   base_state.theta());
     std::vector<double> l_arm, r_arm;
     m_right_arm.getAngles(&r_arm);
     m_left_arm.getAngles(&l_arm);
@@ -88,41 +88,42 @@ void RobotPose::printToInfo(char* log_level) const {
                     r_arm[6]);
 }
 
-void RobotPose::setPViz(boost::shared_ptr<PViz> pviz){
-    m_pviz = pviz;
-}
+//void RobotState::setPViz(boost::shared_ptr<PViz> pviz){
+//    m_pviz = pviz;
+//}
 
-void RobotPose::visualize(){
+void RobotState::visualize(){
     std::vector<double> l_arm, r_arm;
     m_left_arm.getAngles(&l_arm);
     m_right_arm.getAngles(&r_arm);
     BodyPose body_pose = m_base_state.getBodyPose();
-    m_pviz->visualizeRobot(r_arm, l_arm, body_pose, 150, std::string("planner"), 0);
+    Visualizer::pviz->visualizeRobot(r_arm, l_arm, body_pose, 150, 
+                                    std::string("planner"), 0);
 }
 
 
 // this isn't a static function because we need seed angles.
 // this is a bit weird at the moment, but we use the arm angles as seed angles
-bool RobotPose::computeRobotPose(const DiscObjectState& disc_obj_state,
-                                 const RobotPose& seed_robot_pose,
+bool RobotState::computeRobotPose(const DiscObjectState& disc_obj_state,
+                                 const RobotState& seed_robot_pose,
                                  RobotPosePtr& new_robot_pose){
     ContObjectState obj_state = disc_obj_state.getContObjectState();
 
     KDL::Frame obj_frame;
-    obj_frame.p.x(obj_state.getX());
-    obj_frame.p.y(obj_state.getY());
-    obj_frame.p.z(obj_state.getZ());
-    obj_frame.M = KDL::Rotation::RPY(obj_state.getRoll(), 
-                                     obj_state.getPitch(),
-                                     obj_state.getYaw());
-    KDL::Frame obj_to_wrist_offset = seed_robot_pose.getContRightArm().getObjectOffset();
+    obj_frame.p.x(obj_state.x());
+    obj_frame.p.y(obj_state.y());
+    obj_frame.p.z(obj_state.z());
+    obj_frame.M = KDL::Rotation::RPY(obj_state.roll(), 
+                                     obj_state.pitch(),
+                                     obj_state.yaw());
+    KDL::Frame obj_to_wrist_offset = seed_robot_pose.right_arm().getObjectOffset();
 
     // TODO: move this into cont arm
     // TODO: add in the left arm computation
     KDL::Frame wrist_frame = obj_frame * obj_to_wrist_offset;
     SBPLArmModelPtr arm_model = seed_robot_pose.m_right_arm.getArmModel();
     vector<double> seed(7,0), r_angles(7,0);
-    seed_robot_pose.getContRightArm().getAngles(&seed);
+    seed_robot_pose.right_arm().getAngles(&seed);
 
     bool ik_success = arm_model->computeFastIK(wrist_frame, seed, r_angles);
     if (!ik_success){
@@ -132,9 +133,9 @@ bool RobotPose::computeRobotPose(const DiscObjectState& disc_obj_state,
         }
     }
 
-    new_robot_pose = make_shared<RobotPose>(seed_robot_pose.getDiscBaseState(),
+    new_robot_pose = make_shared<RobotState>(seed_robot_pose.base_state(),
                                             RightContArmState(r_angles),
-                                            seed_robot_pose.getContLeftArm());
+                                            seed_robot_pose.left_arm());
     return true;
 }
 
@@ -155,7 +156,7 @@ bool RobotPose::computeRobotPose(const DiscObjectState& disc_obj_state,
 //    return true;
 //}
 
-ContObjectState RobotPose::getObjectStateRelMap() const {
+ContObjectState RobotState::getObjectStateRelMap() const {
     // This is an adaptation of computeContinuousObjectPose from the old
     // planner.  TODO: make this arm agnostic?
     std::vector<double> r_angles;
@@ -176,7 +177,7 @@ ContObjectState RobotPose::getObjectStateRelMap() const {
 }
 
 
-DiscObjectState RobotPose::getObjectStateRelBody() const {
+DiscObjectState RobotState::getObjectStateRelBody() const {
     return m_obj_state;
 }
 

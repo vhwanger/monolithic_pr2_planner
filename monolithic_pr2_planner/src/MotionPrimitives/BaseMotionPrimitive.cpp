@@ -14,7 +14,7 @@ using namespace angles;
 void BaseMotionPrimitive::print() const {
     ROS_DEBUG_NAMED(MPRIM_LOG, "Base Primitive");
     ROS_DEBUG_NAMED(MPRIM_LOG, "\tid: %d", getID());
-    ROS_DEBUG_NAMED(MPRIM_LOG, "\tstart angle: %d", getStartAngle());
+    ROS_DEBUG_NAMED(MPRIM_LOG, "\tstart angle: %d", start_angle());
     ROS_DEBUG_NAMED(MPRIM_LOG, "\tcost: %d", getCost());
     printEndCoord();
     printIntermSteps();
@@ -26,10 +26,12 @@ bool BaseMotionPrimitive::apply(const GraphState& source_state,
     // since the base motion primitive list contains motion primitives for every
     // possible base theta, let's only use the one corresponding to our
     // particular angle.
-    if (source_state.getRobotPose().getDiscBaseState().getTheta() != getStartAngle()){
+    if (source_state.robot_pose().base_state().theta() != start_angle()){
         return false;
     }
     successor.reset(new GraphState(source_state));
+    ROS_DEBUG_NAMED(MPRIM_LOG, "successor copy is");
+    successor->printToDebug(MPRIM_LOG);
     return successor->applyMPrim(m_end_coord);
 }
 

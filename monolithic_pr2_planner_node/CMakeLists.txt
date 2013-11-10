@@ -12,6 +12,11 @@ set(ROS_BUILD_TYPE Debug)
 rosbuild_init()
 SET(CMAKE_CXX_FLAGS "-std=c++0x")
 
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(SBPL REQUIRED sbpl)
+include_directories(${SBPL_INCLUDE_DIRS})
+link_directories(${SBPL_LIBRARY_DIRS})
+
 #set the default path for built executables to the "bin" directory
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 #set the default path for built libraries to the "lib" directory
@@ -29,7 +34,7 @@ rosbuild_add_boost_directories()
 rosbuild_add_executable(node src/node.cpp src/EnvInterfaces.cpp
     src/CollisionSpaceInterface.cpp)
 # TODO figure out why i have to include bfs3d here
-target_link_libraries(node monolithic_pr2_planner bfs3d)
+target_link_libraries(node monolithic_pr2_planner bfs3d ${SBPL_LIBRARIES})
 
 rosbuild_add_executable(testPlanningRequest src/testPlanningRequest.cpp)
 target_link_libraries(testPlanningRequest monolithic_pr2_planner)

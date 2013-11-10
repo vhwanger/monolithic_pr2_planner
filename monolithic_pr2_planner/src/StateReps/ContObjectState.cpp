@@ -7,29 +7,29 @@ using namespace monolithic_pr2_planner;
 using namespace angles;
 
 ContObjectState::ContObjectState(){};
-ContObjectState::ContObjectState(double x, double y, double z, 
-                                 double roll, double pitch, double yaw):
+ContObjectState::ContObjectState(double vx, double vy, double vz,
+                                 double vroll, double vpitch, double vyaw):
     m_coord(6,0){
-    m_coord[ObjectPose::X] = x;
-    m_coord[ObjectPose::Y] = y; 
-    m_coord[ObjectPose::Z] = z; 
-    m_coord[ObjectPose::ROLL] = roll;
-    m_coord[ObjectPose::PITCH] = pitch;
-    m_coord[ObjectPose::YAW] = yaw;
+    m_coord[ObjectPose::X] = vx;
+    m_coord[ObjectPose::Y] = vy;
+    m_coord[ObjectPose::Z] = vz;
+    m_coord[ObjectPose::ROLL] = vroll;
+    m_coord[ObjectPose::PITCH] = vpitch;
+    m_coord[ObjectPose::YAW] = vyaw;
 }
 
 ContObjectState::ContObjectState(DiscObjectState obj_state):
     m_coord(6,0){
-        m_occupancy_grid->gridToWorld(obj_state.getX(),
-                                      obj_state.getY(),
-                                      obj_state.getZ(),
+        m_occupancy_grid->gridToWorld(obj_state.x(),
+                                      obj_state.y(),
+                                      obj_state.z(),
                                       m_coord[ObjectPose::X],
                                       m_coord[ObjectPose::Y],
                                       m_coord[ObjectPose::Z]);
         double rpy_res = m_resolution_params.obj_rpy_resolution;
-        m_coord[ObjectPose::ROLL] = normalize_angle_positive(obj_state.getRoll()*rpy_res);
-        m_coord[ObjectPose::PITCH] = normalize_angle_positive(obj_state.getPitch()*rpy_res);
-        m_coord[ObjectPose::YAW] = normalize_angle_positive(obj_state.getYaw()*rpy_res);
+        m_coord[ObjectPose::ROLL] = normalize_angle_positive(obj_state.roll()*rpy_res);
+        m_coord[ObjectPose::PITCH] = normalize_angle_positive(obj_state.pitch()*rpy_res);
+        m_coord[ObjectPose::YAW] = normalize_angle_positive(obj_state.yaw()*rpy_res);
 }
 
 ContObjectState::ContObjectState(const geometry_msgs::PoseStamped& obj_pose):

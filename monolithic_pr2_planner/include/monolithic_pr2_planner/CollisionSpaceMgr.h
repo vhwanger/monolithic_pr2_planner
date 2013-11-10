@@ -1,7 +1,7 @@
 #pragma once
 #include <boost/shared_ptr.hpp>
 #include <monolithic_pr2_planner/StateReps/GraphState.h>
-#include <monolithic_pr2_planner/StateReps/RobotPose.h>
+#include <monolithic_pr2_planner/StateReps/RobotState.h>
 #include <monolithic_pr2_planner/MotionPrimitives/MotionPrimitive.h>
 #include <monolithic_pr2_planner/ParameterCatalog.h>
 #include <monolithic_pr2_planner/OccupancyGridUser.h>
@@ -18,7 +18,7 @@ namespace monolithic_pr2_planner {
             CollisionSpaceMgr(SBPLArmModelPtr right_arm,
                               SBPLArmModelPtr left_arm);
             bool isValid(DiscObjectState& obj_state);
-            bool isValid(RobotPose& robot_pose);
+            bool isValid(RobotState& robot_pose);
             bool isValidMotion(const GraphState& source_state, 
                                const MotionPrimitivePtr& mprim,
                                GraphStatePtr& successor);
