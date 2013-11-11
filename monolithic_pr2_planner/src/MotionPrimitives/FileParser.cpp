@@ -132,7 +132,13 @@ bool MotionPrimitiveFileParser::parseBaseMotionPrimitives(string filename,
         GraphStateMotion motion(GRAPH_STATE_SIZE,0);
         motion[GraphStateElement::BASE_X] = coord[0];
         motion[GraphStateElement::BASE_Y] = coord[1];
-        motion[GraphStateElement::BASE_THETA] = coord[2];
+
+        // since these mprims are specific to each theta, we need to adjust this
+        // to be relative to the start angle. for example, if our base is
+        // currently at theta = 2 and coord[2] = 3 (the final angle after this
+        // motion primitive), we actually want our motion to be 1, not 3. 
+        // TODO could be a bug here if coord[2] = 0, start_angle = 15
+        motion[GraphStateElement::BASE_THETA] = coord[2] - mprim->start_angle();
 
         mprim->setEndCoord(motion);
         

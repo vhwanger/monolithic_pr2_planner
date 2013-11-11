@@ -23,11 +23,22 @@ namespace monolithic_pr2_planner {
             double pitch() const { return m_coord[ObjectPose::PITCH]; };
             double yaw() const { return m_coord[ObjectPose::YAW]; };
 
+            void x(double value) { m_coord[ObjectPose::X] = value; };
+            void y(double value) { m_coord[ObjectPose::Y] = value; };
+            void z(double value) { m_coord[ObjectPose::Z] = value; };
+            void roll(double value) { m_coord[ObjectPose::ROLL] = normalize(value); };
+            void pitch(double value) { m_coord[ObjectPose::PITCH] = normalize(value); };
+            void yaw(double value) { m_coord[ObjectPose::YAW] = normalize(value); };
+
+
             DiscObjectState getDiscObjectState();
 
             void printToInfo(char* log_level) const;
             void printToDebug(char* log_level) const;
         private:
+            inline double normalize(double value){
+                return normalize_angle_positive(value);
+            }
             std::vector<double> m_coord;
     };
 }

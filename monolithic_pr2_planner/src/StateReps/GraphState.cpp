@@ -22,8 +22,6 @@ bool GraphState::operator!=(const GraphState& other){
 
 
 bool GraphState::applyMPrim(const GraphStateMotion& mprim){
-    ROS_DEBUG_NAMED(MPRIM_LOG, "before mprim applied");
-    m_robot_pose.printToDebug(MPRIM_LOG);
     DiscObjectState obj_state = m_robot_pose.getObjectStateRelBody();
     obj_state.x(obj_state.x() + mprim[GraphStateElement::OBJ_X]);
     obj_state.y(obj_state.y() + mprim[GraphStateElement::OBJ_Y]);
@@ -42,8 +40,6 @@ bool GraphState::applyMPrim(const GraphStateMotion& mprim){
     RobotPosePtr new_robot_pose;
     if (RobotState::computeRobotPose(obj_state, m_robot_pose, new_robot_pose)){
         m_robot_pose = *new_robot_pose;
-        ROS_DEBUG_NAMED(MPRIM_LOG, "after mprim applied");
-        m_robot_pose.printToDebug(MPRIM_LOG);
     } else {
         return false;
     }

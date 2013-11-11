@@ -39,10 +39,11 @@ namespace monolithic_pr2_planner {
         private:
             inline int normalizeRPY(int theta){
                 int num_thetas = m_resolution_params.num_rpy_angles;
-                if (theta >=0) 
+                if (theta >=0){
                     return (theta % num_thetas);
-                else
+                } else {
                     return (theta % num_thetas + num_thetas) % num_thetas;
+                }
             }
             std::vector<unsigned int> m_coord;
     };

@@ -27,9 +27,9 @@ ContObjectState::ContObjectState(DiscObjectState obj_state):
                                       m_coord[ObjectPose::Y],
                                       m_coord[ObjectPose::Z]);
         double rpy_res = m_resolution_params.obj_rpy_resolution;
-        m_coord[ObjectPose::ROLL] = normalize_angle_positive(obj_state.roll()*rpy_res);
-        m_coord[ObjectPose::PITCH] = normalize_angle_positive(obj_state.pitch()*rpy_res);
-        m_coord[ObjectPose::YAW] = normalize_angle_positive(obj_state.yaw()*rpy_res);
+        roll(obj_state.roll()*rpy_res);
+        pitch(obj_state.pitch()*rpy_res);
+        yaw(obj_state.yaw()*rpy_res);
 }
 
 ContObjectState::ContObjectState(const geometry_msgs::PoseStamped& obj_pose):

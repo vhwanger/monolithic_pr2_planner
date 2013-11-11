@@ -6,9 +6,9 @@ namespace monolithic_pr2_planner {
     class HashManager {
         public:
             HashManager(std::vector<int*>* stateID2Mapping);
-            GraphStatePtr getGraphState(unsigned int state_id);
+            GraphStatePtr getGraphState(int state_id);
             unsigned int getStateID(const GraphStatePtr& graph_state);
-            bool exists(const GraphStatePtr& graph_state);
+            bool exists(const GraphStatePtr& graph_state, int& potential_id);
             bool save(GraphStatePtr& graph_state);
             int size() { return static_cast<int>(m_state_id_to_graph_table.size()); } ;
 

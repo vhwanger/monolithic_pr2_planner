@@ -32,12 +32,20 @@ bool Environment::configureRequest(SearchRequestParamsPtr search_request_params,
     return true;
 }
 
+int Environment::GetGoalHeuristic(int stateID){
+    return m_heur->getGoalHeuristic(m_hash_mgr.getGraphState(stateID));
+}
+
 void Environment::GetSuccs(int sourceStateID, vector<int>* succIDs, 
                            vector<int>* costs){
     if (sourceStateID == 1){
         ROS_DEBUG_NAMED(SEARCH_LOG, "expanding goal state?");
         return;
     }
+    succIDs->clear();
+    succIDs->reserve(m_mprims.getMotionPrims().size());
+    costs->clear();
+    costs->reserve(m_mprims.getMotionPrims().size());
 
     GraphStatePtr source_state = m_hash_mgr.getGraphState(sourceStateID);
     ROS_DEBUG_NAMED(SEARCH_LOG, "expanding %d", sourceStateID);
@@ -50,6 +58,8 @@ void Environment::GetSuccs(int sourceStateID, vector<int>* succIDs,
         if (m_cspace_mgr->isValidMotion(*source_state, mprim, successor)){
             ROS_DEBUG_NAMED(MPRIM_LOG, "source state:");
             source_state->printToDebug(MPRIM_LOG);
+            ROS_DEBUG_NAMED(MPRIM_LOG, "motion:");
+            mprim->printEndCoord();
             ROS_DEBUG_NAMED(MPRIM_LOG, "successor state:");
             successor->printToDebug(MPRIM_LOG);
             m_hash_mgr.save(successor);
@@ -60,12 +70,19 @@ void Environment::GetSuccs(int sourceStateID, vector<int>* succIDs,
                 // TODO define the goal state somewhere
                 succIDs->push_back(1);
             } else {
+                ROS_DEBUG_NAMED(SEARCH_LOG, "pushing back %d", successor->id());
                 succIDs->push_back(successor->id());
             }
-            int cost = mprim->getCost() + m_heur->getGoalHeuristic(successor);
-            ROS_DEBUG_NAMED(SEARCH_LOG, "computed cost is %d", cost);
-            costs->push_back(cost);
+            //int cost = mprim->getCost() + m_heur->getGoalHeuristic(successor);
+            //int cost = m_heur->getGoalHeuristic(successor);
+            //ROS_DEBUG_NAMED(SEARCH_LOG, "computed cost is %d", cost);
+            costs->push_back(1);
         } 
+        ROS_INFO(" ");
+    }
+    assert(succIDs->size() == costs->size());
+    for (int i=0; i < succIDs->size(); i++){
+        ROS_INFO("id %d has cost %d", succIDs->at(i), costs->at(i));
     }
 }
 
@@ -123,11 +140,11 @@ bool Environment::setStartGoal(SearchRequestPtr search_request,
 
 // this sets up the environment for things that are query independent.
 void Environment::configurePlanningDomain(){
-    // used for collision space and discretizing functions 
+    // used for collision space and discretizing plain xyz into grid world 
     OccupancyGridUser::init(m_param_catalog.m_occupancy_grid_params,
                             m_param_catalog.m_robot_resolution_params);
 
-    // used for arm discretization
+    // used for discretization of robot movements
     ContArmState::setRobotResolutionParams(m_param_catalog.m_robot_resolution_params);
 
     // used for arm kinematics

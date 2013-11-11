@@ -30,8 +30,6 @@ bool BaseMotionPrimitive::apply(const GraphState& source_state,
         return false;
     }
     successor.reset(new GraphState(source_state));
-    ROS_DEBUG_NAMED(MPRIM_LOG, "successor copy is");
-    successor->printToDebug(MPRIM_LOG);
     return successor->applyMPrim(m_end_coord);
 }
 
@@ -58,7 +56,6 @@ void BaseMotionPrimitive::computeCost(const MotionPrimitiveParams& params){
                                                              final_angle));
     assert((linear_time > 0) || (angular_distance > 0));
 
-    // TODO wtf is this 4.0?
     double turn_time_rads = static_cast<double>(params.turn_45_deg_in_place_time)*M_PI/4.0;
     double angular_time = angular_distance/turn_time_rads;
     //double angular_time = angular_distance/((M_PI/4.0)/

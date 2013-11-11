@@ -16,7 +16,7 @@ namespace monolithic_pr2_planner {
             bool operator==(const GraphState& other);
             bool operator!=(const GraphState& other);
             int id() const { return m_id; };
-            void id(unsigned int id) { m_id = id; };
+            void id(int id) { m_id = id; };
             RobotState robot_pose() const { return m_robot_pose; };
             void robot_pose(RobotState robot_state) { m_robot_pose = robot_state; };
 

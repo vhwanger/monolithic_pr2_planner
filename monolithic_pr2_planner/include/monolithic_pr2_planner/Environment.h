@@ -9,6 +9,7 @@
 #include <monolithic_pr2_planner/StateReps/GoalState.h>
 #include <monolithic_pr2_planner/MotionPrimitives/MotionPrimitivesMgr.h>
 #include <monolithic_pr2_planner/Heuristic.h>
+#include <stdexcept>
 #include <vector>
 #include <memory>
 
@@ -42,9 +43,9 @@ namespace monolithic_pr2_planner {
         public:
             bool InitializeEnv(const char* sEnvFile){return false;};
             bool InitializeMDPCfg(MDPConfig *MDPCfg);
-            int  GetFromToHeuristic(int FromStateID, int ToStateID){ return -1; };
-            int  GetGoalHeuristic(int stateID) { return -1; };
-            int  GetStartHeuristic(int stateID) { return -1; };
+            int  GetFromToHeuristic(int FromStateID, int ToStateID){ throw std::runtime_error("unimplement");  };
+            int  GetGoalHeuristic(int stateID);
+            int  GetStartHeuristic(int stateID) { throw std::runtime_error("unimplement"); };
             void GetPreds(int TargetStateID, std::vector<int>* PredIDV, std::vector<int>* CostV){};
             void SetAllActionsandAllOutcomes(CMDPSTATE* state){};
             void SetAllPreds(CMDPSTATE* state){};

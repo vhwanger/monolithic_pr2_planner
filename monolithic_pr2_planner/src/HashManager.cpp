@@ -56,7 +56,7 @@ unsigned int HashManager::hash(const GraphStatePtr& graph_state){
     return intHash(val) & (hash_table_size-1);
 }
 
-GraphStatePtr HashManager::getGraphState(unsigned int state_id){
+GraphStatePtr HashManager::getGraphState(int state_id){
     return m_state_id_to_graph_table[state_id];
 }
 
@@ -70,12 +70,17 @@ unsigned int HashManager::getStateID(const GraphStatePtr& graph_state){
     throw std::out_of_range("Graph state does not exist");
 }
 
-bool HashManager::exists(const GraphStatePtr& graph_state){
+bool HashManager::exists(const GraphStatePtr& graph_state, int& id){
     unsigned int bin_idx = hash(graph_state);
     ROS_DEBUG_NAMED(HASH_LOG, "Hashed state to %d", bin_idx);
     m_coord_to_state_id_table[bin_idx];
     BOOST_FOREACH(auto g_s, m_coord_to_state_id_table[bin_idx]){
         if (*g_s == *graph_state){
+            ROS_DEBUG_NAMED(HASH_LOG, "exists! the following two match at %d",g_s->id());
+            id = g_s->id();
+            g_s->printToDebug(HASH_LOG);
+            graph_state->printToDebug(HASH_LOG);
+
             return true;
         }
     }
@@ -85,7 +90,9 @@ bool HashManager::exists(const GraphStatePtr& graph_state){
 bool HashManager::save(GraphStatePtr& graph_state){
     // this may not be the desired behavior...
     ROS_DEBUG_NAMED(HASH_LOG, "Saving graph state");
-    if (exists(graph_state)){
+    int potential_id;
+    if (exists(graph_state, potential_id)){
+        graph_state->id(potential_id);
         return false;
     }
     ROS_DEBUG_NAMED(HASH_LOG, "This is a new graph state, adding to table");
@@ -93,7 +100,7 @@ bool HashManager::save(GraphStatePtr& graph_state){
     graph_state->id(m_state_id_to_graph_table.size());
     m_state_id_to_graph_table.push_back(graph_state);
     m_coord_to_state_id_table[bin_idx].push_back(graph_state);
-
+    ROS_DEBUG_NAMED(HASH_LOG, "Saved new entry with id %d", graph_state->id());
 
     // the planner needs this to happen. i have no idea what it's supposed to
     // do.

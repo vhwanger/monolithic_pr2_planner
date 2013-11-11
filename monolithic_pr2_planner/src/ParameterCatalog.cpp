@@ -75,6 +75,20 @@ void ParameterCatalog::setOccupancyGridParams(OccupancyGridParams& params){
     m_nodehandle.param("collision_space/occupancy_grid/size_x", params.max_point.x,1.6);
     m_nodehandle.param("collision_space/occupancy_grid/size_y", params.max_point.y,1.8);
     m_nodehandle.param("collision_space/occupancy_grid/size_z", params.max_point.z,1.4);
+    
+    ROS_DEBUG_NAMED(CONFIG_LOG, "Occupancy grid parameter");
+    ROS_DEBUG_NAMED(CONFIG_LOG, "\tsize: %f %f %f ",
+                          params.max_point.x, 
+                          params.max_point.y,
+                          params.max_point.z);
+    ROS_DEBUG_NAMED(CONFIG_LOG, "\tresolution: %f ",
+                          params.env_resolution);
+    ROS_DEBUG_NAMED(CONFIG_LOG, "\torigin: %f %f %f",  
+                          params.origin.x, 
+                          params.origin.y,
+                          params.origin.z);
+    ROS_DEBUG_NAMED(CONFIG_LOG, "\treference frame: %s", 
+                    params.reference_frame.c_str());
 }
 
 // currently just hard code these...maybe someone will want to retrieve them
@@ -116,24 +130,31 @@ void ParameterCatalog::parseArmMPrimFileHeader(const std::string& mprim_file,
     getNextLine(file, ss, line);
     ss >> label >> dvalue;
     if (label == "xyz_resolution(meters):"){
-        ROS_DEBUG_NAMED(CONFIG_LOG, "xyz_resolution set to %f", dvalue);
         params.obj_xyz_resolution = dvalue*M_PI/180;
+        ROS_DEBUG_NAMED(CONFIG_LOG, "obj_xyz_resolution set to %f", 
+                        params.obj_xyz_resolution);
     } 
 
     getNextLine(file, ss, line);
     ss >> label >> dvalue;
     if (label == "rpy_resolution(degrees):"){
-        ROS_DEBUG_NAMED(CONFIG_LOG, "rpy_resolution set to %f", dvalue);
         params.obj_rpy_resolution = dvalue*M_PI/180;
-        params.num_rpy_angles = (2.0*M_PI) / dvalue + 0.5;
+        ROS_DEBUG_NAMED(CONFIG_LOG, "obj_rpy_resolution set to %f", 
+                        params.obj_rpy_resolution);
+        params.num_rpy_angles = static_cast<int>(360 / dvalue + 0.5);
+        ROS_DEBUG_NAMED(CONFIG_LOG, "obj_num_rpy_angles set to %d", 
+                        params.num_rpy_angles);
     } 
 
     getNextLine(file, ss, line);
     ss >> label >> dvalue;
     if (label == "free_angle_resolution(degrees):"){
-        ROS_DEBUG_NAMED(CONFIG_LOG, "free_angle_resolution set to %f", dvalue);
         params.arm_free_angle_resolution = dvalue*M_PI/180;
-        params.num_free_angle_angles = (2.0*M_PI) / dvalue + 0.5;
+        ROS_DEBUG_NAMED(CONFIG_LOG, "free_angle_resolution set to %f", 
+                        params.arm_free_angle_resolution);
+        params.num_free_angle_angles = static_cast<int>(360 / dvalue + 0.5);
+        ROS_DEBUG_NAMED(CONFIG_LOG, "num_free_angle_angles set to %d", 
+                        params.num_free_angle_angles);
     } 
     file.close();
 }
@@ -146,7 +167,6 @@ bool ParameterCatalog::parseBaseMPrimFileHeader(const std::string& mprim_file,
     int ivalue;
     stringstream ss;
 
-    // TODO get the next line, but we already have resolution? skip it
     getNextLine(file, ss, line);
     getNextLine(file, ss, line);
     ss >> label >> ivalue;
@@ -154,12 +174,11 @@ bool ParameterCatalog::parseBaseMPrimFileHeader(const std::string& mprim_file,
         params.num_base_angles = ivalue;
         params.base_theta_resolution = 2*M_PI/ivalue;
 
-        ROS_DEBUG_NAMED(CONFIG_LOG, "number of angles set to %d", 
-                        ivalue);
+        ROS_DEBUG_NAMED(CONFIG_LOG, "number of base angles set to %d", 
+                        params.num_base_angles);
         ROS_DEBUG_NAMED(CONFIG_LOG, "base_theta_resolution set to %f", 
                         params.base_theta_resolution);
     } 
-
     return true;
 }
 
