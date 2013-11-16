@@ -212,3 +212,31 @@ id: 30
 end_coords(cells): 0 0 0 0 0 -2 0 0
 intermediate_steps: 1
 0 0 0 0 0 -0.196349541 0 0
+
+type: long_distance
+group: 3
+id: 29
+end_coords(cells): 0 0 0 0 2 0 0 0
+intermediate_steps: 1
+0 0 0 0 0.196349541 0 0 0
+
+type: long_distance
+group: 3
+id: 30
+end_coords(cells): 0 0 0 0 -2 0 0 0
+intermediate_steps: 1
+0 0 0 0 -0.196349541 0 0 0
+
+type: long_distance
+group: 3
+id: 29
+end_coords(cells): 0 0 0 2 0 0 0 0
+intermediate_steps: 1
+0 0 0 0.196349541 0 0 0 0
+
+type: long_distance
+group: 3
+id: 30
+end_coords(cells): 0 0 0 -2 0 0 0 0
+intermediate_steps: 1
+0 0 0 -0.196349541 0 0 0 0

@@ -21,10 +21,10 @@ int main(int argc, char** argv){
 
 
 
-    body_start[0] = 8;
-    body_start[1] = 3;
+    body_start[0] = 5;
+    body_start[1] = 1;
     body_start[2] = .1;
-    body_start[3] = .4;
+    body_start[3] = 0;
 
     srv.request.rarm_start = right_arm_start;
     srv.request.larm_start = left_arm_start;
@@ -35,11 +35,11 @@ int main(int argc, char** argv){
     pose.pose.position.z = .5;
     pose.pose.orientation.x = 0;
     pose.pose.orientation.y = 0;
-    pose.pose.orientation.z = 0;
-    pose.pose.orientation.w = 1;
+    pose.pose.orientation.z = 1;
+    pose.pose.orientation.w = 0;
 
     geometry_msgs::PoseStamped rarm_offset;
-    rarm_offset.pose.position.x = 0;
+    rarm_offset.pose.position.x = -.18;
     rarm_offset.pose.position.y = 0;
     rarm_offset.pose.orientation.z = 0;
     rarm_offset.pose.orientation.x = 0;

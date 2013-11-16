@@ -43,6 +43,7 @@ rosbuild_add_library(monolithic_pr2_planner src/StateReps/RobotState.cpp
                                             src/MotionPrimitives/FileParser.cpp
                                             src/MotionPrimitives/MotionPrimitivesMgr.cpp
                                             src/MotionPrimitives/BaseAdaptiveMotionPrimitive.cpp
+                                            src/MotionPrimitives/ArmAdaptiveMotionPrimitive.cpp
                                             src/SearchRequest.cpp
                                             src/Environment.cpp
                                             src/OccupancyGridUser.cpp

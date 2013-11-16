@@ -13,9 +13,9 @@ ContObjectState::ContObjectState(double vx, double vy, double vz,
     m_coord[ObjectPose::X] = vx;
     m_coord[ObjectPose::Y] = vy;
     m_coord[ObjectPose::Z] = vz;
-    m_coord[ObjectPose::ROLL] = vroll;
-    m_coord[ObjectPose::PITCH] = vpitch;
-    m_coord[ObjectPose::YAW] = vyaw;
+    roll(vroll);
+    pitch(vpitch);
+    yaw(vyaw);
 }
 
 ContObjectState::ContObjectState(DiscObjectState obj_state):
@@ -36,14 +36,14 @@ ContObjectState::ContObjectState(const geometry_msgs::PoseStamped& obj_pose):
     m_coord(6,0){
     tf::Pose pose;
     tf::poseMsgToTF(obj_pose.pose, pose);
-    double roll, pitch, yaw;
-    pose.getBasis().getRPY(roll, pitch, yaw);
+    double vroll, vpitch, vyaw;
+    pose.getBasis().getRPY(vroll, vpitch, vyaw);
     m_coord[ObjectPose::X] = obj_pose.pose.position.x;
     m_coord[ObjectPose::Y] = obj_pose.pose.position.y; 
     m_coord[ObjectPose::Z] = obj_pose.pose.position.z; 
-    m_coord[ObjectPose::ROLL] = roll;
-    m_coord[ObjectPose::PITCH] = pitch;
-    m_coord[ObjectPose::YAW] = yaw;
+    roll(vroll);
+    pitch(vpitch);
+    yaw(vyaw);
 }
 
 DiscObjectState ContObjectState::getDiscObjectState(){

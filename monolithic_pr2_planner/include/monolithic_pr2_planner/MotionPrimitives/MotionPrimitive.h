@@ -26,6 +26,7 @@ namespace monolithic_pr2_planner {
             virtual int getAdditionalCostMult() { return m_additional_cost; };
 
         protected:
+            double dist(DiscObjectState s1, DiscObjectState s2);
             int m_id;
             int m_cost;
             int m_additional_cost;

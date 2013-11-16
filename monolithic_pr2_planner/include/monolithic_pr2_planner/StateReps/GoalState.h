@@ -10,13 +10,14 @@ namespace monolithic_pr2_planner {
     // TODO: implement setgoal
     class GoalState {
         public:
+            GoalState(){ };
             GoalState(SearchRequestPtr search_request, HeuristicPtr heur);
             bool isSatisfiedBy(const GraphStatePtr& graph_state);
             unsigned int getHeuristic(GraphStatePtr graph_state);
             void storeAsSolnState(const GraphStatePtr& state){ m_full_goal_state = state; };
             bool isSolnStateID(int state_id);
             void addPotentialSolnState(const GraphStatePtr& graph_state);
-            ContObjectState getContObjectState() const { return ContObjectState(m_goal_state); };
+            DiscObjectState getObjectState() const { return m_goal_state; };
 
             void visualize();
         private:
@@ -28,4 +29,6 @@ namespace monolithic_pr2_planner {
             double r_free_angle;
             HeuristicPtr m_heur;
     };
+    typedef boost::shared_ptr<GoalState> GoalStatePtr;
+    typedef boost::shared_ptr<GoalStatePtr> GoalStatePtrPtr;
 }

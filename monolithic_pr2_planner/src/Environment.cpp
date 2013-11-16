@@ -3,6 +3,7 @@
 #include <monolithic_pr2_planner/StateReps/RobotState.h>
 #include <monolithic_pr2_planner/StateReps/DiscBaseState.h>
 #include <monolithic_pr2_planner/StateReps/ContArmState.h>
+#include <monolithic_pr2_planner/MotionPrimitives/ArmAdaptiveMotionPrimitive.h>
 #include <monolithic_pr2_planner/Visualizer.h>
 #include <boost/shared_ptr.hpp>
 #include <boost/scoped_ptr.hpp>
@@ -50,8 +51,13 @@ void Environment::GetSuccs(int sourceStateID, vector<int>* succIDs,
     GraphStatePtr source_state = m_hash_mgr.getGraphState(sourceStateID);
     ROS_DEBUG_NAMED(SEARCH_LOG, "expanding %d", sourceStateID);
     source_state->robot_pose().printToDebug(SEARCH_LOG);
-    source_state->robot_pose().visualize();
-    sleep(.1);
+    //source_state->robot_pose().visualize();
+    //sleep(.1);
+
+    if (m_heur->getGoalHeuristic(source_state) < 5){
+        ROS_DEBUG_NAMED(SEARCH_LOG, "super close to goal");
+    }
+
 
     for (auto mprim : m_mprims.getMotionPrims()){
         GraphStatePtr successor;
@@ -73,16 +79,8 @@ void Environment::GetSuccs(int sourceStateID, vector<int>* succIDs,
                 ROS_DEBUG_NAMED(SEARCH_LOG, "pushing back %d", successor->id());
                 succIDs->push_back(successor->id());
             }
-            //int cost = mprim->getCost() + m_heur->getGoalHeuristic(successor);
-            //int cost = m_heur->getGoalHeuristic(successor);
-            //ROS_DEBUG_NAMED(SEARCH_LOG, "computed cost is %d", cost);
             costs->push_back(1);
         } 
-        ROS_INFO(" ");
-    }
-    assert(succIDs->size() == costs->size());
-    for (int i=0; i < succIDs->size(); i++){
-        ROS_INFO("id %d has cost %d", succIDs->at(i), costs->at(i));
     }
 }
 
@@ -131,8 +129,13 @@ bool Environment::setStartGoal(SearchRequestPtr search_request,
     goal_id = fake_goal->id();
 
     ROS_INFO_NAMED(SEARCH_LOG, "Goal state created:");
-    m_goal->getContObjectState().printToInfo(SEARCH_LOG);
+    ContObjectState c_goal = m_goal->getObjectState();
+    c_goal.printToInfo(SEARCH_LOG);
     m_goal->visualize();
+
+    // TODO yuck
+    ArmAdaptiveMotionPrimitive::goal(*m_goal);
+    BaseAdaptiveMotionPrimitive::goal(*m_goal);
 
     return true;
 }

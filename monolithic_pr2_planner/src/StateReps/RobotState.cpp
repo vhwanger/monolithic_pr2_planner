@@ -104,6 +104,7 @@ void RobotState::visualize(){
 
 // this isn't a static function because we need seed angles.
 // this is a bit weird at the moment, but we use the arm angles as seed angles
+// disc_obj_state is in body frame
 bool RobotState::computeRobotPose(const DiscObjectState& disc_obj_state,
                                  const RobotState& seed_robot_pose,
                                  RobotPosePtr& new_robot_pose){
@@ -121,6 +122,7 @@ bool RobotState::computeRobotPose(const DiscObjectState& disc_obj_state,
     // TODO: move this into cont arm
     // TODO: add in the left arm computation
     KDL::Frame wrist_frame = obj_frame * obj_to_wrist_offset;
+
     SBPLArmModelPtr arm_model = seed_robot_pose.m_right_arm.getArmModel();
     vector<double> seed(7,0), r_angles(7,0);
     seed_robot_pose.right_arm().getAngles(&seed);
@@ -128,7 +130,7 @@ bool RobotState::computeRobotPose(const DiscObjectState& disc_obj_state,
     bool ik_success = arm_model->computeFastIK(wrist_frame, seed, r_angles);
     if (!ik_success){
         if (!arm_model->computeIK(wrist_frame, seed, r_angles)){
-            ROS_INFO_NAMED(KIN_LOG, "Both IK failed!");
+            ROS_DEBUG_NAMED(KIN_LOG, "Both IK failed!");
             return false;
         }
     }
@@ -136,6 +138,7 @@ bool RobotState::computeRobotPose(const DiscObjectState& disc_obj_state,
     new_robot_pose = make_shared<RobotState>(seed_robot_pose.base_state(),
                                             RightContArmState(r_angles),
                                             seed_robot_pose.left_arm());
+
     return true;
 }
 
@@ -166,8 +169,6 @@ ContObjectState RobotState::getObjectStateRelMap() const {
     // don't remember what 10 is for. ask ben.
     KDL::Frame to_wrist;
     arm_model->computeFK(r_angles, m_base_state.getBodyPose(), 10, &to_wrist);
-    double roll1,pitch1,yaw1;
-    to_wrist.M.GetRPY(roll1,pitch1,yaw1);
     KDL::Frame f = to_wrist * m_right_arm.getObjectOffset().Inverse();
 
     double wr,wp,wy;

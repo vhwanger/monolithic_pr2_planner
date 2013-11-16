@@ -44,3 +44,10 @@ change getter/setter to just x() and x(value)
 make it clear which frame object is in for computeRobotPose
 
 do something about indirection through SBPLEnv and envinterfaces?
+
+
+add in multiple goal
+
+make abstract heuristic class
+
+figure out why mprim logging breaks when search logger is set to info

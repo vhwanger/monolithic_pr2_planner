@@ -59,6 +59,8 @@ bool CollisionSpaceMgr::isValidMotion(const GraphState& source_state,
         return false;
     }
 
+    ROS_DEBUG_NAMED(SEARCH_LOG, "successfully generated successor");
+    successor->printToDebug(SEARCH_LOG);
     // now let's check the validity of the new graph state
     int motion_type = mprim->motion_type();
     if (motion_type == MPrim_Types::BASE){
@@ -67,7 +69,11 @@ bool CollisionSpaceMgr::isValidMotion(const GraphState& source_state,
             return false;
         }
     } else if (motion_type == MPrim_Types::ARM){
-        if (!isValidAfterArmMotion(successor, mprim)) return false;
+        if (!isValidAfterArmMotion(successor, mprim)){
+            successor->robot_pose().visualize();
+            successor->printToDebug(SEARCH_LOG);
+            return false;
+        }
     } else {
         throw std::invalid_argument("not a valid motion primitive type");
     }
@@ -76,6 +82,7 @@ bool CollisionSpaceMgr::isValidMotion(const GraphState& source_state,
     if (motion_type == MPrim_Types::BASE){
         if (!isBaseIntermStatesValid(source_state, mprim)) return false;
     } else if (motion_type == MPrim_Types::ARM){
+        ROS_DEBUG_NAMED(CSPACE_LOG, "skipping the intermediate points for arms because there are none.");
         //if (!isArmsIntermStatesValid(source_state, mprim)) return false;
     } else {
         throw std::invalid_argument("not a valid motion primitive type");
@@ -90,7 +97,7 @@ bool CollisionSpaceMgr::isValidAfterArmMotion(GraphStatePtr& successor,
     pose.right_arm().getAngles(&r_arm);
     pose.left_arm().getAngles(&l_arm);
     BodyPose body_pose = pose.base_state().getBodyPose();
-    bool verbose = true;
+    bool verbose = false;
     double dist;
     int debug;
 
@@ -104,7 +111,7 @@ bool CollisionSpaceMgr::isValidAfterBaseMotion(GraphStatePtr& successor,
     pose.right_arm().getAngles(&r_arm);
     pose.left_arm().getAngles(&l_arm);
     BodyPose body_pose = pose.base_state().getBodyPose();
-    bool verbose = true;
+    bool verbose = false;
     double dist;
     int debug;
 
@@ -119,7 +126,7 @@ bool CollisionSpaceMgr::isBaseIntermStatesValid(const GraphState& source_state,
     pose.right_arm().getAngles(&r_arm);
     pose.left_arm().getAngles(&l_arm);
     BodyPose body_pose = pose.base_state().getBodyPose();
-    bool verbose = true;
+    bool verbose = false;
     double dist;
     int debug;
 

@@ -15,9 +15,9 @@ ContBaseState::ContBaseState(vector<double> base_pose) :
 }
 ContBaseState::ContBaseState(const DiscBaseState& base_pose) :
     m_pose(4){
-    m_occupancy_grid->gridToWorld(static_cast<int>(base_pose.x()),
-                                  static_cast<int>(base_pose.y()),
-                                  static_cast<int>(base_pose.z()),
+    m_occupancy_grid->gridToWorld(base_pose.x(),
+                                  base_pose.y(),
+                                  base_pose.z(),
                                   m_pose[BodyDOF::X],
                                   m_pose[BodyDOF::Y],
                                   m_pose[BodyDOF::Z]);

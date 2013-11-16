@@ -24,6 +24,13 @@ bool GoalState::isSatisfiedBy(const GraphStatePtr& graph_state){
                           m_tolerances[Tolerances::YAW]);
     DiscObjectState d_tol = c_tol.getDiscObjectState();
     DiscObjectState obj = graph_state->getObjectStateRelMap();
+    ROS_DEBUG_NAMED(SEARCH_LOG, "object state");
+    obj.printToDebug(SEARCH_LOG);
+    ROS_DEBUG_NAMED(SEARCH_LOG, "goal state");
+    m_goal_state.printToDebug(SEARCH_LOG);
+    ROS_DEBUG_NAMED(SEARCH_LOG, "tolerances");
+    d_tol.printToDebug(SEARCH_LOG);
+
 
     bool within_xyz_tol = (abs(m_goal_state.x()-obj.x()) < d_tol.x() &&
                            abs(m_goal_state.y()-obj.y()) < d_tol.y() &&
@@ -55,10 +62,14 @@ void GoalState::visualize(){
     double radius = .02;
     int hue = 150;
     std::string ns = "goal";
-    int id = 0;
+    int id = 1;
     ContObjectState cont_goal = ContObjectState(m_goal_state);
-    Visualizer::pviz->visualizeSphere(cont_goal.x(),
-                                      cont_goal.y(),
-                                      cont_goal.z(),
-                                      radius, hue, ns, id);
+    std::vector<double> pose;
+    pose.push_back(cont_goal.x());
+    pose.push_back(cont_goal.y());
+    pose.push_back(cont_goal.z());
+    pose.push_back(cont_goal.roll());
+    pose.push_back(cont_goal.pitch());
+    pose.push_back(cont_goal.yaw());
+    Visualizer::pviz->visualizePose(pose, "goal");
 }

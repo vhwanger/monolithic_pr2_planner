@@ -80,6 +80,7 @@ bool EnvInterfaces::planPathCallback(GetMobileArmPlan::Request &req,
     bool return_first_soln = true;
     m_planner->set_search_mode(return_first_soln);
     m_planner->set_start(start_id);
+    ROS_INFO("setting goal id to %d", goal_id);
     m_planner->set_goal(goal_id);
     m_planner->force_planning_from_scratch();
     vector<int> soln;

@@ -48,6 +48,15 @@ bool GraphState::applyMPrim(const GraphStateMotion& mprim){
 
 void GraphState::printToDebug(char* logger) const {
     DiscObjectState obj_state = m_robot_pose.getObjectStateRelBody();
+    DiscObjectState map_obj_state = m_robot_pose.getObjectStateRelMap();
+    ROS_DEBUG_NAMED(logger, "object in map %d %d %d %d %d %d",
+                    map_obj_state.x(),
+                    map_obj_state.y(),
+                    map_obj_state.z(),
+                    map_obj_state.roll(),
+                    map_obj_state.pitch(),
+                    map_obj_state.yaw());
+                    
     ROS_DEBUG_NAMED(logger, "\t%d %d %d %d %d %d %d %d %d %d %d %d",
                     obj_state.x(),
                     obj_state.y(),

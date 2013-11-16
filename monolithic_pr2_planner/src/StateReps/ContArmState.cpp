@@ -90,8 +90,6 @@ DiscObjectState ContArmState::getObjectStateRelBody(){
     // don't remember what 10 is for. ask ben.
     KDL::Frame to_wrist;
     getArmModel()->computeArmFK(m_angles, 10, &to_wrist);
-    double roll1,pitch1,yaw1;
-    to_wrist.M.GetRPY(roll1,pitch1,yaw1);
     KDL::Frame f = to_wrist * getObjectOffset().Inverse();
 
     double wr,wp,wy;

@@ -32,3 +32,9 @@ void MotionPrimitive::printEndCoord() const {
     }
     ROS_DEBUG_NAMED(MPRIM_LOG, "\tend coord %s", ss.str().c_str());
 }
+
+
+
+double MotionPrimitive::dist(DiscObjectState s1, DiscObjectState s2){
+    return pow(pow(s1.x()-s2.x(),2)+pow(s1.y()-s2.y(),2)+pow(s1.z()-s2.z(),2),.5);
+}

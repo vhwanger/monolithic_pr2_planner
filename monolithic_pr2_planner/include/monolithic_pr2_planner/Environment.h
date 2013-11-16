@@ -34,7 +34,7 @@ namespace monolithic_pr2_planner {
             CSpaceMgrPtr m_cspace_mgr;
             HashManager m_hash_mgr;
             ros::NodeHandle m_nodehandle;
-            boost::shared_ptr<GoalState> m_goal;
+            GoalStatePtr m_goal;
             MotionPrimitivesMgr m_mprims;
             HeuristicPtr m_heur;
 
