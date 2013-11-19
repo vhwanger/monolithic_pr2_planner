@@ -51,6 +51,7 @@ rosbuild_add_library(monolithic_pr2_planner src/StateReps/RobotState.cpp
                                             src/ParameterCatalog.cpp
                                             src/HashManager.cpp
                                             src/Heuristic.cpp
+                                            src/TransitionData.cpp
                                             src/Visualizer.cpp
 
                                             )

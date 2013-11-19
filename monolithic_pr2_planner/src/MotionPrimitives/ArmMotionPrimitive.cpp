@@ -16,14 +16,20 @@ void ArmMotionPrimitive::print() const {
 }
 
 bool ArmMotionPrimitive::apply(const GraphState& graph_state, 
-                           GraphStatePtr& successor){
+                           GraphStatePtr& successor,
+                           TransitionData& t_data){
     successor.reset(new GraphState(graph_state));
 
     ROS_DEBUG_NAMED(MPRIM_LOG, "orig is");
     graph_state.robot_pose().printToDebug(MPRIM_LOG);
     ROS_DEBUG_NAMED(MPRIM_LOG, "successor copy is");
     successor->robot_pose().printToDebug(MPRIM_LOG);
-    return successor->applyMPrim(m_end_coord);
+    bool isSuccessorCreated = successor->applyMPrim(m_end_coord);
+    if (isSuccessorCreated){
+        t_data.successor_id(successor->id());
+        t_data.motion_type(motion_type());
+    }
+    return isSuccessorCreated;
 }
 
 void ArmMotionPrimitive::computeCost(const MotionPrimitiveParams& params){

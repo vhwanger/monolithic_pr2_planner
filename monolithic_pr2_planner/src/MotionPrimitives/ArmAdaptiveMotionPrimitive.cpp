@@ -16,8 +16,11 @@ GoalState ArmAdaptiveMotionPrimitive::m_goal;
 // can fail in the yaw of the object is drastically different from the
 // source_state's yaw (in that case, the base probably needs to be moved, which
 // is done by the BaseAdaptiveMotionPrimitive). 
+//
+// TODO refactor this
 bool ArmAdaptiveMotionPrimitive::apply(const GraphState& source_state,
-                                  GraphStatePtr& successor){
+                                  GraphStatePtr& successor,
+                                  TransitionData& t_data){
     DiscObjectState goal = m_goal.getObjectState();
     // TODO parameterize this distance?
     if (dist(source_state.getObjectStateRelMap(), goal) > 2){
@@ -66,13 +69,16 @@ bool ArmAdaptiveMotionPrimitive::apply(const GraphState& source_state,
         //assert(fabs(new_obj_state.x() == c_obj_state.x()) < .0001);
         //assert(fabs(new_obj_state.y() == c_obj_state.y()) < .0001);
         //assert(fabs(new_obj_state.z()-c_obj_state.z()) < .0001);
-        assert(fabs(new_obj_state.roll() == c_obj_state.roll()) < .0001);
-        assert(fabs(new_obj_state.pitch()-c_obj_state.pitch()) < .0001);
-        assert(fabs(new_obj_state.yaw()-c_obj_state.yaw()) < .0001);
+        //assert(fabs(new_obj_state.roll() == c_obj_state.roll()) < .0001);
+        //assert(fabs(new_obj_state.pitch()-c_obj_state.pitch()) < .0001);
+        //assert(fabs(new_obj_state.yaw()-c_obj_state.yaw()) < .0001);
         successor = boost::make_shared<GraphState>(*successor_robot_pose);
     } else {
         ROS_DEBUG_NAMED(MPRIM_LOG, "IK failed on arm AMP");
     }
+
+    t_data.motion_type(motion_type());
+
     return isIKSuccess;
 }
 

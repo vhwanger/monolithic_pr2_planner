@@ -14,12 +14,12 @@ bool MotionPrimitivesMgr::loadMPrims(const MotionPrimitiveParams& params){
     ArmAdaptiveMotionPrimitivePtr armAMP = make_shared<ArmAdaptiveMotionPrimitive>();
     m_motprims.push_back(armAMP);
 
-    //int NEG_TURN = -1;
-    //int POS_TURN = 1;
-    //BaseAdaptiveMotionPrimitivePtr bamp1 = make_shared<BaseAdaptiveMotionPrimitive>(NEG_TURN);
-    //BaseAdaptiveMotionPrimitivePtr bamp2 = make_shared<BaseAdaptiveMotionPrimitive>(POS_TURN);
-    //m_motprims.push_back(bamp1);
-    //m_motprims.push_back(bamp2);
+    int NEG_TURN = -1;
+    int POS_TURN = 1;
+    BaseAdaptiveMotionPrimitivePtr bamp1 = make_shared<BaseAdaptiveMotionPrimitive>(NEG_TURN);
+    BaseAdaptiveMotionPrimitivePtr bamp2 = make_shared<BaseAdaptiveMotionPrimitive>(POS_TURN);
+    m_motprims.push_back(bamp1);
+    m_motprims.push_back(bamp2);
 
     computeAllMPrimCosts();
 

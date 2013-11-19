@@ -1,5 +1,6 @@
 #include <monolithic_pr2_planner_node/EnvInterfaces.h>
 #include <monolithic_pr2_planner/StateReps/ContArmState.h>
+#include <monolithic_pr2_planner/StateReps/RobotState.h>
 #include <monolithic_pr2_planner/StateReps/ContBaseState.h>
 #include <monolithic_pr2_planner/StateReps/ContObjectState.h>
 #include <monolithic_pr2_planner/SearchRequest.h>
@@ -86,6 +87,33 @@ bool EnvInterfaces::planPathCallback(GetMobileArmPlan::Request &req,
     vector<int> soln;
     int soln_cost;
     m_planner->replan(60.0, &soln, &soln_cost);
+
+    vector<RobotState> states =  m_env->reconstructPath(soln);
+    for (auto state : states){
+        vector<double> angles;
+        vector<double> base_state;
+        ContBaseState cont_base = state.base_state();
+        cont_base.getValues(&base_state);
+        printf("base states: ");
+        for (auto value: base_state){
+            printf("%f ", value);
+        }
+        printf("\n");
+        printf("right arm angles: ");
+        state.right_arm().getAngles(&angles);
+        for (auto angle: angles){
+            printf("%f ", angle);
+        }
+        printf("\n");
+        printf("left arm angles: ");
+        state.left_arm().getAngles(&angles);
+        for (auto angle: angles){
+            printf("%f ", angle);
+        }
+        printf("\n");
+    }
+
+
 
     return retVal;
 

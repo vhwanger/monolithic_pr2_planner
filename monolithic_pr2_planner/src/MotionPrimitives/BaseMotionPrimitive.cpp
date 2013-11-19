@@ -22,7 +22,8 @@ void BaseMotionPrimitive::print() const {
 
 
 bool BaseMotionPrimitive::apply(const GraphState& source_state, 
-                           GraphStatePtr& successor){
+                           GraphStatePtr& successor,
+                           TransitionData& t_data){
     // since the base motion primitive list contains motion primitives for every
     // possible base theta, let's only use the one corresponding to our
     // particular angle.
@@ -30,7 +31,27 @@ bool BaseMotionPrimitive::apply(const GraphState& source_state,
         return false;
     }
     successor.reset(new GraphState(source_state));
-    return successor->applyMPrim(m_end_coord);
+    bool isSuccessorCreated = successor->applyMPrim(m_end_coord);
+    
+    // if we created the successor, fill in transition details
+    if (isSuccessorCreated){
+        t_data.motion_type(motion_type());
+        vector<RobotState> interm_robot_steps;
+        // TODO make sure this skips the first and last points in the intermediate
+        // steps list - they are repeats of the start and end position
+        for (auto interm_mprim_steps : getIntermSteps()){
+            RobotState robot_state = source_state.robot_pose();
+            ContBaseState interm_base = robot_state.base_state();
+            interm_base.x(interm_base.x() + interm_mprim_steps[GraphStateElement::BASE_X]);
+            interm_base.y(interm_base.y() + interm_mprim_steps[GraphStateElement::BASE_Y]);
+            interm_base.theta(interm_base.theta() + interm_mprim_steps[GraphStateElement::BASE_THETA]);
+            robot_state.base_state(interm_base);
+            interm_robot_steps.push_back(robot_state);
+        }
+        t_data.interm_robot_steps(interm_robot_steps);
+    }
+
+    return isSuccessorCreated;
 }
 
 // computes cost of a motion primitive as the max between the linear distance

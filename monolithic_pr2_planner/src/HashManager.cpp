@@ -57,7 +57,7 @@ unsigned int HashManager::hash(const GraphStatePtr& graph_state){
 }
 
 GraphStatePtr HashManager::getGraphState(int state_id){
-    assert(state_id != 1);
+    //assert(state_id != 1);
     return m_state_id_to_graph_table[state_id];
 }
 

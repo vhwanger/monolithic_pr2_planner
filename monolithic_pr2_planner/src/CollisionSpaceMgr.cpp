@@ -55,7 +55,8 @@ bool CollisionSpaceMgr::isValidMotion(const GraphState& source_state,
                                       const MotionPrimitivePtr& mprim,
                                       GraphStatePtr& successor){
     // couldn't generate a graph state for the successor
-    if (!mprim->apply(source_state, successor)){
+    TransitionData t_data;
+    if (!mprim->apply(source_state, successor, t_data)){
         return false;
     }
 
@@ -120,7 +121,6 @@ bool CollisionSpaceMgr::isValidAfterBaseMotion(GraphStatePtr& successor,
 
 bool CollisionSpaceMgr::isBaseIntermStatesValid(const GraphState& source_state,
                                                 const MotionPrimitivePtr& mprim){
-
     RobotState pose = source_state.robot_pose();
     vector<double> r_arm(7), l_arm(7);
     pose.right_arm().getAngles(&r_arm);

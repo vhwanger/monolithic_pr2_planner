@@ -53,3 +53,5 @@ make abstract heuristic class
 figure out why mprim logging breaks when search logger is set to info
 
 create a specific class for motion primitives rather than a vector of numbers
+
+fix the normalization problem in armadapdive

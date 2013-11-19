@@ -1,11 +1,11 @@
 #pragma once
 #include <monolithic_pr2_planner/StateReps/GraphState.h>
+#include <monolithic_pr2_planner/TransitionData.h>
 #include <monolithic_pr2_planner/ParameterCatalog.h>
 #include <monolithic_pr2_planner/Constants.h>
 #include <assert.h>
 
 namespace monolithic_pr2_planner {
-    typedef std::vector<std::vector<double> > IntermSteps;
     class MotionPrimitive {
         public:
             MotionPrimitive();
@@ -15,7 +15,8 @@ namespace monolithic_pr2_planner {
             virtual IntermSteps getIntermSteps(){ return m_interm_steps; };
             virtual void setEndCoord(GraphStateMotion& coord); 
             virtual bool apply(const GraphState& graph_state, 
-                               GraphStatePtr& successor) = 0;
+                               GraphStatePtr& successor,
+                               TransitionData& t_data) = 0;
             virtual void print() const = 0;
             virtual int motion_type() const = 0;
             virtual void computeCost(const MotionPrimitiveParams& params) = 0;

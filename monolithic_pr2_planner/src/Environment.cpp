@@ -192,6 +192,22 @@ void Environment::configureQuerySpecificParams(SearchRequestPtr search_request){
 }
 
 
+vector<RobotState> Environment::reconstructPath(const vector<int>& state_ids){
+    vector<RobotState> path;
+    // TODO reconstruct last goal state as well.
+    for (auto state_id : state_ids){
+        GraphStatePtr graph_state = m_hash_mgr.getGraphState(state_id);
+        //for (auto mprim : m_mprims.getMotionPrims()){
+        //    GraphStatePtr successor;
+        //}
+        graph_state->robot_pose().visualize();
+        ROS_DEBUG_NAMED(SEARCH_LOG, "visualizing");
+        sleep(1);
+        path.push_back(graph_state->robot_pose());
+    }
+    return path;
+}
+
 
 bool Environment::InitializeMDPCfg(MDPConfig *MDPCfg) {
   //MDPCfg->goalstateid = envMobileArm.goalHashEntry->stateID;

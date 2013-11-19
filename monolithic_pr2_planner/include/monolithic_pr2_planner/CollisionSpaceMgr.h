@@ -5,6 +5,7 @@
 #include <monolithic_pr2_planner/MotionPrimitives/MotionPrimitive.h>
 #include <monolithic_pr2_planner/ParameterCatalog.h>
 #include <monolithic_pr2_planner/OccupancyGridUser.h>
+#include <monolithic_pr2_planner/TransitionData.h>
 #include <pr2_collision_checker/pr2_collision_space.h>
 #include <pr2_collision_checker/sbpl_arm_model.h>
 #include <arm_navigation_msgs/CollisionMap.h>

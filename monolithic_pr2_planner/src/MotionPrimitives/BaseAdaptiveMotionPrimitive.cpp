@@ -112,7 +112,8 @@ bool BaseAdaptiveMotionPrimitive::moveObjToGoalPositionUsingBase(const GraphStat
 
 
 bool BaseAdaptiveMotionPrimitive::apply(const GraphState& source_state, 
-                                         GraphStatePtr& successor){
+                                         GraphStatePtr& successor,
+                                         TransitionData& t_data){
     DiscObjectState d_goal = m_goal.getObjectState();
     ContObjectState c_goal = m_goal.getObjectState();
     ContObjectState cur_obj_state = source_state.getObjectStateRelMap();
@@ -144,80 +145,26 @@ bool BaseAdaptiveMotionPrimitive::apply(const GraphState& source_state,
     RobotPosePtr final_state;
     bool mprim_success = moveObjToGoalPositionUsingBase(source_state, rotated_state,
                                                         final_state);
-
     if (!mprim_success){
         return false;
     }
+    t_data.motion_type(motion_type());
 
     ContObjectState final_obj_state = final_state->getObjectStateRelMap();
     ROS_DEBUG_NAMED(MPRIM_LOG, "Final obj state is now");
     final_obj_state.printToDebug(MPRIM_LOG);
     successor = make_shared<GraphState>(*final_state);
     successor->printContToDebug(MPRIM_LOG);
-    computeIntermSteps(source_state, *successor);
+    computeIntermSteps(source_state, *successor, t_data);
     successor->robot_pose().visualize();
 
     return true;
 }
 
-// TODO: add to this comment
-// Since these intermediate steps are computed at every step, the values
-// generated here are absolute coordinates, NOT delta coordinates.
+
 void BaseAdaptiveMotionPrimitive::computeIntermSteps(const GraphState& source_state,
-                                                     const GraphState& successor){
-    vector<ContBaseState> delta_base_steps = computeDeltaBaseSteps(source_state, successor);
-    // TODO API fail
-    double r_free_angle = source_state.robot_pose().right_arm().getUpperArmRollAngle();
-    double l_free_angle = source_state.robot_pose().left_arm().getUpperArmRollAngle();
-
-    ContObjectState obj_state = source_state.getObjectStateRelMap();
-    vector<double> obj_state_coord;
-    obj_state.getStateValues(&obj_state_coord);
-
-    // create a motion primitive element by slapping the interpolated base
-    // states together with the object state xyzrpy, free angle left and right
-    ROS_DEBUG_NAMED(MPRIM_LOG, "generated %lu intermediate base AMP motion primitive vectors:",
-                                delta_base_steps.size());
-    for(auto& base_step : delta_base_steps){
-        vector<double> step;
-        step.insert(step.end(), obj_state_coord.begin(), obj_state_coord.end());
-        step.push_back(r_free_angle);
-        step.push_back(l_free_angle);
-        vector<double> base_vector;
-        base_step.getValues(&base_vector);
-        step.insert(step.end(), base_vector.begin(), base_vector.end());
-        m_interm_steps.push_back(step);
-        assert(step.size() == 12);
-        ROS_DEBUG_NAMED(MPRIM_LOG, "%f %f %f %f %f %f %f %f %f %f %f %f",
-                                   step[0], step[1], step[2], step[3],
-                                   step[4], step[5], step[6], step[7],
-                                   step[8], step[9], step[10], step[11]);
-    }
-
-    ContBaseState source_base = source_state.robot_pose().base_state();
-    double final_x = source_base.x()+m_interm_steps[m_interm_steps.size()-1][GraphStateElement::BASE_X];
-    double final_y = source_base.y()+m_interm_steps[m_interm_steps.size()-1][GraphStateElement::BASE_Y];
-    double final_z = source_base.z()+m_interm_steps[m_interm_steps.size()-1][GraphStateElement::BASE_Z];
-    double final_theta = source_base.theta()+m_interm_steps[m_interm_steps.size()-1][GraphStateElement::BASE_THETA];
-    final_theta = normalize_angle_positive(final_theta);
-
-    ContBaseState final_base = successor.robot_pose().base_state();
-    ROS_DEBUG_NAMED(MPRIM_LOG, "source state");
-    source_state.printContToDebug(MPRIM_LOG);
-    ROS_DEBUG_NAMED(MPRIM_LOG, "successor state");
-    successor.printContToDebug(MPRIM_LOG);
-    ROS_DEBUG_NAMED(MPRIM_LOG, "source state + final motion primitive (%f %f %f %f)",
-                               final_x, final_y, final_z, final_theta);
-    assert(fabs(final_x-final_base.x()) < .001);
-    assert(fabs(final_y-final_base.y()) < .001);
-    assert(fabs(final_z-final_base.z()) < .001);
-    assert(fabs(final_theta-final_base.theta()) < .001);
-
-}
-
-vector<ContBaseState> BaseAdaptiveMotionPrimitive::computeDeltaBaseSteps(
-                                                        const GraphState& source_state,
-                                                        const GraphState& successor){
+                                                     const GraphState& successor,
+                                                     TransitionData& t_data){
     // TODO parameterize the number of degrees to check
     // compute the intermediate base poses
     ROS_DEBUG_NAMED(MPRIM_LOG, "interpolating between:");
@@ -232,15 +179,103 @@ vector<ContBaseState> BaseAdaptiveMotionPrimitive::computeDeltaBaseSteps(
     vector<ContBaseState> interp_base_states =  ContBaseState::interpolate(start_base_state, 
                                                                            end_base_state, 
                                                                            num_interp_steps);
-    // need to grab the delta motions for the motion primitive vector
-    for (auto& base_state_step : interp_base_states){
-        base_state_step.x(base_state_step.x()-start_base_state.x());
-        base_state_step.y(base_state_step.y()-start_base_state.y());
-        base_state_step.z(base_state_step.z()-start_base_state.z());
-        base_state_step.theta(base_state_step.theta()-start_base_state.theta());
+    vector<RobotState> interm_robot_steps;
+    ROS_DEBUG_NAMED(MPRIM_LOG, "generated %lu intermediate base AMP motion primitive vectors:",
+                                interp_base_states.size());
+    LeftContArmState l_arm = source_state.robot_pose().left_arm();
+    RightContArmState r_arm = source_state.robot_pose().right_arm();
+    for (auto base_step : interp_base_states){
+        RobotState robot_state(base_step, r_arm, l_arm);
+        interm_robot_steps.push_back(robot_state);
+        robot_state.printToDebug(MPRIM_LOG);
     }
-    return interp_base_states;
+    t_data.interm_robot_steps(interm_robot_steps);
+
 }
+
+
+// TODO: add to this comment
+// Since these intermediate steps are computed at every step, the values
+// generated here are absolute coordinates, NOT delta coordinates.
+//void BaseAdaptiveMotionPrimitive::computeIntermSteps(const GraphState& source_state,
+//                                                     const GraphState& successor,
+//                                                     TransitionData& t_data){
+//    vector<ContBaseState> delta_base_steps = computeDeltaBaseSteps(source_state, successor);
+//    // TODO API fail
+//    double r_free_angle = source_state.robot_pose().right_arm().getUpperArmRollAngle();
+//    double l_free_angle = source_state.robot_pose().left_arm().getUpperArmRollAngle();
+//
+//    ContObjectState obj_state = source_state.getObjectStateRelMap();
+//    vector<double> obj_state_coord;
+//    obj_state.getStateValues(&obj_state_coord);
+//
+//    // create a motion primitive element by slapping the interpolated base
+//    // states together with the object state xyzrpy, free angle left and right
+//    ROS_DEBUG_NAMED(MPRIM_LOG, "generated %lu intermediate base AMP motion primitive vectors:",
+//                                delta_base_steps.size());
+//    for(auto& base_step : delta_base_steps){
+//        vector<double> step;
+//        step.insert(step.end(), obj_state_coord.begin(), obj_state_coord.end());
+//        step.push_back(r_free_angle);
+//        step.push_back(l_free_angle);
+//        vector<double> base_vector;
+//        base_step.getValues(&base_vector);
+//        step.insert(step.end(), base_vector.begin(), base_vector.end());
+//        m_interm_steps.push_back(step);
+//        assert(step.size() == 12);
+//        ROS_DEBUG_NAMED(MPRIM_LOG, "%f %f %f %f %f %f %f %f %f %f %f %f",
+//                                   step[0], step[1], step[2], step[3],
+//                                   step[4], step[5], step[6], step[7],
+//                                   step[8], step[9], step[10], step[11]);
+//    }
+//
+//    ContBaseState source_base = source_state.robot_pose().base_state();
+//    double final_x = source_base.x()+m_interm_steps[m_interm_steps.size()-1][GraphStateElement::BASE_X];
+//    double final_y = source_base.y()+m_interm_steps[m_interm_steps.size()-1][GraphStateElement::BASE_Y];
+//    double final_z = source_base.z()+m_interm_steps[m_interm_steps.size()-1][GraphStateElement::BASE_Z];
+//    double final_theta = source_base.theta()+m_interm_steps[m_interm_steps.size()-1][GraphStateElement::BASE_THETA];
+//    final_theta = normalize_angle_positive(final_theta);
+//
+//    ContBaseState final_base = successor.robot_pose().base_state();
+//    ROS_DEBUG_NAMED(MPRIM_LOG, "source state");
+//    source_state.printContToDebug(MPRIM_LOG);
+//    ROS_DEBUG_NAMED(MPRIM_LOG, "successor state");
+//    successor.printContToDebug(MPRIM_LOG);
+//    ROS_DEBUG_NAMED(MPRIM_LOG, "source state + final motion primitive (%f %f %f %f)",
+//                               final_x, final_y, final_z, final_theta);
+//    assert(fabs(final_x-final_base.x()) < .001);
+//    assert(fabs(final_y-final_base.y()) < .001);
+//    assert(fabs(final_z-final_base.z()) < .001);
+//    assert(fabs(final_theta-final_base.theta()) < .001);
+//
+//}
+//
+//vector<ContBaseState> BaseAdaptiveMotionPrimitive::computeDeltaBaseSteps(
+//                                                        const GraphState& source_state,
+//                                                        const GraphState& successor){
+//    // TODO parameterize the number of degrees to check
+//    // compute the intermediate base poses
+//    ROS_DEBUG_NAMED(MPRIM_LOG, "interpolating between:");
+//    ContBaseState start_base_state = source_state.robot_pose().base_state();
+//    ContBaseState end_base_state = successor.robot_pose().base_state();
+//    start_base_state.printToDebug(MPRIM_LOG);
+//    end_base_state.printToDebug(MPRIM_LOG);
+//    double del_theta = fabs(end_base_state.theta()-start_base_state.theta());
+//    int num_interp_steps = static_cast<int>(del_theta / (2.0*M_PI/180));
+//    ROS_DEBUG_NAMED(MPRIM_LOG, "number of interpolation steps: %d", num_interp_steps);
+//    ROS_DEBUG_NAMED(MPRIM_LOG, "del theta is %f", del_theta);
+//    vector<ContBaseState> interp_base_states =  ContBaseState::interpolate(start_base_state, 
+//                                                                           end_base_state, 
+//                                                                           num_interp_steps);
+//    // need to grab the delta motions for the motion primitive vector
+//    for (auto& base_state_step : interp_base_states){
+//        base_state_step.x(base_state_step.x()-start_base_state.x());
+//        base_state_step.y(base_state_step.y()-start_base_state.y());
+//        base_state_step.z(base_state_step.z()-start_base_state.z());
+//        base_state_step.theta(base_state_step.theta()-start_base_state.theta());
+//    }
+//    return interp_base_states;
+//}
 
 void BaseAdaptiveMotionPrimitive::print() const {
     ROS_DEBUG_NAMED(CONFIG_LOG, "Base Adaptive Primitive");

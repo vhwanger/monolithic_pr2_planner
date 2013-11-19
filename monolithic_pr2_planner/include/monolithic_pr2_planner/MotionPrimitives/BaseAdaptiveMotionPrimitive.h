@@ -10,7 +10,8 @@ namespace monolithic_pr2_planner {
         public:
             BaseAdaptiveMotionPrimitive(int direction);
             virtual bool apply(const GraphState& graph_state, 
-                               GraphStatePtr& successor);
+                               GraphStatePtr& successor,
+                               TransitionData& t_data);
             virtual void print() const;
 
             //TODO this isn't the correct thing to do, but this is used as a
@@ -21,7 +22,8 @@ namespace monolithic_pr2_planner {
             static GoalState goal() { return m_goal; };
         private:
             void computeIntermSteps(const GraphState& source_state,
-                                    const GraphState& successor);
+                                    const GraphState& successor,
+                                    TransitionData& t_data);
             std::vector<ContBaseState> computeDeltaBaseSteps(const GraphState& source_state,
                                                              const GraphState& successor);
             void rotateObjToGoalYawUsingBase(const GraphState& source_state,

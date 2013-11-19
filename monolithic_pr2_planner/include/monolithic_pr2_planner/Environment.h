@@ -52,6 +52,7 @@ namespace monolithic_pr2_planner {
             int  SizeofCreatedEnv();
             void PrintState(int stateID, bool bVerbose, FILE* fOut=NULL);
             void PrintEnv_Config(FILE* fOut){};
+            std::vector<RobotState> reconstructPath(const std::vector<int>& state_ids);
 
     };
 }
