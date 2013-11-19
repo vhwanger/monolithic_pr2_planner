@@ -72,6 +72,33 @@ void GraphState::printToDebug(char* logger) const {
                     m_robot_pose.base_state().theta());
 }
 
+void GraphState::printContToDebug(char* logger) const {
+    ContObjectState obj_state = m_robot_pose.getObjectStateRelBody();
+    ContObjectState map_obj_state = m_robot_pose.getObjectStateRelMap();
+    ContBaseState base_state = m_robot_pose.base_state();
+    ROS_DEBUG_NAMED(logger, "object in map %f %f %f %f %f %f",
+                    map_obj_state.x(),
+                    map_obj_state.y(),
+                    map_obj_state.z(),
+                    map_obj_state.roll(),
+                    map_obj_state.pitch(),
+                    map_obj_state.yaw());
+                    
+    ROS_DEBUG_NAMED(logger, "\t%f %f %f %f %f %f %f %f %f %f %f %f",
+                    obj_state.x(),
+                    obj_state.y(),
+                    obj_state.z(),
+                    obj_state.roll(),
+                    obj_state.pitch(),
+                    obj_state.yaw(),
+                    m_robot_pose.right_arm().getUpperArmRollAngle(),
+                    m_robot_pose.left_arm().getUpperArmRollAngle(),
+                    base_state.x(),
+                    base_state.y(),
+                    base_state.z(),
+                    base_state.theta());
+}
+
 DiscObjectState GraphState::getObjectStateRelMap() const {
     return m_robot_pose.getObjectStateRelMap();
 }

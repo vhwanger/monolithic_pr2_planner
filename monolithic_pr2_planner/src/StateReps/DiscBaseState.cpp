@@ -39,7 +39,6 @@ int DiscBaseState::convertContDistance(double distance){
     // TODO obj_xyz and base distance discretization may not be the same! Add in
     // checks during initialization or something?
     double distance_res = m_occupancy_grid->getResolution();
-    ROS_INFO("distance res is %f", distance_res);
     return static_cast<int>((distance + distance_res*0.5)/distance_res);
 }
 

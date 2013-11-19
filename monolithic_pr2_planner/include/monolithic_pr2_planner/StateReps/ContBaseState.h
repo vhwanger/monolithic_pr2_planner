@@ -25,9 +25,12 @@ namespace monolithic_pr2_planner {
             void theta(double theta) { m_pose[BodyDOF::THETA] = normalize_angle_positive(theta); };
 
             DiscBaseState getDiscBaseState();
+            void printToDebug(char* logger);
+            static double getThetaResolution(){ return m_resolution_params.base_theta_resolution; };
 
-            static bool interpolate(const ContBaseState& start, const ContBaseState& end,
-                                    int num_steps, std::vector<ContBaseState>* interp_steps);
+            static std::vector<ContBaseState> interpolate(const ContBaseState& start, 
+                                                          const ContBaseState& end, 
+                                                          int num_steps);
         private:
             std::vector<double> m_pose;
     };

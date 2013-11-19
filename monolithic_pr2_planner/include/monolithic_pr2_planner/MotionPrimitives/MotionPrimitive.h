@@ -21,7 +21,7 @@ namespace monolithic_pr2_planner {
             virtual void computeCost(const MotionPrimitiveParams& params) = 0;
             virtual void printIntermSteps() const;
             virtual void printEndCoord() const;
-            virtual int getCost() const { return m_cost; };
+            virtual int cost() const { return m_cost; };
             virtual void setAdditionalCostMult(double cost) { m_additional_cost = cost; };
             virtual int getAdditionalCostMult() { return m_additional_cost; };
 

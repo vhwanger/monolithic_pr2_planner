@@ -23,6 +23,7 @@ namespace monolithic_pr2_planner {
             bool applyMPrim(const GraphStateMotion& mprim);
 
             void printToDebug(char* logger) const ;
+            void printContToDebug(char* logger) const ;
 
             DiscObjectState getObjectStateRelMap() const;
             DiscObjectState getObjectStateRelBody() const;

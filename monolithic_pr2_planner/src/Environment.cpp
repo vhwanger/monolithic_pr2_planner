@@ -39,6 +39,9 @@ int Environment::GetGoalHeuristic(int stateID){
 
 void Environment::GetSuccs(int sourceStateID, vector<int>* succIDs, 
                            vector<int>* costs){
+    ROS_DEBUG_NAMED(SEARCH_LOG, 
+            "==================Expanding state %d==================", 
+                    sourceStateID);
     if (sourceStateID == 1){
         ROS_DEBUG_NAMED(SEARCH_LOG, "expanding goal state?");
         return;
@@ -49,10 +52,10 @@ void Environment::GetSuccs(int sourceStateID, vector<int>* succIDs,
     costs->reserve(m_mprims.getMotionPrims().size());
 
     GraphStatePtr source_state = m_hash_mgr.getGraphState(sourceStateID);
-    ROS_DEBUG_NAMED(SEARCH_LOG, "expanding %d", sourceStateID);
+    ROS_DEBUG_NAMED(SEARCH_LOG, "Source state is:");
     source_state->robot_pose().printToDebug(SEARCH_LOG);
-    //source_state->robot_pose().visualize();
-    //sleep(.1);
+    source_state->robot_pose().visualize();
+    sleep(.1);
 
     if (m_heur->getGoalHeuristic(source_state) < 5){
         ROS_DEBUG_NAMED(SEARCH_LOG, "super close to goal");
@@ -62,13 +65,14 @@ void Environment::GetSuccs(int sourceStateID, vector<int>* succIDs,
     for (auto mprim : m_mprims.getMotionPrims()){
         GraphStatePtr successor;
         if (m_cspace_mgr->isValidMotion(*source_state, mprim, successor)){
-            ROS_DEBUG_NAMED(MPRIM_LOG, "source state:");
-            source_state->printToDebug(MPRIM_LOG);
-            ROS_DEBUG_NAMED(MPRIM_LOG, "motion:");
+            ROS_DEBUG_NAMED(SEARCH_LOG, 
+            "==================Applying Motion Primitive==================");
+            ROS_DEBUG_NAMED(MPRIM_LOG, "Applying motion:");
             mprim->printEndCoord();
-            ROS_DEBUG_NAMED(MPRIM_LOG, "successor state:");
-            successor->printToDebug(MPRIM_LOG);
             m_hash_mgr.save(successor);
+            ROS_DEBUG_NAMED(MPRIM_LOG, "successor state with id %d is:", 
+                            successor->id());
+            successor->printToDebug(MPRIM_LOG);
 
             if (m_goal->isSatisfiedBy(successor)){
                 m_goal->storeAsSolnState(successor);
@@ -76,10 +80,10 @@ void Environment::GetSuccs(int sourceStateID, vector<int>* succIDs,
                 // TODO define the goal state somewhere
                 succIDs->push_back(1);
             } else {
-                ROS_DEBUG_NAMED(SEARCH_LOG, "pushing back %d", successor->id());
                 succIDs->push_back(successor->id());
             }
             costs->push_back(1);
+            //costs->push_back(mprim->cost());
         } 
     }
 }
@@ -91,7 +95,6 @@ bool Environment::setStartGoal(SearchRequestPtr search_request,
                          search_request->m_params->left_arm_start);
     ContObjectState obj_state = start_pose.getObjectStateRelMap();
     obj_state.printToInfo(SEARCH_LOG);
-    ROS_INFO("probably converting here");
 
     if (!search_request->isValid(m_cspace_mgr)){
         obj_state.printToInfo(SEARCH_LOG);

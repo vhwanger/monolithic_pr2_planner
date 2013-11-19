@@ -22,6 +22,13 @@ namespace monolithic_pr2_planner {
         private:
             void computeIntermSteps(const GraphState& source_state,
                                     const GraphState& successor);
+            std::vector<ContBaseState> computeDeltaBaseSteps(const GraphState& source_state,
+                                                             const GraphState& successor);
+            void rotateObjToGoalYawUsingBase(const GraphState& source_state,
+                                             RobotState& rotated_state);
+            bool moveObjToGoalPositionUsingBase(const GraphState& source_state,
+                                                const RobotState& rotated_state,
+                                                RobotPosePtr& final_state);
             int m_direction;
             // MotionPrimitiveParams m_params;
             // TODO yuck. shouldn't have this as a static variable

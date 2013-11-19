@@ -14,6 +14,7 @@ namespace monolithic_pr2_planner {
             bool operator==(const RobotState& other);
             bool operator!=(const RobotState& other);
 
+            RobotState(){};
             RobotState(ContBaseState base_state, RightContArmState r_arm, LeftContArmState l_arm);
             DiscBaseState base_state() const { return m_base_state; };
             ContBaseState getContBaseState();

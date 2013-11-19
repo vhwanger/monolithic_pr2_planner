@@ -15,7 +15,7 @@ void BaseMotionPrimitive::print() const {
     ROS_DEBUG_NAMED(MPRIM_LOG, "Base Primitive");
     ROS_DEBUG_NAMED(MPRIM_LOG, "\tid: %d", getID());
     ROS_DEBUG_NAMED(MPRIM_LOG, "\tstart angle: %d", start_angle());
-    ROS_DEBUG_NAMED(MPRIM_LOG, "\tcost: %d", getCost());
+    ROS_DEBUG_NAMED(MPRIM_LOG, "\tcost: %d", cost());
     printEndCoord();
     printIntermSteps();
 }
