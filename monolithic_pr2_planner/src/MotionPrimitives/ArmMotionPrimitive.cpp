@@ -22,7 +22,6 @@ bool ArmMotionPrimitive::apply(const GraphState& source_state,
 
     bool isSuccessorCreated = successor->applyMPrim(m_end_coord);
     if (isSuccessorCreated){
-        t_data.successor_id(successor->id());
         t_data.motion_type(motion_type());
         t_data.cost(cost());
     }

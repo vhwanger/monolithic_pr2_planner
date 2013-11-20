@@ -51,6 +51,7 @@ bool CollisionSpaceMgr::isValid(RobotState& robot_pose){
                                     debug_code);
 }
 
+// TODO bounds check spine, collision check spine motion
 bool CollisionSpaceMgr::isValidSuccessor(const GraphState& successor,
                                          const TransitionData& t_data){
     RobotState pose = successor.robot_pose();
@@ -70,6 +71,8 @@ bool CollisionSpaceMgr::isValidSuccessor(const GraphState& successor,
         return m_cspace->checkBaseMotion(l_arm, r_arm, body_pose, verbose, dist, debug);
     } else if (onlyArmMotion){
         return m_cspace->checkArmsMotion(l_arm, r_arm, body_pose, verbose, dist, debug);
+    } else if (t_data.motion_type() == MPrim_Types::TORSO){
+        return m_cspace->checkSpineMotion(l_arm, r_arm, body_pose, verbose, dist, debug);
     } else {
         throw std::invalid_argument("not a valid motion primitive type");
     }

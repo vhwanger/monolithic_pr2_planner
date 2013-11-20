@@ -6,6 +6,7 @@
 #include <monolithic_pr2_planner/MotionPrimitives/ArmAdaptiveMotionPrimitive.h>
 #include <monolithic_pr2_planner/MotionPrimitives/ArmMotionPrimitive.h>
 #include <monolithic_pr2_planner/MotionPrimitives/BaseMotionPrimitive.h>
+#include <monolithic_pr2_planner/MotionPrimitives/TorsoMotionPrimitive.h>
 #include <monolithic_pr2_planner/StateReps/GoalState.h>
 
 namespace monolithic_pr2_planner {

@@ -21,6 +21,13 @@ bool MotionPrimitivesMgr::loadMPrims(const MotionPrimitiveParams& params){
     m_motprims.push_back(bamp1);
     m_motprims.push_back(bamp2);
 
+    int VERTICAL_UP = 1;
+    int VERTICAL_DOWN = -1;
+    TorsoMotionPrimitivePtr t_mprim1 = make_shared<TorsoMotionPrimitive>(VERTICAL_UP);
+    TorsoMotionPrimitivePtr t_mprim2 = make_shared<TorsoMotionPrimitive>(VERTICAL_DOWN);
+    m_motprims.push_back(t_mprim1);
+    m_motprims.push_back(t_mprim2);
+
     computeAllMPrimCosts();
 
     BOOST_FOREACH(auto mprim, m_motprims){    
