@@ -71,3 +71,45 @@ void ContObjectState::printToDebug(char* log_level) const {
                     m_coord[ObjectPose::PITCH],
                     m_coord[ObjectPose::YAW]);
 }
+
+
+// returns <num_steps> number of interpolated points, with the start and end
+// included in this count. That's why we subtract 1 from the input number.
+vector<ContObjectState> ContObjectState::interpolate(const ContObjectState& start,
+                                                     const ContObjectState& end,
+                                                     int num_steps){
+    vector<ContObjectState> interp_steps;
+    if (num_steps < 2){
+        interp_steps.push_back(start);
+        interp_steps.push_back(end);
+        return interp_steps;
+    }
+    num_steps--;
+    double step = 1/static_cast<double>(num_steps);
+    double dx = end.x()-start.x();
+    double dy = end.y()-start.y();
+    double dz = end.z()-start.z();
+    double droll = shortest_angular_distance(start.roll(), end.roll());
+    double dpitch = shortest_angular_distance(start.pitch(), end.pitch());
+    double dyaw = shortest_angular_distance(start.yaw(), end.yaw());
+
+    for (int i=0; i <= num_steps; i++){
+        ContObjectState state(start.x() + i*dx*step,
+                              start.y() + i*dy*step,
+                              start.z() + i*dz*step,
+                              start.roll() + i*droll*step,
+                              start.pitch() + i*dpitch*step,
+                              start.yaw() + i*dyaw*step);
+
+        interp_steps.push_back(state);
+    }
+    return interp_steps;
+}
+
+
+double ContObjectState::distance(const ContObjectState& start, const ContObjectState& end){
+    double dX = end.x() - start.x();
+    double dY = end.y() - start.y();
+    double dZ = end.z() - start.z();
+    return pow((pow(dX,2) + pow(dY,2) + pow(dZ,2)),.5);
+}

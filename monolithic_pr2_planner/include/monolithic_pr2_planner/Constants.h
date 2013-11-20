@@ -54,7 +54,7 @@ namespace monolithic_pr2_planner {
 
     class MPrim_Types {
         public:
-            enum { BASE, ARM, ADAPTIVE };
+            enum { BASE, ARM, ARM_ADAPTIVE, BASE_ADAPTIVE };
     };
 }
 

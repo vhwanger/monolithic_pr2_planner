@@ -36,19 +36,34 @@ bool BaseMotionPrimitive::apply(const GraphState& source_state,
     // if we created the successor, fill in transition details
     if (isSuccessorCreated){
         t_data.motion_type(motion_type());
+        t_data.cost(cost());
         vector<RobotState> interm_robot_steps;
+        vector<ContBaseState> cont_base_interm_steps;
         // TODO make sure this skips the first and last points in the intermediate
         // steps list - they are repeats of the start and end position
+        ROS_DEBUG_NAMED(MPRIM_LOG, "Creating BaseMotionPrimitive intermediate steps");
         for (auto interm_mprim_steps : getIntermSteps()){
             RobotState robot_state = source_state.robot_pose();
             ContBaseState interm_base = robot_state.base_state();
             interm_base.x(interm_base.x() + interm_mprim_steps[GraphStateElement::BASE_X]);
             interm_base.y(interm_base.y() + interm_mprim_steps[GraphStateElement::BASE_Y]);
-            interm_base.theta(interm_base.theta() + interm_mprim_steps[GraphStateElement::BASE_THETA]);
+
+            // we don't add the original theta like the above because BASE_THETA
+            // represents the absolute angle, not the delta angle.
+            interm_base.theta(interm_mprim_steps[GraphStateElement::BASE_THETA]);
             robot_state.base_state(interm_base);
             interm_robot_steps.push_back(robot_state);
+            cont_base_interm_steps.push_back(interm_base);
+
         }
+        GraphState last_state(interm_robot_steps[interm_robot_steps.size()-1]);
+        ROS_DEBUG_NAMED(MPRIM_LOG, "last state of base mp");
+        last_state.printToDebug(MPRIM_LOG);
+        ROS_DEBUG_NAMED(MPRIM_LOG, "successor");
+        successor->printToDebug(MPRIM_LOG);
+        assert(*successor == last_state);
         t_data.interm_robot_steps(interm_robot_steps);
+        t_data.cont_base_interm_steps(cont_base_interm_steps);
     }
 
     return isSuccessorCreated;

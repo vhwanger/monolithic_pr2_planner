@@ -148,7 +148,6 @@ bool BaseAdaptiveMotionPrimitive::apply(const GraphState& source_state,
     if (!mprim_success){
         return false;
     }
-    t_data.motion_type(motion_type());
 
     ContObjectState final_obj_state = final_state->getObjectStateRelMap();
     ROS_DEBUG_NAMED(MPRIM_LOG, "Final obj state is now");
@@ -158,6 +157,9 @@ bool BaseAdaptiveMotionPrimitive::apply(const GraphState& source_state,
     computeIntermSteps(source_state, *successor, t_data);
     successor->robot_pose().visualize();
 
+    t_data.motion_type(motion_type());
+    // TODO compute proper cost
+    t_data.cost(cost());
     return true;
 }
 

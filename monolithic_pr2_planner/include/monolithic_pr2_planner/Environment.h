@@ -28,6 +28,8 @@ namespace monolithic_pr2_planner {
                               int& start_id, int& goal_id);
             void configurePlanningDomain();
             void configureQuerySpecificParams(SearchRequestPtr search_request);
+            void printFinalPath(const vector<int>& state_ids,
+                                const vector<TransitionData>& transition_states);
 
             ParameterCatalog m_param_catalog;
             ArmModelPtr m_arm_model;

@@ -12,7 +12,7 @@ namespace monolithic_pr2_planner {
                                GraphStatePtr& successor,
                                TransitionData& t_data);
             virtual void print() const;
-            virtual int motion_type() const { return MPrim_Types::ARM; }; 
+            virtual int motion_type() const { return MPrim_Types::ARM_ADAPTIVE; }; 
             virtual void computeCost(const MotionPrimitiveParams& params);
 
             // TODO yuck
@@ -21,6 +21,9 @@ namespace monolithic_pr2_planner {
             
         private:
             // TODO yuck?
+            void computeIntermSteps(const GraphState& source_state,
+                                    const GraphState& successor,
+                                    TransitionData& t_data);
             static GoalState m_goal;
     };
     typedef boost::shared_ptr<ArmAdaptiveMotionPrimitive> ArmAdaptiveMotionPrimitivePtr;

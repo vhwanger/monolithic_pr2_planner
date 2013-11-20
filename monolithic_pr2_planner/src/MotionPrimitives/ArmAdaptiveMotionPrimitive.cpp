@@ -78,10 +78,29 @@ bool ArmAdaptiveMotionPrimitive::apply(const GraphState& source_state,
     }
 
     t_data.motion_type(motion_type());
+    // TODO compute real cost
+    t_data.cost(cost());
+    computeIntermSteps(source_state, *successor, t_data);
 
     return isIKSuccess;
 }
 
+
+void ArmAdaptiveMotionPrimitive::computeIntermSteps(const GraphState& source_state, 
+                        const GraphState& successor, 
+                        TransitionData& t_data){
+    std::vector<RobotState> interp_steps;
+    RobotState::workspaceInterpolate(source_state.robot_pose(), 
+                                     successor.robot_pose(),
+                                     &interp_steps);
+
+    ROS_DEBUG_NAMED(MPRIM_LOG, "interpolation for arm AMP");
+    for (auto robot_state: interp_steps){
+        robot_state.printToDebug(MPRIM_LOG);
+    }
+    t_data.interm_robot_steps(interp_steps);
+
+}
 
 void ArmAdaptiveMotionPrimitive::print() const {
     ROS_DEBUG_NAMED(MPRIM_LOG, 

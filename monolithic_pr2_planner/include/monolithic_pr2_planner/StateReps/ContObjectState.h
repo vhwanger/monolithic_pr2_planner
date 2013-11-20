@@ -33,6 +33,14 @@ namespace monolithic_pr2_planner {
 
             DiscObjectState getDiscObjectState();
 
+            static std::vector<ContObjectState> interpolate(const ContObjectState& start, 
+                                                            const ContObjectState& end, 
+                                                            int num_steps);
+
+            static double distance(const ContObjectState& start, const ContObjectState& end);
+            static double getRPYResolution(){ return m_resolution_params.obj_rpy_resolution; };
+            static double getXYZResolution(){ return m_resolution_params.obj_xyz_resolution; };
+
             void printToInfo(char* log_level) const;
             void printToDebug(char* log_level) const;
         private:

@@ -16,7 +16,7 @@ namespace monolithic_pr2_planner {
 
             //TODO this isn't the correct thing to do, but this is used as a
             //clue for the collision checker
-            virtual int motion_type() const { return MPrim_Types::BASE; }; 
+            virtual int motion_type() const { return MPrim_Types::BASE_ADAPTIVE; }; 
             virtual void computeCost(const MotionPrimitiveParams& params);
             static void goal(GoalState& goal) { m_goal = goal; };
             static GoalState goal() { return m_goal; };

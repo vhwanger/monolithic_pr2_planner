@@ -39,8 +39,8 @@ namespace monolithic_pr2_planner {
             static bool computeRobotPose(const DiscObjectState& disc_obj_state,
                                          const RobotState& robot_pose,
                                          boost::shared_ptr<RobotState>& new_robot_pose);
-            //static bool interpolateRobotPose(const RobotPose& start, const RobotPose& end,
-            //                                 int num_steps, std::vector<RobotPose>* interp_steps);
+            static bool workspaceInterpolate(const RobotState& start, const RobotState& end,
+                                             std::vector<RobotState>* interp_steps);
 
 
 

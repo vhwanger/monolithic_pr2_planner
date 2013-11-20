@@ -20,33 +20,14 @@ namespace monolithic_pr2_planner {
                               SBPLArmModelPtr left_arm);
             bool isValid(DiscObjectState& obj_state);
             bool isValid(RobotState& robot_pose);
-            bool isValidMotion(const GraphState& source_state, 
-                               const MotionPrimitivePtr& mprim,
-                               GraphStatePtr& successor);
+            bool isValidSuccessor(const GraphState& successor,
+                                  const TransitionData& t_data);
+            bool isValidTransitionStates(const TransitionData& t_data);
 
             void updateMap(const arm_navigation_msgs::CollisionMap& map);
             //bool readMapFromEigen(Eigen::Vector3d points);
 
         private:
-            // only need to check arms-arms, arms-world, arms-body
-            // we first check the final coord, then check the intermediates
-            bool isValidAfterArmMotion(GraphStatePtr& successor,
-                                        const MotionPrimitivePtr& mprim) const;
-
-            // only need to check base, both arms against world (not against each other),
-            // torso, head
-            // we first check the final coord, then check the intermediates
-            bool isValidAfterBaseMotion(GraphStatePtr& successor,
-                                        const MotionPrimitivePtr& mprim) const;
-            bool isValidAfterAnyMotion(GraphStatePtr& successor,
-                                        const MotionPrimitivePtr& mprim) const;
-
-            bool isBaseIntermStatesValid(const GraphState& source_state,
-                                         const MotionPrimitivePtr& mprim);
-            //bool isArmsIntermStatesValid(const GraphState& source_state,
-            //                             const MotionPrimitivePtr& mprim);
-
-
             boost::shared_ptr<pr2_collision_checker::PR2CollisionSpace> m_cspace;
     };
     typedef boost::shared_ptr<CollisionSpaceMgr> CSpaceMgrPtr;

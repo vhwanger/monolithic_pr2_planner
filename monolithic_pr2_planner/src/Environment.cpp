@@ -5,10 +5,12 @@
 #include <monolithic_pr2_planner/StateReps/ContArmState.h>
 #include <monolithic_pr2_planner/MotionPrimitives/ArmAdaptiveMotionPrimitive.h>
 #include <monolithic_pr2_planner/Visualizer.h>
+#include <monolithic_pr2_planner/Constants.h>
 #include <boost/shared_ptr.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <assert.h>
 
+#define GOAL_STATE 1
 using namespace monolithic_pr2_planner;
 using namespace boost;
 
@@ -39,13 +41,10 @@ int Environment::GetGoalHeuristic(int stateID){
 
 void Environment::GetSuccs(int sourceStateID, vector<int>* succIDs, 
                            vector<int>* costs){
+    assert(sourceStateID != GOAL_STATE);
     ROS_DEBUG_NAMED(SEARCH_LOG, 
             "==================Expanding state %d==================", 
                     sourceStateID);
-    if (sourceStateID == 1){
-        ROS_DEBUG_NAMED(SEARCH_LOG, "expanding goal state?");
-        return;
-    }
     succIDs->clear();
     succIDs->reserve(m_mprims.getMotionPrims().size());
     costs->clear();
@@ -57,14 +56,14 @@ void Environment::GetSuccs(int sourceStateID, vector<int>* succIDs,
     source_state->robot_pose().visualize();
     sleep(.1);
 
-    if (m_heur->getGoalHeuristic(source_state) < 5){
-        ROS_DEBUG_NAMED(SEARCH_LOG, "super close to goal");
-    }
-
-
     for (auto mprim : m_mprims.getMotionPrims()){
         GraphStatePtr successor;
-        if (m_cspace_mgr->isValidMotion(*source_state, mprim, successor)){
+        TransitionData t_data;
+        if (!mprim->apply(*source_state, successor, t_data)){
+            continue;
+        }
+        if (m_cspace_mgr->isValidSuccessor(*successor, t_data) && 
+            m_cspace_mgr->isValidTransitionStates(t_data)){
             ROS_DEBUG_NAMED(SEARCH_LOG, 
             "==================Applying Motion Primitive==================");
             ROS_DEBUG_NAMED(MPRIM_LOG, "Applying motion:");
@@ -77,8 +76,7 @@ void Environment::GetSuccs(int sourceStateID, vector<int>* succIDs,
             if (m_goal->isSatisfiedBy(successor)){
                 m_goal->storeAsSolnState(successor);
                 ROS_INFO_NAMED(SEARCH_LOG, "Found potential goal");
-                // TODO define the goal state somewhere
-                succIDs->push_back(1);
+                succIDs->push_back(GOAL_STATE);
             } else {
                 succIDs->push_back(successor->id());
             }
@@ -194,18 +192,88 @@ void Environment::configureQuerySpecificParams(SearchRequestPtr search_request){
 
 vector<RobotState> Environment::reconstructPath(const vector<int>& state_ids){
     vector<RobotState> path;
+    auto all_mprims = m_mprims.getMotionPrims();
+    vector<TransitionData> transition_states;
     // TODO reconstruct last goal state as well.
-    for (auto state_id : state_ids){
-        GraphStatePtr graph_state = m_hash_mgr.getGraphState(state_id);
-        //for (auto mprim : m_mprims.getMotionPrims()){
-        //    GraphStatePtr successor;
-        //}
-        graph_state->robot_pose().visualize();
-        ROS_DEBUG_NAMED(SEARCH_LOG, "visualizing");
-        sleep(1);
-        path.push_back(graph_state->robot_pose());
+    for (size_t i=0; i < state_ids.size()-1; i++){
+        int state_id = state_ids[i];
+        GraphStatePtr source_state = m_hash_mgr.getGraphState(state_id);
+        GraphStatePtr successor;
+        int best_cost = 1000000;
+        TransitionData best_transition;
+        TransitionData t_data;
+        GraphStatePtr real_next_successor = m_hash_mgr.getGraphState(state_ids[i+1]);
+        for (size_t i=0; i < all_mprims.size(); i++){
+            auto mprim = all_mprims[i];
+            if (!mprim->apply(*source_state, successor, t_data)){
+                continue;
+            }
+            bool isAdaptive = (t_data.motion_type() == MPrim_Types::BASE_ADAPTIVE || 
+                               t_data.motion_type() == MPrim_Types::ARM_ADAPTIVE);
+            if ((*successor != *real_next_successor) && !isAdaptive){
+                continue;
+            } else if (isAdaptive){
+                ROS_DEBUG_NAMED(SEARCH_LOG, "found AMP in path reconstruction. adding it");
+                best_transition = t_data;
+                best_cost = 1;
+                break;
+            }
+            if (t_data.cost() < best_cost){
+                best_cost = t_data.cost();
+                best_transition = t_data;
+            }
+        }
+        if (best_cost != 1000000){
+            transition_states.push_back(best_transition);
+        } else {
+            ROS_ERROR("Couldn't find the right successor???");
+        }
     }
+    
+    printFinalPath(state_ids, transition_states);
+    // TODO actually return path
     return path;
+}
+
+void Environment::printFinalPath(const vector<int>& state_ids,
+                                 const vector<TransitionData>& transition_states){
+    GraphStatePtr source_state = m_hash_mgr.getGraphState(state_ids[0]);
+    source_state->robot_pose().visualize();
+    source_state->robot_pose().printToInfo(SEARCH_LOG);
+    sleep(.1);
+    for (size_t i=0; i < transition_states.size(); i++){
+        int motion_type = transition_states[i].motion_type();
+        bool isInterpBaseMotion = (motion_type == MPrim_Types::BASE || 
+                                   motion_type == MPrim_Types::BASE_ADAPTIVE);
+        if (isInterpBaseMotion){
+            ROS_DEBUG_NAMED(SEARCH_LOG, "found an interpolated base motion of size %lu", 
+                                        transition_states[i].cont_base_interm_steps().size());
+            for (size_t j=0; j < transition_states[i].cont_base_interm_steps().size(); j++){
+                RobotState robot = transition_states[i].interm_robot_steps()[j];
+                vector<double> l_arm, r_arm;
+                robot.right_arm().getAngles(&r_arm);
+                robot.left_arm().getAngles(&l_arm);
+                ContBaseState cont_base = transition_states[i].cont_base_interm_steps()[j];
+                cont_base.printToDebug(SEARCH_LOG);
+                BodyPose bp = cont_base.body_pose();
+                Visualizer::pviz->visualizeRobot(r_arm, l_arm, bp, 150, "planner", 0);
+                usleep(50000);
+            } 
+        } else {
+            for (size_t j=0; j < transition_states[i].interm_robot_steps().size(); j++){
+                RobotState robot = transition_states[i].interm_robot_steps()[j];
+                robot.visualize();
+                usleep(50000);
+            }
+        }
+
+        source_state = m_hash_mgr.getGraphState(state_ids[i+1]);
+        source_state->robot_pose().visualize();
+        source_state->robot_pose().printToInfo(SEARCH_LOG);
+        usleep(50000);
+    }
+    GraphStatePtr soln_state = m_goal->getSolnState();
+    soln_state->robot_pose().visualize();
 }
 
 

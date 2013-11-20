@@ -142,22 +142,70 @@ bool RobotState::computeRobotPose(const DiscObjectState& disc_obj_state,
     return true;
 }
 
-// TODO only does base interpolation right now
-//bool RobotPose::interpolateRobotPose(const RobotPose& start, const RobotPose& end,
-//                                     int num_steps, vector<RobotPose>* interp_steps){
-//    vector<ContBaseState> base_states;
-//    if (start.m_base_state != end.m_base_state){
-//        ContBaseState::interpolate(start.m_base_state, end.m_base_state, 
-//                                   num_steps, &base_states);
-//    }
-//
-//    for (auto& base_state : base_states){
-//        RobotPose robot_state(base_state, start.getContRightArm(), 
-//                              start.getContLeftArm());
-//        interp_steps->push_back(robot_state);
-//    }
-//    return true;
-//}
+// TODO need to test this a lot more
+bool RobotState::workspaceInterpolate(const RobotState& start, const RobotState& end,
+                                      vector<RobotState>* interp_steps){
+
+    ContObjectState start_obj = start.getObjectStateRelBody();
+    ContObjectState end_obj = end.getObjectStateRelBody();
+    ContBaseState start_base = start.base_state();
+    ContBaseState end_base = end.base_state();
+    
+    double droll = shortest_angular_distance(start_obj.roll(), end_obj.roll());
+    double dpitch = shortest_angular_distance(start_obj.pitch(), end_obj.pitch());
+    double dyaw = shortest_angular_distance(start_obj.yaw(), end_obj.yaw());
+    double d_rot = max(fabs(droll), fabs(dpitch));
+    double dbase_theta = shortest_angular_distance(start_base.theta(),
+                                                   end_base.theta());
+
+    ROS_DEBUG_NAMED(MPRIM_LOG, "droll %f, dpitch %f, dyaw %f, dbase_theta %f",
+                               droll, dpitch, dyaw, dbase_theta);
+    d_rot = max(d_rot, fabs(dyaw));
+    d_rot = max(d_rot, fabs(dbase_theta));
+
+
+    double d_object = ContObjectState::distance(start_obj, end_obj);
+    double d_base = ContBaseState::distance(ContBaseState(start.base_state()), 
+                                         ContBaseState(end.base_state()));
+    ROS_DEBUG_NAMED(MPRIM_LOG, "dobject %f, dbase %f", d_object, d_base);
+    double d_dist = max(d_object, d_base);
+
+    int rot_steps = static_cast<int>(d_rot/ContObjectState::getRPYResolution());
+    int dist_steps = static_cast<int>(d_dist/ContBaseState::getXYZResolution());
+
+    ROS_DEBUG_NAMED(MPRIM_LOG, "rot steps %d, dist_steps %d", rot_steps, dist_steps);
+
+    int num_interp_steps = max(rot_steps, dist_steps);
+    vector<ContObjectState> interp_obj_steps;
+    vector<ContBaseState> interp_base_steps;
+    ROS_DEBUG_NAMED(MPRIM_LOG, "start obj");
+    start_obj.printToDebug(MPRIM_LOG);
+    ROS_DEBUG_NAMED(MPRIM_LOG, "end obj");
+    end_obj.printToDebug(MPRIM_LOG);
+    interp_obj_steps = ContObjectState::interpolate(start_obj, end_obj, 
+                                                    num_interp_steps);
+    interp_base_steps = ContBaseState::interpolate(start_base, end_base, 
+                                                   num_interp_steps);
+    assert(interp_obj_steps.size() == interp_base_steps.size());
+    ROS_DEBUG_NAMED(MPRIM_LOG, "size of returned interp %lu", interp_obj_steps.size());
+    if (num_interp_steps < 2){
+        assert(interp_obj_steps.size() == 2);
+    } else {
+        assert(interp_obj_steps.size() == static_cast<size_t>(num_interp_steps));
+    }
+
+    for (size_t i=0; i < interp_obj_steps.size(); i++){
+        interp_obj_steps[i].printToDebug(MPRIM_LOG);
+        RobotState seed(interp_base_steps[i], start.right_arm(), start.left_arm());
+        RobotPosePtr new_robot_state;
+        if (!computeRobotPose(interp_obj_steps[i], seed, new_robot_state)){
+            return false;
+        }
+        interp_steps->push_back(*new_robot_state);
+    }
+
+    return true;
+}
 
 ContObjectState RobotState::getObjectStateRelMap() const {
     // This is an adaptation of computeContinuousObjectPose from the old

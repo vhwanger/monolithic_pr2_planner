@@ -15,6 +15,7 @@ namespace monolithic_pr2_planner {
             bool isSatisfiedBy(const GraphStatePtr& graph_state);
             unsigned int getHeuristic(GraphStatePtr graph_state);
             void storeAsSolnState(const GraphStatePtr& state){ m_full_goal_state = state; };
+            GraphStatePtr getSolnState(){ return m_full_goal_state; };
             bool isSolnStateID(int state_id);
             void addPotentialSolnState(const GraphStatePtr& graph_state);
             DiscObjectState getObjectState() const { return m_goal_state; };
@@ -30,5 +31,4 @@ namespace monolithic_pr2_planner {
             HeuristicPtr m_heur;
     };
     typedef boost::shared_ptr<GoalState> GoalStatePtr;
-    typedef boost::shared_ptr<GoalStatePtr> GoalStatePtrPtr;
 }

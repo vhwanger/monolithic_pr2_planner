@@ -15,21 +15,36 @@ void ArmMotionPrimitive::print() const {
     printIntermSteps();
 }
 
-bool ArmMotionPrimitive::apply(const GraphState& graph_state, 
+bool ArmMotionPrimitive::apply(const GraphState& source_state, 
                            GraphStatePtr& successor,
                            TransitionData& t_data){
-    successor.reset(new GraphState(graph_state));
+    successor.reset(new GraphState(source_state));
 
-    ROS_DEBUG_NAMED(MPRIM_LOG, "orig is");
-    graph_state.robot_pose().printToDebug(MPRIM_LOG);
-    ROS_DEBUG_NAMED(MPRIM_LOG, "successor copy is");
-    successor->robot_pose().printToDebug(MPRIM_LOG);
     bool isSuccessorCreated = successor->applyMPrim(m_end_coord);
     if (isSuccessorCreated){
         t_data.successor_id(successor->id());
         t_data.motion_type(motion_type());
+        t_data.cost(cost());
     }
+    computeIntermSteps(source_state, *successor, t_data);
+
     return isSuccessorCreated;
+}
+
+void ArmMotionPrimitive::computeIntermSteps(const GraphState& source_state, 
+                        const GraphState& successor, 
+                        TransitionData& t_data){
+    std::vector<RobotState> interp_steps;
+    RobotState::workspaceInterpolate(source_state.robot_pose(), 
+                                     successor.robot_pose(),
+                                     &interp_steps);
+
+    ROS_DEBUG_NAMED(MPRIM_LOG, "interpolation for arm AMP");
+    for (auto robot_state: interp_steps){
+        robot_state.printToDebug(MPRIM_LOG);
+    }
+    t_data.interm_robot_steps(interp_steps);
+
 }
 
 void ArmMotionPrimitive::computeCost(const MotionPrimitiveParams& params){

@@ -59,10 +59,6 @@ void GoalState::addPotentialSolnState(const GraphStatePtr& graph_state) {
 }
 
 void GoalState::visualize(){
-    double radius = .02;
-    int hue = 150;
-    std::string ns = "goal";
-    int id = 1;
     ContObjectState cont_goal = ContObjectState(m_goal_state);
     std::vector<double> pose;
     pose.push_back(cont_goal.x());

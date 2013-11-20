@@ -27,32 +27,50 @@ ContBaseState::ContBaseState(const DiscBaseState& base_pose) :
     m_pose[BodyDOF::THETA] = normalize_angle_positive(static_cast<double>(base_pose.theta())*theta_res);
 }
 
+// returns <num_steps> number of interpolated points, with the start and end
+// included in this count. That's why we subtract 1 from the input number.
 vector<ContBaseState> ContBaseState::interpolate(const ContBaseState& start, 
                                                  const ContBaseState& end,
                                                  int num_steps){
     vector<ContBaseState> interp_steps;
-    double dX = end.m_pose[BodyDOF::X] - start.m_pose[BodyDOF::X];
-    double dY = end.m_pose[BodyDOF::Y] - start.m_pose[BodyDOF::Y];
-    double dZ = end.m_pose[BodyDOF::Z] - start.m_pose[BodyDOF::Z];
-
-    double dTheta = angles::shortest_angular_distance(start.m_pose[BodyDOF::THETA],
-                                                      end.m_pose[BodyDOF::THETA]);
-
+    if (num_steps < 2){
+        interp_steps.push_back(start);
+        interp_steps.push_back(end);
+        return interp_steps;
+    }
+    num_steps--;
+    double dX = end.x() - start.x();
+    double dY = end.y() - start.y();
+    double dZ = end.z() - start.z();
+    double dTheta = angles::shortest_angular_distance(start.theta(), end.theta());
     double step_mult = 1/static_cast<double>(num_steps);
+
     for (int i=0; i <= num_steps; i++){
-        ContBaseState state(start.m_pose[BodyDOF::X] + i*dX*step_mult,
-                            start.m_pose[BodyDOF::Y] + i*dY*step_mult,
-                            start.m_pose[BodyDOF::Z] + i*dZ*step_mult,
-                            start.m_pose[BodyDOF::THETA] + i*dTheta*step_mult);
+        ContBaseState state(start.x() + i*dX*step_mult,
+                            start.y() + i*dY*step_mult,
+                            start.z() + i*dZ*step_mult,
+                            start.theta() + i*dTheta*step_mult);
         interp_steps.push_back(state);
     }
     return interp_steps;
 }
 
+double ContBaseState::distance(const ContBaseState& start, const ContBaseState& end){
+    double dX = end.x() - start.x();
+    double dY = end.y() - start.y();
+    double dZ = end.z() - start.z();
+    return pow((pow(dX,2) + pow(dY,2) + pow(dZ,2)),.5);
+}
+
 void ContBaseState::printToDebug(char* logger){
-    ROS_DEBUG_NAMED(logger, "%f %f %f %f",
-                    m_pose[BodyDOF::X],
-                    m_pose[BodyDOF::Y],
-                    m_pose[BodyDOF::Z],
-                    m_pose[BodyDOF::THETA]);
+    ROS_DEBUG_NAMED(logger, "%f %f %f %f", x(),y(),z(),theta());
+}
+
+BodyPose ContBaseState::body_pose() const {
+    BodyPose bp;
+    bp.x = x();
+    bp.y = y();
+    bp.z = z();
+    bp.theta = theta();
+    return bp;
 }
