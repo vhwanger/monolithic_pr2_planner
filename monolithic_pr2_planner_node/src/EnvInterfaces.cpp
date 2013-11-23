@@ -78,7 +78,7 @@ bool EnvInterfaces::planPathCallback(GetMobileArmPlan::Request &req,
     bool retVal = m_env->configureRequest(search_request, start_id, goal_id);
 
     m_planner->set_initialsolution_eps(search_request->initial_epsilon);
-    bool return_first_soln = false;
+    bool return_first_soln = true;
     m_planner->set_search_mode(return_first_soln);
     m_planner->set_start(start_id);
     ROS_INFO("setting goal id to %d", goal_id);
@@ -87,7 +87,7 @@ bool EnvInterfaces::planPathCallback(GetMobileArmPlan::Request &req,
     vector<int> soln;
     int soln_cost;
     // TODO make external parameter
-    bool isPlanFound = m_planner->replan(10.0, &soln, &soln_cost);
+    bool isPlanFound = m_planner->replan(60.0, &soln, &soln_cost);
 
     if (isPlanFound){
         vector<RobotState> states =  m_env->reconstructPath(soln);

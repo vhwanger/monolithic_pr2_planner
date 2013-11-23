@@ -7,10 +7,12 @@ include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 #  Release        : w/o debug symbols, w/ optimization
 #  RelWithDebInfo : w/ debug symbols, w/ optimization
 #  MinSizeRel     : w/o debug symbols, w/ optimization, stripped binaries
-set(ROS_BUILD_TYPE Debug)
+set(ROS_BUILD_TYPE Release)
 
 rosbuild_init()
 SET(CMAKE_CXX_FLAGS "-std=c++0x")
+add_definitions(-DUSE_IKFAST_SOLVER)
+#add_definitions(-DUSE_KDL_SOLVER)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(SBPL REQUIRED sbpl)

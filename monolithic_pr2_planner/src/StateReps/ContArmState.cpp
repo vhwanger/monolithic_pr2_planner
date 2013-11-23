@@ -7,6 +7,7 @@ using namespace monolithic_pr2_planner;
 using namespace angles;
 using namespace std;
 
+IKFastPR2 ContArmState::m_ikfast_solver;
 RobotResolutionParams ContArmState::m_params;
 KDL::Frame LeftContArmState::m_object_offset;
 KDL::Frame RightContArmState::m_object_offset;
@@ -87,9 +88,14 @@ void RightContArmState::initArmModel(ArmDescriptionParams& params){
 }
 
 DiscObjectState ContArmState::getObjectStateRelBody(){
-    // don't remember what 10 is for. ask ben.
     KDL::Frame to_wrist;
+#ifdef USE_KDL_SOLVER
+    // 10 is the link number for the r_wrist_roll_link
     getArmModel()->computeArmFK(m_angles, 10, &to_wrist);
+#endif
+#ifdef USE_IKFAST_SOLVER
+    to_wrist = m_ikfast_solver.fkRightArm(m_angles);
+#endif
     KDL::Frame f = to_wrist * getObjectOffset().Inverse();
 
     double wr,wp,wy;

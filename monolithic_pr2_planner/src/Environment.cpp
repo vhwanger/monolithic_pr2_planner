@@ -36,6 +36,7 @@ bool Environment::configureRequest(SearchRequestParamsPtr search_request_params,
 
 int Environment::GetGoalHeuristic(int stateID){
     return m_heur->getGoalHeuristic(m_hash_mgr.getGraphState(stateID));
+    //return 1;
 }
 
 void Environment::GetSuccs(int sourceStateID, vector<int>* succIDs, 
@@ -52,8 +53,8 @@ void Environment::GetSuccs(int sourceStateID, vector<int>* succIDs,
     GraphStatePtr source_state = m_hash_mgr.getGraphState(sourceStateID);
     ROS_DEBUG_NAMED(SEARCH_LOG, "Source state is:");
     source_state->robot_pose().printToDebug(SEARCH_LOG);
-    //source_state->robot_pose().visualize();
-    //sleep(.1);
+    source_state->robot_pose().visualize();
+    sleep(.1);
 
     for (auto mprim : m_mprims.getMotionPrims()){
         GraphStatePtr successor;
@@ -74,7 +75,7 @@ void Environment::GetSuccs(int sourceStateID, vector<int>* succIDs,
 
             if (m_goal->isSatisfiedBy(successor)){
                 m_goal->storeAsSolnState(successor);
-                ROS_INFO_NAMED(SEARCH_LOG, "Found potential goal");
+                ROS_INFO_NAMED(SEARCH_LOG, "Found potential goal at state %d", successor->id());
                 succIDs->push_back(GOAL_STATE);
             } else {
                 succIDs->push_back(successor->id());
@@ -193,49 +194,81 @@ vector<RobotState> Environment::reconstructPath(const vector<int>& state_ids){
     vector<RobotState> path;
     auto all_mprims = m_mprims.getMotionPrims();
     vector<TransitionData> transition_states;
+    vector<int> corrected_soln_path = state_ids;
+    corrected_soln_path[corrected_soln_path.size()-1] = m_goal->getSolnState()->id();
+    ROS_DEBUG_NAMED(SEARCH_LOG, "setting goal state id to %d", m_goal->getSolnState()->id());
+
     // TODO reconstruct last goal state as well.
-    for (size_t i=0; i < state_ids.size()-1; i++){
-        int state_id = state_ids[i];
+    ROS_DEBUG_NAMED(SEARCH_LOG, "reconstructing soln path of size %lu", 
+                                corrected_soln_path.size());
+    for (size_t i=0; i < corrected_soln_path.size()-1; i++){
+        ROS_DEBUG_NAMED(SEARCH_LOG, "searching from %d for successor id %d", 
+                                    corrected_soln_path[i], corrected_soln_path[i+1]);
+        int state_id = corrected_soln_path[i];
         GraphStatePtr source_state = m_hash_mgr.getGraphState(state_id);
         GraphStatePtr successor;
         int best_cost = 1000000;
         TransitionData best_transition;
-        GraphStatePtr real_next_successor = m_hash_mgr.getGraphState(state_ids[i+1]);
-        for (size_t i=0; i < all_mprims.size(); i++){
+        GraphStatePtr real_next_successor = m_hash_mgr.getGraphState(corrected_soln_path[i+1]);
+        for (size_t j=0; j < all_mprims.size(); j++){
             TransitionData t_data;
-            auto mprim = all_mprims[i];
+            auto mprim = all_mprims[j];
             if (!mprim->apply(*source_state, successor, t_data)){
                 continue;
             }
+            if (!m_cspace_mgr->isValidSuccessor(*successor, t_data) ||  
+                !m_cspace_mgr->isValidTransitionStates(t_data)){
+                continue;
+            }
+            ROS_DEBUG_NAMED(SEARCH_LOG, "applied mprim");
+            mprim->print();
             bool isAdaptive = (t_data.motion_type() == MPrim_Types::BASE_ADAPTIVE || 
                                t_data.motion_type() == MPrim_Types::ARM_ADAPTIVE);
-            if ((*successor != *real_next_successor) && !isAdaptive){
-                continue;
-            } else if (isAdaptive){
-                ROS_DEBUG_NAMED(SEARCH_LOG, "found AMP in path reconstruction. adding it");
-                best_transition = t_data;
-                best_cost = 1;
-                break;
+            successor->id(m_hash_mgr.getStateID(successor));
+            ROS_DEBUG_NAMED(SEARCH_LOG, "found successor at state id %d with cost %d", 
+                            successor->id(), t_data.cost());
+            if ((successor->id() == corrected_soln_path[i+1])){
+                ROS_DEBUG_NAMED(SEARCH_LOG, "successor matches the real path! let's figure out costs");
+                if (t_data.cost() < best_cost){
+                    ROS_DEBUG_NAMED(SEARCH_LOG, "cost of %d is better than best cost%d at id %d", 
+                                                t_data.cost(), best_cost, successor->id());
+                    best_cost = t_data.cost();
+                    best_transition = t_data;
+                    best_transition.successor_id(successor->id());
+                } else {
+                    ROS_DEBUG_NAMED(SEARCH_LOG, "cost of %d is worst than best cost %d", 
+                                                t_data.cost(), best_cost);
+                    ROS_DEBUG_NAMED(SEARCH_LOG, "skipping the above successor");
+                    successor->printToDebug(SEARCH_LOG);
+                }
+            } else {
+                ROS_DEBUG_NAMED(SEARCH_LOG, "this isn't the right successor");
             }
-            if (t_data.cost() < best_cost){
-                best_cost = t_data.cost();
-                best_transition = t_data;
-            }
+            //else if (isAdaptive){
+            //    ROS_DEBUG_NAMED(SEARCH_LOG, "found AMP in path reconstruction. adding it");
+            //    best_transition = t_data;
+            //    best_transition.successor_id(-1);
+            //    best_cost = 1;
+            //    break;
+            //}
         }
         if (best_cost != 1000000){
+            ROS_DEBUG_NAMED(SEARCH_LOG, "best successor found is %d", 
+                                        best_transition.successor_id());
             transition_states.push_back(best_transition);
         } else {
             ROS_ERROR("Couldn't find the right successor???");
         }
     }
     
-    printFinalPath(state_ids, transition_states);
+    printFinalPath(corrected_soln_path, transition_states);
     // TODO actually return path
     return path;
 }
 
 void Environment::printFinalPath(const vector<int>& state_ids,
                                  const vector<TransitionData>& transition_states){
+    ROS_DEBUG_NAMED(SEARCH_LOG, "printing final path after reconstruction");
     GraphStatePtr source_state = m_hash_mgr.getGraphState(state_ids[0]);
     source_state->robot_pose().visualize();
     source_state->robot_pose().printToInfo(SEARCH_LOG);

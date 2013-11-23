@@ -32,7 +32,11 @@ bool GraphState::applyMPrim(const GraphStateMotion& mprim){
     obj_state.pitch(obj_state.pitch() + mprim[GraphStateElement::OBJ_PITCH]);
     obj_state.yaw(obj_state.yaw() + mprim[GraphStateElement::OBJ_YAW]);
 
+
     DiscBaseState base_state = m_robot_pose.base_state();
+
+    // TODO ADD FA change!
+
     base_state.x(base_state.x() + mprim[GraphStateElement::BASE_X]);
     base_state.y(base_state.y() + mprim[GraphStateElement::BASE_Y]);
     base_state.z(base_state.z() + mprim[GraphStateElement::BASE_Z]);

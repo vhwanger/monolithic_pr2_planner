@@ -24,12 +24,6 @@ bool GoalState::isSatisfiedBy(const GraphStatePtr& graph_state){
                           m_tolerances[Tolerances::YAW]);
     DiscObjectState d_tol = c_tol.getDiscObjectState();
     DiscObjectState obj = graph_state->getObjectStateRelMap();
-    ROS_DEBUG_NAMED(SEARCH_LOG, "object state");
-    obj.printToDebug(SEARCH_LOG);
-    ROS_DEBUG_NAMED(SEARCH_LOG, "goal state");
-    m_goal_state.printToDebug(SEARCH_LOG);
-    ROS_DEBUG_NAMED(SEARCH_LOG, "tolerances");
-    d_tol.printToDebug(SEARCH_LOG);
 
 
     bool within_xyz_tol = (abs(m_goal_state.x()-obj.x()) < d_tol.x() &&

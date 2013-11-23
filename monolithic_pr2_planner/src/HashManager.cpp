@@ -68,18 +68,18 @@ unsigned int HashManager::getStateID(const GraphStatePtr& graph_state){
             return g_s->id();
         }
     }
-    throw std::out_of_range("Graph state does not exist");
+    throw std::out_of_range("Graph state does not exist in heap");
 }
 
 bool HashManager::exists(const GraphStatePtr& graph_state, int& id){
     unsigned int bin_idx = hash(graph_state);
-    ROS_DEBUG_NAMED(HASH_LOG, "Hashed state to %d", bin_idx);
+    //ROS_DEBUG_NAMED(HASH_LOG, "Hashed state to %d", bin_idx);
     m_coord_to_state_id_table[bin_idx];
     BOOST_FOREACH(auto g_s, m_coord_to_state_id_table[bin_idx]){
         if (*g_s == *graph_state){
             ROS_DEBUG_NAMED(HASH_LOG, "exists! the following two match at %d",g_s->id());
             id = g_s->id();
-            g_s->printToDebug(HASH_LOG);
+            //g_s->printToDebug(HASH_LOG);
             graph_state->printToDebug(HASH_LOG);
 
             return true;
@@ -96,7 +96,7 @@ bool HashManager::save(GraphStatePtr& graph_state){
         graph_state->id(potential_id);
         return false;
     }
-    ROS_DEBUG_NAMED(HASH_LOG, "This is a new graph state, adding to table");
+    //ROS_DEBUG_NAMED(HASH_LOG, "This is a new graph state, adding to table");
     unsigned int bin_idx = hash(graph_state);
     graph_state->id(m_state_id_to_graph_table.size());
     m_state_id_to_graph_table.push_back(graph_state);

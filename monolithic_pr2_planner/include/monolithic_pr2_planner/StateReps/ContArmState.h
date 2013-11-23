@@ -5,6 +5,7 @@
 #include <monolithic_pr2_planner/LoggerNames.h>
 #include <monolithic_pr2_planner/StateReps/DiscObjectState.h>
 #include <monolithic_pr2_planner/StateReps/ContObjectState.h>
+#include <ikfast_pr2/ik_interface.h>
 #include <pr2_collision_checker/sbpl_arm_model.h>
 #include <boost/shared_ptr.hpp>
 
@@ -75,6 +76,7 @@ namespace monolithic_pr2_planner {
             //static KDL::Frame m_object_offset;
             virtual void setArmModel(SBPLArmModelPtr arm_model) = 0;
             static RobotResolutionParams m_params;
+            static IKFastPR2 m_ikfast_solver;
 
             bool m_is_enforcing_joint_limits;
             std::vector<double> m_angles;

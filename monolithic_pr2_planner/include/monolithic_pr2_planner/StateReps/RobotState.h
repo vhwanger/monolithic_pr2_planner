@@ -3,6 +3,7 @@
 #include <monolithic_pr2_planner/StateReps/ContBaseState.h>
 #include <monolithic_pr2_planner/StateReps/DiscBaseState.h>
 #include <monolithic_pr2_planner/StateReps/DiscObjectState.h>
+#include <ikfast_pr2/ik_interface.h>
 #include <pviz/pviz.h>
 #include <geometry_msgs/Pose.h>
 #include <boost/scoped_ptr.hpp>
@@ -47,6 +48,7 @@ namespace monolithic_pr2_planner {
 
         private:
             //static boost::shared_ptr<PViz> m_pviz;
+            static IKFastPR2 m_ikfast_solver;
             DiscBaseState m_base_state;
             RightContArmState m_right_arm;
             LeftContArmState m_left_arm;

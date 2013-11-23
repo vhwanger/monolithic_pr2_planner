@@ -17,6 +17,7 @@ namespace monolithic_pr2_planner {
         public:
             TransitionData(){};
             void successor_id(int id){ m_successor_id = id; };
+            int successor_id(){ return m_successor_id; };
             void motion_type(int mt){ m_motion_type = mt; };
             int motion_type() const { return m_motion_type; };
 
