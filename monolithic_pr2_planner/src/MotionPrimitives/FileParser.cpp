@@ -14,7 +14,9 @@ void MotionPrimitiveFileParser::getNextLine(ifstream& file, stringstream& ss, st
     ss.clear();
 }
 
-// this is a very brittle function because it needs exactly the right format.
+/*! \brief Parses a very specific arm motion primitives file. This is a very
+ * brittle function because it needs exactly the right format.
+ */
 bool MotionPrimitiveFileParser::parseArmMotionPrimitives(string filename,
                                                          std::vector<MotionPrimitivePtr>& prims){
     ifstream file;

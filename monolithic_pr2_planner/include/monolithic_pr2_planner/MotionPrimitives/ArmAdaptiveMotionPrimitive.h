@@ -6,6 +6,16 @@
 #include <boost/shared_ptr.hpp>
 
 namespace monolithic_pr2_planner {
+    /*! \brief An adaptive motion that snaps the gripper to the object pose.
+     *
+     * The arm adaptive motion dynamically generates a motion that moves the current
+     * source_state directly to the goal state. This only runs if the Euclidean
+     * distance of the object state is sufficiently close to the goal - then all
+     * that's left to do is align the roll, pitch, and yaw to the goal state. This
+     * can fail in the yaw of the object is drastically different from the
+     * source_state's yaw (in that case, the base probably needs to be moved, which
+     * is done by the BaseAdaptiveMotionPrimitive). 
+     */
     class ArmAdaptiveMotionPrimitive : public MotionPrimitive {
         public:
             virtual bool apply(const GraphState& graph_state, 

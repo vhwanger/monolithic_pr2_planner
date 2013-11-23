@@ -65,6 +65,7 @@ bool BaseMotionPrimitive::apply(const GraphState& source_state,
         t_data.interm_robot_steps(interm_robot_steps);
         t_data.cont_base_interm_steps(cont_base_interm_steps);
     }
+    assert(t_data.cont_base_interm_steps().size() == t_data.interm_robot_steps().size());
 
     return isSuccessorCreated;
 }

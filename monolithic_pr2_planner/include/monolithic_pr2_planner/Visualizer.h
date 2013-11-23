@@ -4,6 +4,8 @@
 #include <memory>
 
 namespace monolithic_pr2_planner {
+    /*! \brief A singleton that wraps PViz for easy access to visualization.
+     */
     class Visualizer {
         public:
             static void setReferenceFrame(std::string frame);

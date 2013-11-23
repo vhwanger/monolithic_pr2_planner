@@ -14,7 +14,6 @@
 using namespace monolithic_pr2_planner;
 using namespace boost;
 
-
 typedef scoped_ptr<SearchRequest> SearchRequestPtr;
 
 // TODO yuck @ stateid2mapping pointer
@@ -53,8 +52,8 @@ void Environment::GetSuccs(int sourceStateID, vector<int>* succIDs,
     GraphStatePtr source_state = m_hash_mgr.getGraphState(sourceStateID);
     ROS_DEBUG_NAMED(SEARCH_LOG, "Source state is:");
     source_state->robot_pose().printToDebug(SEARCH_LOG);
-    source_state->robot_pose().visualize();
-    sleep(.1);
+    //source_state->robot_pose().visualize();
+    //sleep(.1);
 
     for (auto mprim : m_mprims.getMotionPrims()){
         GraphStatePtr successor;
@@ -201,9 +200,9 @@ vector<RobotState> Environment::reconstructPath(const vector<int>& state_ids){
         GraphStatePtr successor;
         int best_cost = 1000000;
         TransitionData best_transition;
-        TransitionData t_data;
         GraphStatePtr real_next_successor = m_hash_mgr.getGraphState(state_ids[i+1]);
         for (size_t i=0; i < all_mprims.size(); i++){
+            TransitionData t_data;
             auto mprim = all_mprims[i];
             if (!mprim->apply(*source_state, successor, t_data)){
                 continue;
@@ -260,8 +259,19 @@ void Environment::printFinalPath(const vector<int>& state_ids,
                 usleep(50000);
             } 
         } else {
+            if (motion_type == MPrim_Types::BASE)
+                ROS_DEBUG_NAMED(SEARCH_LOG, "reconstructing BASE");
+            if (motion_type == MPrim_Types::ARM)
+                ROS_DEBUG_NAMED(SEARCH_LOG, "reconstructing ARM");
+            if (motion_type == MPrim_Types::BASE_ADAPTIVE)
+                ROS_DEBUG_NAMED(SEARCH_LOG, "reconstructing BASE_ADAPTIVE");
+            if (motion_type == MPrim_Types::ARM_ADAPTIVE)
+                ROS_DEBUG_NAMED(SEARCH_LOG, "reconstructing ARM_ADAPTIVE");
+            if (motion_type == MPrim_Types::TORSO)
+                ROS_DEBUG_NAMED(SEARCH_LOG, "reconstructing TORSO");
             for (size_t j=0; j < transition_states[i].interm_robot_steps().size(); j++){
                 RobotState robot = transition_states[i].interm_robot_steps()[j];
+                robot.printToDebug(SEARCH_LOG);
                 robot.visualize();
                 usleep(50000);
             }

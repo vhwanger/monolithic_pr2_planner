@@ -8,11 +8,12 @@ using namespace monolithic_pr2_planner;
 using namespace std;
 
 
-ParameterCatalog::ParameterCatalog() : m_nodehandle("~") {
+ParameterCatalog::ParameterCatalog() {
 }
 
 void ParameterCatalog::fetch(ros::NodeHandle nh){
-    ROS_INFO_NAMED(CONFIG_LOG, "fetching parameters");
+    ROS_INFO_NAMED(CONFIG_LOG, "fetching parameters from namespace %s", 
+                                nh.getNamespace().c_str());
     m_nodehandle = nh;
     // TODO clean this up, setmotionprimitive needs to be run before parse
     // stuff!

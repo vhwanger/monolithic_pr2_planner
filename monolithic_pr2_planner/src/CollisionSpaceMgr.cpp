@@ -22,6 +22,8 @@ CollisionSpaceMgr::CollisionSpaceMgr(SBPLArmModelPtr right_arm,
     ROS_INFO_NAMED(INIT_LOG, "Launched collision space manager");
 }
 
+/*! \brief Updates the internal collision map of the collision checker.
+ */
 void CollisionSpaceMgr::updateMap(const arm_navigation_msgs::CollisionMap& map){
     std::vector<Eigen::Vector3d> points;
     for (int i=0; i < (int)map.boxes.size(); i++){
@@ -50,8 +52,15 @@ bool CollisionSpaceMgr::isValid(RobotState& robot_pose){
     return m_cspace->checkAllMotion(l_arm, r_arm, body_pose, true, dist_temp, 
                                     debug_code);
 }
-
-// TODO bounds check spine, collision check spine motion
+/*! \brief Given the transition data from a state expansion, this does a smart
+ * collision check on the successor.
+ *
+ * If the motion primitive that generated this successor only moves the base,
+ * then we don't need to collision check the arms against each other. If only
+ * the arm moves, then we don't need to collision check the base for anything.
+ *
+ * TODO bounds check spine, bounds check base
+ */
 bool CollisionSpaceMgr::isValidSuccessor(const GraphState& successor,
                                          const TransitionData& t_data){
     RobotState pose = successor.robot_pose();
@@ -80,29 +89,45 @@ bool CollisionSpaceMgr::isValidSuccessor(const GraphState& successor,
     return true;
 }
 
-// TODO need to fix this to collision check the right data in t_data
+/*! \brief Given the transition data from a state expansion, this collision
+ * checks all continuous, intermediate states.
+ *
+ * We cannot just collision check the base state stored in RobotState IF the
+ * type of motion is a base motion because RobotState only stores the discrete
+ * base state. Thus, we need to look at the continuous base state that is also
+ * stored in the transition data.
+ *
+ * TODO need to fix this to collision check the right data in t_data
+ */
 bool CollisionSpaceMgr::isValidTransitionStates(const TransitionData& t_data){
-    for (auto robot_state : t_data.interm_robot_steps()){
+    bool onlyBaseMotion = (t_data.motion_type() == MPrim_Types::BASE ||
+                           t_data.motion_type() == MPrim_Types::BASE_ADAPTIVE);
+    bool onlyArmMotion = (t_data.motion_type() == MPrim_Types::ARM ||
+                          t_data.motion_type() == MPrim_Types::ARM_ADAPTIVE);
+    vector<ContBaseState> interp_base_motions;
+    if (onlyBaseMotion){
+        interp_base_motions = t_data.cont_base_interm_steps();
+        assert(interp_base_motions.size() == t_data.interm_robot_steps().size());
+    }
+    int idx = 0;
+    for (auto& robot_state : t_data.interm_robot_steps()){
         vector<double> r_arm(7), l_arm(7);
         robot_state.right_arm().getAngles(&r_arm);
         robot_state.left_arm().getAngles(&l_arm);
-        BodyPose body_pose = robot_state.base_state().getBodyPose();
         bool verbose = false;
         double dist;
         int debug;
     
         // let's check the validity of all intermediate poses
-        bool onlyBaseMotion = (t_data.motion_type() == MPrim_Types::BASE ||
-                               t_data.motion_type() == MPrim_Types::BASE_ADAPTIVE);
-        bool onlyArmMotion = (t_data.motion_type() == MPrim_Types::ARM ||
-                              t_data.motion_type() == MPrim_Types::ARM_ADAPTIVE);
         if (onlyBaseMotion){
+            BodyPose body_pose = interp_base_motions[idx].body_pose();
             return m_cspace->checkBaseMotion(l_arm, r_arm, body_pose, verbose, dist, debug);
         } else if (onlyArmMotion){
             ROS_DEBUG_NAMED(CSPACE_LOG, "skipping the intermediate points for arms because there are none.");
         } else {
             throw std::invalid_argument("not a valid motion primitive type");
         }
+        idx++;
     }
     return true;
 }

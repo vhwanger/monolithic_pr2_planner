@@ -11,6 +11,13 @@
 namespace monolithic_pr2_planner {
     typedef boost::shared_ptr<sbpl_arm_planner::SBPLArmModel> SBPLArmModelPtr;
 
+    /*! \brief Represents a state of the left/right arm PR2.
+     *
+     * The PR2 arm has associated with it seven joints, an object offset, and
+     * inverse and forward kinematic functions. This class provides the
+     * necessary functions to retrieve and set continuous joint informatio about
+     * the arms.
+     */
     class ContArmState {
         public:
             ContArmState();

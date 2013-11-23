@@ -6,6 +6,13 @@
 
 namespace monolithic_pr2_planner {
     typedef std::vector<std::vector<double> > IntermSteps;
+    /*! \brief Contains information generated during a state expansion.
+     *
+     * When a state is expanded, it usually has unique information about the
+     * expansion, namely the intermediate states associated with the particular
+     * motion primitive. This class wraps it all up so it can be easily used for
+     * collision checking and path reconstruction by other objects.
+     */
     class TransitionData {
         public:
             TransitionData(){};

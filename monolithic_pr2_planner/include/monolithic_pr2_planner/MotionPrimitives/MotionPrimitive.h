@@ -6,6 +6,9 @@
 #include <assert.h>
 
 namespace monolithic_pr2_planner {
+    /*! \brief Base class for motion primitives. Motion primitives contain user
+     * defined motions for generating successors in a search. 
+     */
     class MotionPrimitive {
         public:
             MotionPrimitive();

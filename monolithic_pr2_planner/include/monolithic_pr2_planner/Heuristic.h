@@ -8,6 +8,9 @@
 #include <boost/shared_ptr.hpp>
 
 namespace monolithic_pr2_planner {
+    /*! \brief Manages heuristic computation used by the SBPL planner. Currently
+     * implements a 3D breadth first search for the end effector.
+     */
     class Heuristic : public OccupancyGridUser {
         public:
             Heuristic(CSpaceMgrPtr cspace);

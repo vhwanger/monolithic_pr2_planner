@@ -3,6 +3,9 @@
 #include <boost/shared_ptr.hpp>
 
 namespace monolithic_pr2_planner {
+    /*! \brief Contains functions for creating and getting graph states used by
+     * the environment and SBPL planner.
+     */
     class HashManager {
         public:
             HashManager(std::vector<int*>* stateID2Mapping);

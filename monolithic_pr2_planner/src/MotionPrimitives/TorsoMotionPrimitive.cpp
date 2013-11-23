@@ -16,8 +16,6 @@ bool TorsoMotionPrimitive::apply(const GraphState& source_state,
         t_data.motion_type(motion_type());
         t_data.cost(cost());
     }
-    source_state.robot_pose().visualize();
-    successor->robot_pose().visualize();
     return isSuccessorCreated;
 }
 

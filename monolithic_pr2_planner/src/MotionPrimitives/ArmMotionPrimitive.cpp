@@ -25,7 +25,7 @@ bool ArmMotionPrimitive::apply(const GraphState& source_state,
         t_data.motion_type(motion_type());
         t_data.cost(cost());
     }
-    computeIntermSteps(source_state, *successor, t_data);
+    //computeIntermSteps(source_state, *successor, t_data);
 
     return isSuccessorCreated;
 }

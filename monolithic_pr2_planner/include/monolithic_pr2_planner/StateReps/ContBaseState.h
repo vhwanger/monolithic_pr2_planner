@@ -6,6 +6,10 @@
 #include <vector>
 namespace monolithic_pr2_planner {
     class DiscBaseState;
+    /*! \brief The ContinuousBaseState object represents the location of the PR2
+     * base in the continuous coordinates of the map. Also implements an
+     * interpolation function for the base.
+     */
     class ContBaseState : public OccupancyGridUser {
         public:
             ContBaseState();

@@ -7,7 +7,7 @@ include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 #  Release        : w/o debug symbols, w/ optimization
 #  RelWithDebInfo : w/ debug symbols, w/ optimization
 #  MinSizeRel     : w/o debug symbols, w/ optimization, stripped binaries
-set(ROS_BUILD_TYPE Debug)
+set(ROS_BUILD_TYPE Release)
 
 rosbuild_init()
 SET(CMAKE_CXX_FLAGS "-std=c++0x")
@@ -38,3 +38,6 @@ target_link_libraries(node monolithic_pr2_planner bfs3d ${SBPL_LIBRARIES})
 
 rosbuild_add_executable(testPlanningRequest src/testPlanningRequest.cpp)
 target_link_libraries(testPlanningRequest monolithic_pr2_planner)
+
+rosbuild_add_executable(testExecute src/testExecute.cpp)
+target_link_libraries(testExecute monolithic_pr2_planner ${SBPL_LIBRARIES})

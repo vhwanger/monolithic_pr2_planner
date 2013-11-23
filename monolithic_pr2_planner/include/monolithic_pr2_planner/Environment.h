@@ -3,7 +3,6 @@
 #include <sbpl/headers.h>
 #include <monolithic_pr2_planner/ParameterCatalog.h>
 #include <monolithic_pr2_planner/CollisionSpaceMgr.h>
-#include <monolithic_pr2_planner/ArmModel.h>
 #include <monolithic_pr2_planner/HashManager.h>
 #include <monolithic_pr2_planner/SearchRequest.h>
 #include <monolithic_pr2_planner/StateReps/GoalState.h>
@@ -14,6 +13,10 @@
 #include <memory>
 
 namespace monolithic_pr2_planner {
+    /*! \brief Implements a complete environment used by the SBPL planner.
+     * Contains everything from managing state IDs to collision space
+     * information.
+     */
     class Environment : public DiscreteSpaceInformation {
         public:
             Environment(ros::NodeHandle nh);
@@ -32,7 +35,6 @@ namespace monolithic_pr2_planner {
                                 const vector<TransitionData>& transition_states);
 
             ParameterCatalog m_param_catalog;
-            ArmModelPtr m_arm_model;
             CSpaceMgrPtr m_cspace_mgr;
             HashManager m_hash_mgr;
             ros::NodeHandle m_nodehandle;

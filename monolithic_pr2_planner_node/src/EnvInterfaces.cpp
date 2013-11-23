@@ -78,7 +78,7 @@ bool EnvInterfaces::planPathCallback(GetMobileArmPlan::Request &req,
     bool retVal = m_env->configureRequest(search_request, start_id, goal_id);
 
     m_planner->set_initialsolution_eps(search_request->initial_epsilon);
-    bool return_first_soln = true;
+    bool return_first_soln = false;
     m_planner->set_search_mode(return_first_soln);
     m_planner->set_start(start_id);
     ROS_INFO("setting goal id to %d", goal_id);
@@ -86,36 +86,39 @@ bool EnvInterfaces::planPathCallback(GetMobileArmPlan::Request &req,
     m_planner->force_planning_from_scratch();
     vector<int> soln;
     int soln_cost;
-    m_planner->replan(60.0, &soln, &soln_cost);
+    // TODO make external parameter
+    bool isPlanFound = m_planner->replan(10.0, &soln, &soln_cost);
 
-    vector<RobotState> states =  m_env->reconstructPath(soln);
-    for (auto state : states){
-        vector<double> angles;
-        vector<double> base_state;
-        ContBaseState cont_base = state.base_state();
-        cont_base.getValues(&base_state);
-        printf("base states: ");
-        for (auto value: base_state){
-            printf("%f ", value);
+    if (isPlanFound){
+        vector<RobotState> states =  m_env->reconstructPath(soln);
+        for (auto state : states){
+            vector<double> angles;
+            vector<double> base_state;
+            ContBaseState cont_base = state.base_state();
+            cont_base.getValues(&base_state);
+            printf("base states: ");
+            for (auto value: base_state){
+                printf("%f ", value);
+            }
+            printf("\n");
+            printf("right arm angles: ");
+            state.right_arm().getAngles(&angles);
+            for (auto angle: angles){
+                printf("%f ", angle);
+            }
+            printf("\n");
+            printf("left arm angles: ");
+            state.left_arm().getAngles(&angles);
+            for (auto angle: angles){
+                printf("%f ", angle);
+            }
+            printf("\n");
         }
-        printf("\n");
-        printf("right arm angles: ");
-        state.right_arm().getAngles(&angles);
-        for (auto angle: angles){
-            printf("%f ", angle);
-        }
-        printf("\n");
-        printf("left arm angles: ");
-        state.left_arm().getAngles(&angles);
-        for (auto angle: angles){
-            printf("%f ", angle);
-        }
-        printf("\n");
+    } else {
+        ROS_INFO("No plan found!");
     }
 
-
-
-    return retVal;
+    return isPlanFound;
 
 }
 

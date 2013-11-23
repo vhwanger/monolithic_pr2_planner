@@ -4,6 +4,9 @@
 #include <boost/shared_ptr.hpp>
 
 namespace monolithic_pr2_planner {
+    /*! \brief Contains information about the collision map. This tends to be
+     * used as a singleton for objects that need discretization information.
+     */
     class OccupancyGridUser {
         public:
             static void init(OccupancyGridParams& og_params, RobotResolutionParams& r_params);

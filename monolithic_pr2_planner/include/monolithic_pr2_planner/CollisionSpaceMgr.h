@@ -14,6 +14,9 @@
 
 namespace monolithic_pr2_planner {
     typedef boost::shared_ptr<sbpl_arm_planner::SBPLArmModel> SBPLArmModelPtr;
+    /*! \brief Does collision checking on MotionPrimitive, GraphState,
+     * RobotState, and TransitionData types.
+     */
     class CollisionSpaceMgr : OccupancyGridUser {
         public:
             CollisionSpaceMgr(SBPLArmModelPtr right_arm,

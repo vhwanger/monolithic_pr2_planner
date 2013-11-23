@@ -9,14 +9,6 @@ using namespace std;
 
 GoalState ArmAdaptiveMotionPrimitive::m_goal;
 
-// The arm adaptive motion dynamically generates a motion that moves the current
-// source_state directly to the goal state. This only runs if the Euclidean
-// distance of the object state is sufficiently close to the goal - then all
-// that's left to do is align the roll, pitch, and yaw to the goal state. This
-// can fail in the yaw of the object is drastically different from the
-// source_state's yaw (in that case, the base probably needs to be moved, which
-// is done by the BaseAdaptiveMotionPrimitive). 
-//
 // TODO refactor this
 bool ArmAdaptiveMotionPrimitive::apply(const GraphState& source_state,
                                   GraphStatePtr& successor,
@@ -28,8 +20,6 @@ bool ArmAdaptiveMotionPrimitive::apply(const GraphState& source_state,
     }
 
     DiscBaseState base_state = source_state.robot_pose().base_state();
-    
-
 
     // take the discrete orientation (theta) of the robot and convert it
     // into the discrete yaw in the object frame. object frame yaw is
@@ -75,6 +65,7 @@ bool ArmAdaptiveMotionPrimitive::apply(const GraphState& source_state,
         successor = boost::make_shared<GraphState>(*successor_robot_pose);
     } else {
         ROS_DEBUG_NAMED(MPRIM_LOG, "IK failed on arm AMP");
+        return false;
     }
 
     t_data.motion_type(motion_type());
