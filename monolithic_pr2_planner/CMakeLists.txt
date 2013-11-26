@@ -11,8 +11,8 @@ set(ROS_BUILD_TYPE Release)
 
 rosbuild_init()
 SET(CMAKE_CXX_FLAGS "-std=c++0x")
-#add_definitions(-DUSE_IKFAST_SOLVER)
-add_definitions(-DUSE_KDL_SOLVER)
+add_definitions(-DUSE_IKFAST_SOLVER)
+#add_definitions(-DUSE_KDL_SOLVER)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(SBPL REQUIRED sbpl)

@@ -125,8 +125,9 @@ bool RobotState::computeRobotPose(const DiscObjectState& disc_obj_state,
     // TODO: move this into cont arm
     // TODO: add in the left arm computation
     KDL::Frame wrist_frame = obj_frame * obj_to_wrist_offset;
-    vector<double> seed(7,0), r_angles(7,0);
-    seed_robot_pose.right_arm().getAngles(&seed);
+    vector<double> r_seed(7,0), r_angles(7,0), l_seed(7,0), l_angles(7,0);
+    seed_robot_pose.right_arm().getAngles(&r_seed);
+    seed_robot_pose.left_arm().getAngles(&l_seed);
 
     ik_calls++;
     struct timeval tv_b;
@@ -137,17 +138,22 @@ bool RobotState::computeRobotPose(const DiscObjectState& disc_obj_state,
 
 #ifdef USE_KDL_SOLVER
     SBPLArmModelPtr arm_model = seed_robot_pose.m_right_arm.getArmModel();
-    bool ik_success = arm_model->computeFastIK(wrist_frame, seed, r_angles);
+    bool ik_success = arm_model->computeFastIK(wrist_frame, r_seed, r_angles);
     if (!ik_success){
-        if (!arm_model->computeIK(wrist_frame, seed, r_angles)){
+        if (!arm_model->computeIK(wrist_frame, r_seed, r_angles)){
             //ROS_DEBUG_NAMED(KIN_LOG, "Both IK failed!");
             return false;
         }
     }
 #endif
 #ifdef USE_IKFAST_SOLVER
-    double free_angle = seed[Joints::UPPER_ARM_ROLL];
-    if (!m_ikfast_solver.ikRightArm(wrist_frame, free_angle, &r_angles)){
+    double r_free_angle = r_seed[Joints::UPPER_ARM_ROLL];
+    if (!m_ikfast_solver.ikRightArm(wrist_frame, r_free_angle, &r_angles)){
+        return false;
+    }
+
+    double l_free_angle = l_seed[Joints::UPPER_ARM_ROLL];
+    if (!m_ikfast_solver.ikRightArm(wrist_frame, l_free_angle, &l_angles)){
         return false;
     }
 #endif
@@ -159,7 +165,7 @@ bool RobotState::computeRobotPose(const DiscObjectState& disc_obj_state,
 
     new_robot_pose = make_shared<RobotState>(seed_robot_pose.base_state(),
                                             RightContArmState(r_angles),
-                                            seed_robot_pose.left_arm());
+                                            LeftContArmState(l_angles));
 
     return true;
 }

@@ -1,4 +1,5 @@
 #include <ros/ros.h>
+#include <kdl/frames.hpp>
 #include <vector>
 #include <geometry_msgs/PoseStamped.h>
 #include <monolithic_pr2_planner_node/GetMobileArmPlan.h>
@@ -29,14 +30,19 @@ int main(int argc, char** argv){
     srv.request.rarm_start = right_arm_start;
     srv.request.larm_start = left_arm_start;
     srv.request.body_start = body_start;
+
+    KDL::Rotation rot = KDL::Rotation::RPY(0,0,M_PI);
+    double qx, qy, qz, qw;
+    rot.GetQuaternion(qx, qy, qz, qw);
+
     geometry_msgs::PoseStamped pose;
     pose.pose.position.x = 1.5;
-    pose.pose.position.y = 2;
+    pose.pose.position.y = 1.5;
     pose.pose.position.z = .5;
-    pose.pose.orientation.x = 0;
-    pose.pose.orientation.y = 0;
-    pose.pose.orientation.z = 0;
-    pose.pose.orientation.w = 2;
+    pose.pose.orientation.x = qx;
+    pose.pose.orientation.y = qy;
+    pose.pose.orientation.z = qz;
+    pose.pose.orientation.w = qw;
 
     geometry_msgs::PoseStamped rarm_offset;
     rarm_offset.pose.position.x = -.18;
@@ -47,6 +53,7 @@ int main(int argc, char** argv){
     rarm_offset.pose.orientation.z = 0;
     rarm_offset.pose.orientation.w = 1;
     srv.request.rarm_object = rarm_offset;
+    srv.request.larm_object = rarm_offset;
 
     srv.request.goal = pose;
     srv.request.initial_eps = 10;

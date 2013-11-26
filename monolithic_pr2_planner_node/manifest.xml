@@ -15,6 +15,7 @@
   <depend package="monolithic_pr2_planner" />
   <depend package="leatherman" />
   <depend package="pcl_ros" />
+  <depend package="kdl" />
   <depend package="geometry_msgs" />
   <depend package="sensor_msgs" />
   <depend package="arm_navigation_msgs" />
