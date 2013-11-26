@@ -49,6 +49,8 @@ namespace monolithic_pr2_planner {
         private:
             //static boost::shared_ptr<PViz> m_pviz;
             static IKFastPR2 m_ikfast_solver;
+            static int ik_calls;
+            static int ik_time;
             DiscBaseState m_base_state;
             RightContArmState m_right_arm;
             LeftContArmState m_left_arm;

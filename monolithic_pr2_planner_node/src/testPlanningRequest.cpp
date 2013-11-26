@@ -30,13 +30,13 @@ int main(int argc, char** argv){
     srv.request.larm_start = left_arm_start;
     srv.request.body_start = body_start;
     geometry_msgs::PoseStamped pose;
-    pose.pose.position.x = 3;
-    pose.pose.position.y = 1;
+    pose.pose.position.x = 1.5;
+    pose.pose.position.y = 2;
     pose.pose.position.z = .5;
     pose.pose.orientation.x = 0;
     pose.pose.orientation.y = 0;
-    pose.pose.orientation.z = 1;
-    pose.pose.orientation.w = 0;
+    pose.pose.orientation.z = 0;
+    pose.pose.orientation.w = 2;
 
     geometry_msgs::PoseStamped rarm_offset;
     rarm_offset.pose.position.x = -.18;

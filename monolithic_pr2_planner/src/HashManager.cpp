@@ -77,7 +77,7 @@ bool HashManager::exists(const GraphStatePtr& graph_state, int& id){
     m_coord_to_state_id_table[bin_idx];
     BOOST_FOREACH(auto g_s, m_coord_to_state_id_table[bin_idx]){
         if (*g_s == *graph_state){
-            ROS_DEBUG_NAMED(HASH_LOG, "exists! the following two match at %d",g_s->id());
+            //ROS_DEBUG_NAMED(HASH_LOG, "exists! the following two match at %d",g_s->id());
             id = g_s->id();
             //g_s->printToDebug(HASH_LOG);
             graph_state->printToDebug(HASH_LOG);
@@ -90,7 +90,7 @@ bool HashManager::exists(const GraphStatePtr& graph_state, int& id){
 
 bool HashManager::save(GraphStatePtr& graph_state){
     // this may not be the desired behavior...
-    ROS_DEBUG_NAMED(HASH_LOG, "Saving graph state");
+    //ROS_DEBUG_NAMED(HASH_LOG, "Saving graph state");
     int potential_id;
     if (exists(graph_state, potential_id)){
         graph_state->id(potential_id);
@@ -101,7 +101,7 @@ bool HashManager::save(GraphStatePtr& graph_state){
     graph_state->id(m_state_id_to_graph_table.size());
     m_state_id_to_graph_table.push_back(graph_state);
     m_coord_to_state_id_table[bin_idx].push_back(graph_state);
-    ROS_DEBUG_NAMED(HASH_LOG, "Saved new entry with id %d", graph_state->id());
+    //ROS_DEBUG_NAMED(HASH_LOG, "Saved new entry with id %d", graph_state->id());
 
     // the planner needs this to happen. i have no idea what it's supposed to
     // do.

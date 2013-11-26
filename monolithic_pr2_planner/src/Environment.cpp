@@ -54,7 +54,7 @@ void Environment::GetSuccs(int sourceStateID, vector<int>* succIDs,
     ROS_DEBUG_NAMED(SEARCH_LOG, "Source state is:");
     source_state->robot_pose().printToDebug(SEARCH_LOG);
     source_state->robot_pose().visualize();
-    sleep(.1);
+    sleep(.5);
 
     for (auto mprim : m_mprims.getMotionPrims()){
         GraphStatePtr successor;
@@ -82,7 +82,10 @@ void Environment::GetSuccs(int sourceStateID, vector<int>* succIDs,
             }
             costs->push_back(1);
             //costs->push_back(mprim->cost());
-        } 
+        } else {
+            //successor->robot_pose().visualize();
+            ROS_DEBUG_NAMED(SEARCH_LOG, "invalid successor");
+        }
     }
 }
 
@@ -147,13 +150,24 @@ void Environment::configurePlanningDomain(){
     // used for collision space and discretizing plain xyz into grid world 
     OccupancyGridUser::init(m_param_catalog.m_occupancy_grid_params,
                             m_param_catalog.m_robot_resolution_params);
+    // init empty heuristic
+    m_heur = make_shared<Heuristic>();
 
     // used for discretization of robot movements
     ContArmState::setRobotResolutionParams(m_param_catalog.m_robot_resolution_params);
 
+#ifdef USE_IKFAST_SOLVER
+    ROS_INFO_NAMED(CONFIG_LOG, "Using IKFast");
+#endif
+#ifdef USE_KDL_SOLVER
+    ROS_INFO_NAMED(CONFIG_LOG, "Using KDL");
+#endif
+
+
     // used for arm kinematics
     LeftContArmState::initArmModel(m_param_catalog.m_left_arm_params);
     RightContArmState::initArmModel(m_param_catalog.m_right_arm_params);
+
 
     // collision space mgr needs arm models in order to do collision checking
     // have to do this funny thing  of initializing an object because of static
@@ -161,18 +175,14 @@ void Environment::configurePlanningDomain(){
     LeftContArmState l_arm;
     RightContArmState r_arm;
     m_cspace_mgr = make_shared<CollisionSpaceMgr>(l_arm.getArmModel(),
-                                                  r_arm.getArmModel());
+                                                  r_arm.getArmModel(),
+                                                  m_heur);
     
-    // load heuristic
-    m_heur = make_shared<Heuristic>(m_cspace_mgr);
 
     // load up motion primitives
     m_mprims.loadMPrims(m_param_catalog.m_motion_primitive_params);
 
     // load up static pviz instance for visualizations. 
-    //boost::shared_ptr<PViz> m_pviz = boost::make_shared<PViz>();
-    //m_pviz->setReferenceFrame("map");
-    //RobotState::setPViz(m_pviz);
     Visualizer::createPVizInstance();
     Visualizer::setReferenceFrame(std::string("/map"));
 
@@ -189,81 +199,68 @@ void Environment::configureQuerySpecificParams(SearchRequestPtr search_request){
     r_arm.setObjectOffset(search_request->m_params->right_arm_object);
 }
 
-
-vector<RobotState> Environment::reconstructPath(const vector<int>& state_ids){
+/*! \brief Given the solution path containing state IDs, reconstruct the
+ * actual corresponding robot states. This also makes the path smooth in between
+ * each state id because we add in the intermediate states given by the
+ * transition data.
+ */
+vector<RobotState> Environment::reconstructPath(vector<int> soln_path){
     vector<RobotState> path;
-    auto all_mprims = m_mprims.getMotionPrims();
     vector<TransitionData> transition_states;
-    vector<int> corrected_soln_path = state_ids;
-    corrected_soln_path[corrected_soln_path.size()-1] = m_goal->getSolnState()->id();
-    ROS_DEBUG_NAMED(SEARCH_LOG, "setting goal state id to %d", m_goal->getSolnState()->id());
-
-    // TODO reconstruct last goal state as well.
-    ROS_DEBUG_NAMED(SEARCH_LOG, "reconstructing soln path of size %lu", 
-                                corrected_soln_path.size());
-    for (size_t i=0; i < corrected_soln_path.size()-1; i++){
-        ROS_DEBUG_NAMED(SEARCH_LOG, "searching from %d for successor id %d", 
-                                    corrected_soln_path[i], corrected_soln_path[i+1]);
-        int state_id = corrected_soln_path[i];
-        GraphStatePtr source_state = m_hash_mgr.getGraphState(state_id);
-        GraphStatePtr successor;
-        int best_cost = 1000000;
+    // the last state in the soln path return by the SBPL planner will always be
+    // the goal state ID. Since this doesn't actually correspond to a real state
+    // in the heap, we have to look it up.
+    soln_path[soln_path.size()-1] = m_goal->getSolnState()->id();
+    ROS_DEBUG_NAMED(SEARCH_LOG, "setting goal state id to %d", 
+                                 m_goal->getSolnState()->id());
+    for (size_t i=0; i < soln_path.size()-1; i++){
         TransitionData best_transition;
-        GraphStatePtr real_next_successor = m_hash_mgr.getGraphState(corrected_soln_path[i+1]);
-        for (size_t j=0; j < all_mprims.size(); j++){
-            TransitionData t_data;
-            auto mprim = all_mprims[j];
-            if (!mprim->apply(*source_state, successor, t_data)){
-                continue;
-            }
-            if (!m_cspace_mgr->isValidSuccessor(*successor, t_data) ||  
-                !m_cspace_mgr->isValidTransitionStates(t_data)){
-                continue;
-            }
-            ROS_DEBUG_NAMED(SEARCH_LOG, "applied mprim");
-            mprim->print();
-            bool isAdaptive = (t_data.motion_type() == MPrim_Types::BASE_ADAPTIVE || 
-                               t_data.motion_type() == MPrim_Types::ARM_ADAPTIVE);
-            successor->id(m_hash_mgr.getStateID(successor));
-            ROS_DEBUG_NAMED(SEARCH_LOG, "found successor at state id %d with cost %d", 
-                            successor->id(), t_data.cost());
-            if ((successor->id() == corrected_soln_path[i+1])){
-                ROS_DEBUG_NAMED(SEARCH_LOG, "successor matches the real path! let's figure out costs");
-                if (t_data.cost() < best_cost){
-                    ROS_DEBUG_NAMED(SEARCH_LOG, "cost of %d is better than best cost%d at id %d", 
-                                                t_data.cost(), best_cost, successor->id());
-                    best_cost = t_data.cost();
-                    best_transition = t_data;
-                    best_transition.successor_id(successor->id());
-                } else {
-                    ROS_DEBUG_NAMED(SEARCH_LOG, "cost of %d is worst than best cost %d", 
-                                                t_data.cost(), best_cost);
-                    ROS_DEBUG_NAMED(SEARCH_LOG, "skipping the above successor");
-                    successor->printToDebug(SEARCH_LOG);
-                }
-            } else {
-                ROS_DEBUG_NAMED(SEARCH_LOG, "this isn't the right successor");
-            }
-            //else if (isAdaptive){
-            //    ROS_DEBUG_NAMED(SEARCH_LOG, "found AMP in path reconstruction. adding it");
-            //    best_transition = t_data;
-            //    best_transition.successor_id(-1);
-            //    best_cost = 1;
-            //    break;
-            //}
-        }
-        if (best_cost != 1000000){
-            ROS_DEBUG_NAMED(SEARCH_LOG, "best successor found is %d", 
-                                        best_transition.successor_id());
+        bool success = findBestTransition(soln_path[i], 
+                                          soln_path[i+1], 
+                                          best_transition);
+        if (success){
             transition_states.push_back(best_transition);
         } else {
-            ROS_ERROR("Couldn't find the right successor???");
+            ROS_ERROR("Successor not found during path reconstruction!");
         }
     }
     
-    printFinalPath(corrected_soln_path, transition_states);
+    printFinalPath(soln_path, transition_states);
     // TODO actually return path
     return path;
+}
+
+/*! \brief Given a start and end state id, find the motion primitive with the
+ * least cost that gets us from start to end. Return that information with a
+ * TransitionData object.
+ */
+bool Environment::findBestTransition(int start_id, int end_id, 
+                                     TransitionData& best_transition){
+    ROS_DEBUG_NAMED(SEARCH_LOG, "searching from %d for successor id %d", 
+                                start_id, end_id);
+    GraphStatePtr source_state = m_hash_mgr.getGraphState(start_id);
+    GraphStatePtr successor;
+    int best_cost = 1000000;
+    GraphStatePtr real_next_successor = m_hash_mgr.getGraphState(end_id);
+    for (auto mprim : m_mprims.getMotionPrims()){
+        TransitionData t_data;
+        if (!mprim->apply(*source_state, successor, t_data)){
+            continue;
+        }
+        if (!m_cspace_mgr->isValidSuccessor(*successor, t_data) ||  
+                !m_cspace_mgr->isValidTransitionStates(t_data)){
+            continue;
+        }
+        successor->id(m_hash_mgr.getStateID(successor));
+        if ((successor->id() == end_id)){
+            if (t_data.cost() < best_cost){
+                best_cost = t_data.cost();
+                best_transition = t_data;
+                best_transition.successor_id(successor->id());
+            } 
+        }
+    }
+    return (best_cost != 1000000);
 }
 
 void Environment::printFinalPath(const vector<int>& state_ids,
@@ -289,7 +286,7 @@ void Environment::printFinalPath(const vector<int>& state_ids,
                 cont_base.printToDebug(SEARCH_LOG);
                 BodyPose bp = cont_base.body_pose();
                 Visualizer::pviz->visualizeRobot(r_arm, l_arm, bp, 150, "planner", 0);
-                usleep(50000);
+                usleep(10000);
             } 
         } else {
             if (motion_type == MPrim_Types::BASE)
@@ -306,7 +303,7 @@ void Environment::printFinalPath(const vector<int>& state_ids,
                 RobotState robot = transition_states[i].interm_robot_steps()[j];
                 robot.printToDebug(SEARCH_LOG);
                 robot.visualize();
-                usleep(50000);
+                usleep(10000);
             }
         }
 

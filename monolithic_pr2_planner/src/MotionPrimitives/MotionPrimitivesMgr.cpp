@@ -23,10 +23,10 @@ bool MotionPrimitivesMgr::loadMPrims(const MotionPrimitiveParams& params){
 
     int VERTICAL_UP = 1;
     int VERTICAL_DOWN = -1;
-    TorsoMotionPrimitivePtr t_mprim1 = make_shared<TorsoMotionPrimitive>(VERTICAL_UP);
-    TorsoMotionPrimitivePtr t_mprim2 = make_shared<TorsoMotionPrimitive>(VERTICAL_DOWN);
-    m_motprims.push_back(t_mprim1);
-    m_motprims.push_back(t_mprim2);
+    //TorsoMotionPrimitivePtr t_mprim1 = make_shared<TorsoMotionPrimitive>(VERTICAL_UP);
+    //TorsoMotionPrimitivePtr t_mprim2 = make_shared<TorsoMotionPrimitive>(VERTICAL_DOWN);
+    //m_motprims.push_back(t_mprim1);
+    //m_motprims.push_back(t_mprim2);
 
     computeAllMPrimCosts();
 

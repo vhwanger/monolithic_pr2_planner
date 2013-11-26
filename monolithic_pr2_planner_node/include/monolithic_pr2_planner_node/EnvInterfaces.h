@@ -22,6 +22,7 @@ namespace monolithic_pr2_planner_node {
                                   GetMobileArmPlan::Response &res);
             void bindPlanPathToEnv(std::string service_name);
             bool bindCollisionSpaceToTopic(std::string topic_name);
+            void initCollisionSpaceFromfile(std::string filename);
 
         private:
             ros::NodeHandle m_nodehandle;

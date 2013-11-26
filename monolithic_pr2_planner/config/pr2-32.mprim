@@ -215,28 +215,28 @@ intermediate_steps: 1
 
 type: long_distance
 group: 3
-id: 29
+id: 31
 end_coords(cells): 0 0 0 0 2 0 0 0
 intermediate_steps: 1
 0 0 0 0 0.196349541 0 0 0
 
 type: long_distance
 group: 3
-id: 30
+id: 32
 end_coords(cells): 0 0 0 0 -2 0 0 0
 intermediate_steps: 1
 0 0 0 0 -0.196349541 0 0 0
 
 type: long_distance
 group: 3
-id: 29
+id: 33
 end_coords(cells): 0 0 0 2 0 0 0 0
 intermediate_steps: 1
 0 0 0 0.196349541 0 0 0 0
 
 type: long_distance
 group: 3
-id: 30
+id: 34
 end_coords(cells): 0 0 0 -2 0 0 0 0
 intermediate_steps: 1
 0 0 0 -0.196349541 0 0 0 0

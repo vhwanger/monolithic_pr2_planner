@@ -6,6 +6,7 @@
 #include <monolithic_pr2_planner/ParameterCatalog.h>
 #include <monolithic_pr2_planner/OccupancyGridUser.h>
 #include <monolithic_pr2_planner/TransitionData.h>
+#include <monolithic_pr2_planner/Heuristic.h>
 #include <pr2_collision_checker/pr2_collision_space.h>
 #include <pr2_collision_checker/sbpl_arm_model.h>
 #include <arm_navigation_msgs/CollisionMap.h>
@@ -17,10 +18,11 @@ namespace monolithic_pr2_planner {
     /*! \brief Does collision checking on MotionPrimitive, GraphState,
      * RobotState, and TransitionData types.
      */
-    class CollisionSpaceMgr : OccupancyGridUser {
+    class CollisionSpaceMgr : public OccupancyGridUser {
         public:
             CollisionSpaceMgr(SBPLArmModelPtr right_arm,
-                              SBPLArmModelPtr left_arm);
+                              SBPLArmModelPtr left_arm,
+                              HeuristicPtr heur);
             bool isValid(DiscObjectState& obj_state);
             bool isValid(RobotState& robot_pose);
             bool isValidSuccessor(const GraphState& successor,
@@ -28,10 +30,11 @@ namespace monolithic_pr2_planner {
             bool isValidTransitionStates(const TransitionData& t_data);
 
             void updateMap(const arm_navigation_msgs::CollisionMap& map);
-            //bool readMapFromEigen(Eigen::Vector3d points);
+            bool loadMap(const std::vector<Eigen::Vector3d>& points);
 
         private:
             boost::shared_ptr<pr2_collision_checker::PR2CollisionSpace> m_cspace;
+            HeuristicPtr m_heur;
     };
     typedef boost::shared_ptr<CollisionSpaceMgr> CSpaceMgrPtr;
 }

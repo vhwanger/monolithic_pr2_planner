@@ -129,3 +129,7 @@ bool EnvInterfaces::bindCollisionSpaceToTopic(std::string topic_name){
     return true;
 }
 
+
+void EnvInterfaces::initCollisionSpaceFromfile(std::string filename){
+    m_collision_space_interface.loadMap(filename);
+}

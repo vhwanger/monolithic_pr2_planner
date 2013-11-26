@@ -25,6 +25,7 @@ namespace monolithic_pr2_planner {
                                   int& start_id, int& goal_id);
             void GetSuccs(int sourceStateID, vector<int>* succIDs, 
                           vector<int>* costs);
+            std::vector<RobotState> reconstructPath(std::vector<int> state_ids);
 
         protected:
             bool setStartGoal(SearchRequestPtr search_request, 
@@ -33,6 +34,7 @@ namespace monolithic_pr2_planner {
             void configureQuerySpecificParams(SearchRequestPtr search_request);
             void printFinalPath(const vector<int>& state_ids,
                                 const vector<TransitionData>& transition_states);
+            bool findBestTransition(int start_id, int end_id, TransitionData& t_data);
 
             ParameterCatalog m_param_catalog;
             CSpaceMgrPtr m_cspace_mgr;
@@ -56,7 +58,6 @@ namespace monolithic_pr2_planner {
             int  SizeofCreatedEnv();
             void PrintState(int stateID, bool bVerbose, FILE* fOut=NULL);
             void PrintEnv_Config(FILE* fOut){};
-            std::vector<RobotState> reconstructPath(const std::vector<int>& state_ids);
 
     };
 }

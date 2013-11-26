@@ -10,6 +10,8 @@ using namespace monolithic_pr2_planner;
 using namespace boost;
 
 IKFastPR2 RobotState::m_ikfast_solver;
+int RobotState::ik_calls;
+int RobotState::ik_time;
 
 bool RobotState::operator==(const RobotState& other){
     return (m_base_state == other.m_base_state &&
@@ -125,22 +127,35 @@ bool RobotState::computeRobotPose(const DiscObjectState& disc_obj_state,
     KDL::Frame wrist_frame = obj_frame * obj_to_wrist_offset;
     vector<double> seed(7,0), r_angles(7,0);
     seed_robot_pose.right_arm().getAngles(&seed);
+
+    ik_calls++;
+    struct timeval tv_b;
+    struct timeval tv_a;
+    gettimeofday(&tv_b, NULL);
+    double before = tv_b.tv_usec + (tv_b.tv_sec * 1000000);
+    gettimeofday(&tv_a, NULL);
+
 #ifdef USE_KDL_SOLVER
     SBPLArmModelPtr arm_model = seed_robot_pose.m_right_arm.getArmModel();
-
     bool ik_success = arm_model->computeFastIK(wrist_frame, seed, r_angles);
     if (!ik_success){
         if (!arm_model->computeIK(wrist_frame, seed, r_angles)){
-            ROS_DEBUG_NAMED(KIN_LOG, "Both IK failed!");
+            //ROS_DEBUG_NAMED(KIN_LOG, "Both IK failed!");
             return false;
         }
     }
 #endif
-
 #ifdef USE_IKFAST_SOLVER
     double free_angle = seed[Joints::UPPER_ARM_ROLL];
-    m_ikfast_solver.ikRightArm(wrist_frame, free_angle, &r_angles);
+    if (!m_ikfast_solver.ikRightArm(wrist_frame, free_angle, &r_angles)){
+        return false;
+    }
 #endif
+    double after = tv_a.tv_usec + (tv_a.tv_sec * 1000000);
+    ik_time += after - before;
+    if (ik_calls % 10000 == 0){
+        ROS_INFO("ik calls %d, time %d us", ik_calls, ik_time);
+    }
 
     new_robot_pose = make_shared<RobotState>(seed_robot_pose.base_state(),
                                             RightContArmState(r_angles),
@@ -236,13 +251,4 @@ ContObjectState RobotState::getObjectStateRelMap() const {
 DiscObjectState RobotState::getObjectStateRelBody() const {
     return m_obj_state;
 }
-
-
-
-
-
-
-
-
-
 

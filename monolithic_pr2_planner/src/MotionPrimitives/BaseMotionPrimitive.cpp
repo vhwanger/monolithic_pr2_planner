@@ -31,7 +31,23 @@ bool BaseMotionPrimitive::apply(const GraphState& source_state,
         return false;
     }
     successor.reset(new GraphState(source_state));
-    bool isSuccessorCreated = successor->applyMPrim(m_end_coord);
+    //bool isSuccessorCreated = successor->applyMPrim(m_end_coord);
+    // TODO move this
+    
+
+    DiscBaseState base_state = successor->robot_pose().base_state();
+
+
+    // TODO ADD FA change!
+
+    base_state.x(base_state.x() + m_end_coord[GraphStateElement::BASE_X]);
+    base_state.y(base_state.y() + m_end_coord[GraphStateElement::BASE_Y]);
+    base_state.z(base_state.z() + m_end_coord[GraphStateElement::BASE_Z]);
+    base_state.theta(base_state.theta() + m_end_coord[GraphStateElement::BASE_THETA]);
+    RobotState new_state(base_state, successor->robot_pose().right_arm(), successor->robot_pose().left_arm());
+    successor->robot_pose(new_state);
+    bool isSuccessorCreated = true;
+    
     
     // if we created the successor, fill in transition details
     if (isSuccessorCreated){
