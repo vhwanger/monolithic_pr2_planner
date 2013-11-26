@@ -13,6 +13,7 @@ end effector). The final position of the robot will place this object/gripper at
 the given pose, while freely choosing the best spot for the base, arm, and
 spine positions (while avoiding obstacles). 
 
+This code is still under active development.
 
 User's Guide
 ---------------------
@@ -21,6 +22,7 @@ Coming soon
 
 Developer's Guide
 ---------------------
+
 If you're looking to understand the planning theory, I've written tutorials
 [here](http://sbpl.net/Tutorials).
 
