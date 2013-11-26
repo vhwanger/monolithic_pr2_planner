@@ -8,6 +8,7 @@
 #include <monolithic_pr2_planner/MotionPrimitives/BaseMotionPrimitive.h>
 #include <monolithic_pr2_planner/MotionPrimitives/TorsoMotionPrimitive.h>
 #include <monolithic_pr2_planner/StateReps/GoalState.h>
+#include <monolithic_pr2_planner/StateReps/GraphState.h>
 
 namespace monolithic_pr2_planner {
     class MotionPrimitivesMgr {

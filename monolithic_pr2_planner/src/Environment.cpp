@@ -36,7 +36,6 @@ bool Environment::configureRequest(SearchRequestParamsPtr search_request_params,
 
 int Environment::GetGoalHeuristic(int stateID){
     return m_heur->getGoalHeuristic(m_hash_mgr.getGraphState(stateID));
-    //return 1;
 }
 
 void Environment::GetSuccs(int sourceStateID, vector<int>* succIDs, 
@@ -116,19 +115,13 @@ bool Environment::setStartGoal(SearchRequestPtr search_request,
 
     m_goal = make_shared<GoalState>(search_request, m_heur);
 
-    // TODO fix this shit! shouldn't be saving the start state twice.
-    // also, api fail.
+    // TODO fix this! shouldn't be saving the start state twice.
     GraphStatePtr fake_goal = make_shared<GraphState>(*start_graph_state);
-    fake_goal->robot_pose().base_state().x(0);
-    fake_goal->robot_pose().base_state().y(0);
-    fake_goal->robot_pose().base_state().z(0);
-    RobotState blah_robot_state = fake_goal->robot_pose();
-    DiscBaseState blah_base = blah_robot_state.base_state();
-    blah_base.x(0); blah_base.y(0); blah_base.z(0);
-    blah_robot_state.base_state(blah_base);
-    fake_goal->robot_pose(blah_robot_state);
-    ROS_INFO("base state %d", 
-             fake_goal->robot_pose().base_state().x());
+    RobotState fake_robot_state = fake_goal->robot_pose();
+    DiscBaseState fake_base = fake_robot_state.base_state();
+    fake_base.x(0); fake_base.y(0); fake_base.z(0);
+    fake_robot_state.base_state(fake_base);
+    fake_goal->robot_pose(fake_robot_state);
     m_hash_mgr.save(fake_goal);
     goal_id = fake_goal->id();
 
@@ -137,7 +130,7 @@ bool Environment::setStartGoal(SearchRequestPtr search_request,
     c_goal.printToInfo(SEARCH_LOG);
     m_goal->visualize();
 
-    // TODO yuck
+    // This informs the adaptive motions about the goal.
     ArmAdaptiveMotionPrimitive::goal(*m_goal);
     BaseAdaptiveMotionPrimitive::goal(*m_goal);
 
