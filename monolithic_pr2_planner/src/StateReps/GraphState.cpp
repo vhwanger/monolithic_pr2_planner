@@ -40,6 +40,7 @@ bool GraphState::applyMPrim(const GraphStateMotion& mprim){
     base_state.x(base_state.x() + mprim[GraphStateElement::BASE_X]);
     base_state.y(base_state.y() + mprim[GraphStateElement::BASE_Y]);
     base_state.z(base_state.z() + mprim[GraphStateElement::BASE_Z]);
+
     base_state.theta(base_state.theta() + mprim[GraphStateElement::BASE_THETA]);
     m_robot_pose.base_state(base_state);
 
@@ -47,6 +48,7 @@ bool GraphState::applyMPrim(const GraphStateMotion& mprim){
     if (RobotState::computeRobotPose(obj_state, m_robot_pose, new_robot_pose)){
         m_robot_pose = *new_robot_pose;
     } else {
+        ROS_ERROR("ik failed");
         return false;
     }
     return true;

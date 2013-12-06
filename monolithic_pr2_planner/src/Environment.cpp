@@ -55,22 +55,32 @@ void Environment::GetSuccs(int sourceStateID, vector<int>* succIDs,
     source_state->robot_pose().visualize();
     sleep(.5);
 
+    if (GetGoalHeuristic(sourceStateID) < 5){
+        ROS_INFO("close to the goal");
+    }
+
     for (auto mprim : m_mprims.getMotionPrims()){
+        ROS_DEBUG_NAMED(SEARCH_LOG, "Applying motion:");
+        mprim->printEndCoord();
         GraphStatePtr successor;
         TransitionData t_data;
         if (!mprim->apply(*source_state, successor, t_data)){
+            ROS_DEBUG_NAMED(MPRIM_LOG, "couldn't apply mprim");
             continue;
         }
         if (m_cspace_mgr->isValidSuccessor(*successor, t_data) && 
             m_cspace_mgr->isValidTransitionStates(t_data)){
-            ROS_DEBUG_NAMED(SEARCH_LOG, 
-            "==================Applying Motion Primitive==================");
-            ROS_DEBUG_NAMED(MPRIM_LOG, "Applying motion:");
-            mprim->printEndCoord();
+            //ROS_DEBUG_NAMED(SEARCH_LOG, "Source state is:");
+            //source_state->printToDebug(SEARCH_LOG);
+            //ROS_DEBUG_NAMED(SEARCH_LOG, 
+            //"==================Applying Motion Primitive==================");
+            //ROS_DEBUG_NAMED(MPRIM_LOG, "Applying motion:");
+            //mprim->printEndCoord();
             m_hash_mgr.save(successor);
-            ROS_DEBUG_NAMED(MPRIM_LOG, "successor state with id %d is:", 
-                            successor->id());
-            successor->printToDebug(MPRIM_LOG);
+            //ROS_DEBUG_NAMED(MPRIM_LOG, "successor state with id %d is:", 
+            //                successor->id());
+            //successor->printToDebug(MPRIM_LOG);
+
 
             if (m_goal->isSatisfiedBy(successor)){
                 m_goal->storeAsSolnState(successor);
@@ -79,11 +89,12 @@ void Environment::GetSuccs(int sourceStateID, vector<int>* succIDs,
             } else {
                 succIDs->push_back(successor->id());
             }
-            costs->push_back(1);
-            //costs->push_back(mprim->cost());
+            //costs->push_back(1);
+            costs->push_back(mprim->cost());
+            ROS_DEBUG_NAMED(SEARCH_LOG, "motion succeeded with cost %d", mprim->cost());
         } else {
-            //successor->robot_pose().visualize();
-            ROS_DEBUG_NAMED(SEARCH_LOG, "invalid successor");
+            successor->robot_pose().visualize();
+            ROS_DEBUG_NAMED(SEARCH_LOG, "successor failed collision checking");
         }
     }
 }
@@ -167,8 +178,8 @@ void Environment::configurePlanningDomain(){
     // variable + inheritance (see ContArmState for details)
     LeftContArmState l_arm;
     RightContArmState r_arm;
-    m_cspace_mgr = make_shared<CollisionSpaceMgr>(l_arm.getArmModel(),
-                                                  r_arm.getArmModel(),
+    m_cspace_mgr = make_shared<CollisionSpaceMgr>(r_arm.getArmModel(),
+                                                  l_arm.getArmModel(),
                                                   m_heur);
     
 
@@ -190,6 +201,7 @@ void Environment::configureQuerySpecificParams(SearchRequestPtr search_request){
     RightContArmState r_arm;
     l_arm.setObjectOffset(search_request->m_params->left_arm_object);
     r_arm.setObjectOffset(search_request->m_params->right_arm_object);
+    RobotState::setPlanningMode(search_request->m_params->planning_mode);
 }
 
 /*! \brief Given the solution path containing state IDs, reconstruct the
@@ -197,8 +209,7 @@ void Environment::configureQuerySpecificParams(SearchRequestPtr search_request){
  * each state id because we add in the intermediate states given by the
  * transition data.
  */
-vector<RobotState> Environment::reconstructPath(vector<int> soln_path){
-    vector<RobotState> path;
+vector<FullBodyState> Environment::reconstructPath(vector<int> soln_path){
     vector<TransitionData> transition_states;
     // the last state in the soln path return by the SBPL planner will always be
     // the goal state ID. Since this doesn't actually correspond to a real state
@@ -218,9 +229,26 @@ vector<RobotState> Environment::reconstructPath(vector<int> soln_path){
         }
     }
     
-    printFinalPath(soln_path, transition_states);
-    // TODO actually return path
-    return path;
+    vector<FullBodyState> final_path = getFinalPath(soln_path, 
+                                                    transition_states);
+    visualizeFinalPath(final_path);
+    return final_path;
+}
+
+void Environment::visualizeFinalPath(vector<FullBodyState> path){
+    for (auto& state : path){
+        vector<double> l_arm, r_arm, base;
+        l_arm = state.left_arm;
+        r_arm = state.right_arm;
+        base = state.base;
+        BodyPose bp;
+        bp.x = base[0];
+        bp.y = base[1];
+        bp.z = base[2];
+        bp.theta = base[3];
+        Visualizer::pviz->visualizeRobot(r_arm, l_arm, bp, 150, "robot", 0);
+        usleep(10000);
+    }
 }
 
 /*! \brief Given a start and end state id, find the motion primitive with the
@@ -256,63 +284,58 @@ bool Environment::findBestTransition(int start_id, int end_id,
     return (best_cost != 1000000);
 }
 
-void Environment::printFinalPath(const vector<int>& state_ids,
+FullBodyState Environment::createFBState(const RobotState& robot){
+    vector<double> l_arm, r_arm, base;
+    robot.right_arm().getAngles(&r_arm);
+    robot.left_arm().getAngles(&l_arm);
+    ContBaseState c_base = robot.base_state();
+    c_base.getValues(&base);
+    FullBodyState state;
+    state.left_arm = l_arm;
+    state.right_arm = r_arm;
+    state.base = base;
+    return state;
+}
+
+/*! \brief Retrieve the final path, with intermediate states and all. There's
+ * some slight funny business with TransitionData for intermediate base states
+ * because they're not captured in the RobotState. Instead, they're held
+ * separately in TransitionData ONLY if the motion primitive has the base
+ * moving. There's one more state_id than transition state.
+ * */
+std::vector<FullBodyState> Environment::getFinalPath(const vector<int>& state_ids,
                                  const vector<TransitionData>& transition_states){
-    ROS_DEBUG_NAMED(SEARCH_LOG, "printing final path after reconstruction");
-    GraphStatePtr source_state = m_hash_mgr.getGraphState(state_ids[0]);
-    source_state->robot_pose().visualize();
-    source_state->robot_pose().printToInfo(SEARCH_LOG);
-    sleep(.1);
+    vector<FullBodyState> fb_states;
+    { // throw in the first point
+        GraphStatePtr source_state = m_hash_mgr.getGraphState(state_ids[0]);
+        fb_states.push_back(createFBState(source_state->robot_pose()));
+    }
     for (size_t i=0; i < transition_states.size(); i++){
         int motion_type = transition_states[i].motion_type();
         bool isInterpBaseMotion = (motion_type == MPrim_Types::BASE || 
                                    motion_type == MPrim_Types::BASE_ADAPTIVE);
-        if (isInterpBaseMotion){
-            ROS_DEBUG_NAMED(SEARCH_LOG, "found an interpolated base motion of size %lu", 
-                                        transition_states[i].cont_base_interm_steps().size());
-            for (size_t j=0; j < transition_states[i].cont_base_interm_steps().size(); j++){
-                RobotState robot = transition_states[i].interm_robot_steps()[j];
-                vector<double> l_arm, r_arm;
-                robot.right_arm().getAngles(&r_arm);
-                robot.left_arm().getAngles(&l_arm);
+        for (size_t j=0; j < transition_states[i].interm_robot_steps().size(); j++){
+            RobotState robot = transition_states[i].interm_robot_steps()[j];
+            FullBodyState state = createFBState(robot);
+            if (isInterpBaseMotion){
+                assert(transition_states[i].interm_robot_steps().size() == 
+                       transition_states[i].cont_base_interm_steps().size());
                 ContBaseState cont_base = transition_states[i].cont_base_interm_steps()[j];
-                cont_base.printToDebug(SEARCH_LOG);
-                BodyPose bp = cont_base.body_pose();
-                Visualizer::pviz->visualizeRobot(r_arm, l_arm, bp, 150, "planner", 0);
-                usleep(10000);
+                std::vector<double> base;
+                cont_base.getValues(&base);
+                state.base = base;
             } 
-        } else {
-            if (motion_type == MPrim_Types::BASE)
-                ROS_DEBUG_NAMED(SEARCH_LOG, "reconstructing BASE");
-            if (motion_type == MPrim_Types::ARM)
-                ROS_DEBUG_NAMED(SEARCH_LOG, "reconstructing ARM");
-            if (motion_type == MPrim_Types::BASE_ADAPTIVE)
-                ROS_DEBUG_NAMED(SEARCH_LOG, "reconstructing BASE_ADAPTIVE");
-            if (motion_type == MPrim_Types::ARM_ADAPTIVE)
-                ROS_DEBUG_NAMED(SEARCH_LOG, "reconstructing ARM_ADAPTIVE");
-            if (motion_type == MPrim_Types::TORSO)
-                ROS_DEBUG_NAMED(SEARCH_LOG, "reconstructing TORSO");
-            for (size_t j=0; j < transition_states[i].interm_robot_steps().size(); j++){
-                RobotState robot = transition_states[i].interm_robot_steps()[j];
-                robot.printToDebug(SEARCH_LOG);
-                robot.visualize();
-                usleep(10000);
-            }
+            fb_states.push_back(state);
         }
-
-        source_state = m_hash_mgr.getGraphState(state_ids[i+1]);
-        source_state->robot_pose().visualize();
-        source_state->robot_pose().printToInfo(SEARCH_LOG);
-        usleep(50000);
     }
-    GraphStatePtr soln_state = m_goal->getSolnState();
-    soln_state->robot_pose().visualize();
+    { // throw in the last point
+        GraphStatePtr soln_state = m_goal->getSolnState();
+        fb_states.push_back(createFBState(soln_state->robot_pose()));
+    }
+    return fb_states;
 }
 
-
 bool Environment::InitializeMDPCfg(MDPConfig *MDPCfg) {
-  //MDPCfg->goalstateid = envMobileArm.goalHashEntry->stateID;
-  //MDPCfg->startstateid = envMobileArm.startHashEntry->stateID;
   return true;
 }
 

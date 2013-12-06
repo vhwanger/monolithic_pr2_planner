@@ -12,6 +12,7 @@ using namespace boost;
 IKFastPR2 RobotState::m_ikfast_solver;
 int RobotState::ik_calls;
 int RobotState::ik_time;
+int RobotState::m_planning_mode;
 
 bool RobotState::operator==(const RobotState& other){
     return (m_base_state == other.m_base_state &&
@@ -27,8 +28,14 @@ RobotState::RobotState(ContBaseState base_state, RightContArmState r_arm,
                      LeftContArmState l_arm):
     m_base_state(base_state), 
     m_right_arm(r_arm), 
-    m_left_arm(l_arm),
-    m_obj_state(r_arm.getObjectStateRelBody()){
+    m_left_arm(l_arm){
+    bool left_arm_dominant = (m_planning_mode == PlanningModes::LEFT_ARM ||
+                              m_planning_mode == PlanningModes::LEFT_ARM_MOBILE);
+    if (left_arm_dominant){
+        m_obj_state = l_arm.getObjectStateRelBody();
+    } else {
+        m_obj_state = r_arm.getObjectStateRelBody();
+    }
 }
 
 ContBaseState RobotState::getContBaseState(){
@@ -91,10 +98,6 @@ void RobotState::printToInfo(char* log_level) const {
                     r_arm[6]);
 }
 
-//void RobotState::setPViz(boost::shared_ptr<PViz> pviz){
-//    m_pviz = pviz;
-//}
-
 void RobotState::visualize(){
     std::vector<double> l_arm, r_arm;
     m_left_arm.getAngles(&l_arm);
@@ -105,12 +108,12 @@ void RobotState::visualize(){
 }
 
 
-// this isn't a static function because we need seed angles.
 // this is a bit weird at the moment, but we use the arm angles as seed angles
 // disc_obj_state is in body frame
 bool RobotState::computeRobotPose(const DiscObjectState& disc_obj_state,
                                  const RobotState& seed_robot_pose,
-                                 RobotPosePtr& new_robot_pose){
+                                 RobotPosePtr& new_robot_pose,
+                                 bool free_angle_search){
     ContObjectState obj_state = disc_obj_state.getContObjectState();
 
     KDL::Frame obj_frame;
@@ -120,14 +123,18 @@ bool RobotState::computeRobotPose(const DiscObjectState& disc_obj_state,
     obj_frame.M = KDL::Rotation::RPY(obj_state.roll(), 
                                      obj_state.pitch(),
                                      obj_state.yaw());
-    KDL::Frame obj_to_wrist_offset = seed_robot_pose.right_arm().getObjectOffset();
+    KDL::Frame r_obj_to_wrist_offset = seed_robot_pose.right_arm().getObjectOffset();
+    KDL::Frame l_obj_to_wrist_offset = seed_robot_pose.left_arm().getObjectOffset();
 
     // TODO: move this into cont arm
     // TODO: add in the left arm computation
-    KDL::Frame wrist_frame = obj_frame * obj_to_wrist_offset;
+    KDL::Frame r_wrist_frame = obj_frame * r_obj_to_wrist_offset;
+    KDL::Frame l_wrist_frame = obj_frame * l_obj_to_wrist_offset;
     vector<double> r_seed(7,0), r_angles(7,0), l_seed(7,0), l_angles(7,0);
     seed_robot_pose.right_arm().getAngles(&r_seed);
+    r_angles = r_seed;
     seed_robot_pose.left_arm().getAngles(&l_seed);
+    l_angles = l_seed;
 
     ik_calls++;
     struct timeval tv_b;
@@ -136,32 +143,47 @@ bool RobotState::computeRobotPose(const DiscObjectState& disc_obj_state,
     double before = tv_b.tv_usec + (tv_b.tv_sec * 1000000);
     gettimeofday(&tv_a, NULL);
 
+    bool use_right_arm = (m_planning_mode == PlanningModes::RIGHT_ARM ||
+                          m_planning_mode == PlanningModes::DUAL_ARM ||
+                          m_planning_mode == PlanningModes::RIGHT_ARM_MOBILE ||
+                          m_planning_mode == PlanningModes::DUAL_ARM_MOBILE);
+    bool use_left_arm = (m_planning_mode == PlanningModes::LEFT_ARM ||
+                          m_planning_mode == PlanningModes::DUAL_ARM ||
+                          m_planning_mode == PlanningModes::LEFT_ARM_MOBILE ||
+                          m_planning_mode == PlanningModes::DUAL_ARM_MOBILE);
+    if (!(use_right_arm || use_left_arm)){
+        ROS_ERROR("what! not using any arm for IK??");
+    }
+
+    // TODO make this work for the left arm as well
 #ifdef USE_KDL_SOLVER
     SBPLArmModelPtr arm_model = seed_robot_pose.m_right_arm.getArmModel();
-    bool ik_success = arm_model->computeFastIK(wrist_frame, r_seed, r_angles);
+    bool ik_success = arm_model->computeFastIK(r_wrist_frame, r_seed, r_angles);
     if (!ik_success){
-        if (!arm_model->computeIK(wrist_frame, r_seed, r_angles)){
+        if (!arm_model->computeIK(r_wrist_frame, r_seed, r_angles)){
             //ROS_DEBUG_NAMED(KIN_LOG, "Both IK failed!");
             return false;
         }
     }
 #endif
 #ifdef USE_IKFAST_SOLVER
-    double r_free_angle = r_seed[Joints::UPPER_ARM_ROLL];
-    if (!m_ikfast_solver.ikRightArm(wrist_frame, r_free_angle, &r_angles)){
-        return false;
-    }
 
-    double l_free_angle = l_seed[Joints::UPPER_ARM_ROLL];
-    if (!m_ikfast_solver.ikRightArm(wrist_frame, l_free_angle, &l_angles)){
-        return false;
+    if (use_right_arm){
+        double r_free_angle = r_seed[Joints::UPPER_ARM_ROLL];
+        if (!m_ikfast_solver.ikRightArm(r_wrist_frame, r_free_angle, &r_angles)){
+            return false;
+        }
+    }
+    
+    if (use_left_arm){
+        double l_free_angle = l_seed[Joints::UPPER_ARM_ROLL];
+        if (!m_ikfast_solver.ikLeftArm(l_wrist_frame, l_free_angle, &l_angles)){
+            return false;
+        }
     }
 #endif
     double after = tv_a.tv_usec + (tv_a.tv_sec * 1000000);
     ik_time += after - before;
-    if (ik_calls % 10000 == 0){
-        ROS_INFO("ik calls %d, time %d us", ik_calls, ik_time);
-    }
 
     new_robot_pose = make_shared<RobotState>(seed_robot_pose.base_state(),
                                             RightContArmState(r_angles),
@@ -238,14 +260,25 @@ bool RobotState::workspaceInterpolate(const RobotState& start, const RobotState&
 ContObjectState RobotState::getObjectStateRelMap() const {
     // This is an adaptation of computeContinuousObjectPose from the old
     // planner.  TODO: make this arm agnostic?
-    std::vector<double> r_angles;
-    m_right_arm.getAngles(&r_angles);
-    SBPLArmModelPtr arm_model = m_right_arm.getArmModel();
+    std::vector<double> angles;
+    SBPLArmModelPtr arm_model;
+    KDL::Frame offset;
+    bool left_arm_dominant = (m_planning_mode == PlanningModes::LEFT_ARM ||
+                              m_planning_mode == PlanningModes::LEFT_ARM_MOBILE);
+    if (left_arm_dominant){
+        m_left_arm.getAngles(&angles);
+        arm_model = m_left_arm.getArmModel();
+        offset = m_left_arm.getObjectOffset().Inverse();
+    } else {
+        m_right_arm.getAngles(&angles);
+        arm_model = m_right_arm.getArmModel();
+        offset = m_right_arm.getObjectOffset().Inverse();
+    }
 
     // don't remember what 10 is for. ask ben.
     KDL::Frame to_wrist;
-    arm_model->computeFK(r_angles, m_base_state.getBodyPose(), 10, &to_wrist);
-    KDL::Frame f = to_wrist * m_right_arm.getObjectOffset().Inverse();
+    arm_model->computeFK(angles, m_base_state.getBodyPose(), 10, &to_wrist);
+    KDL::Frame f = to_wrist * offset;
 
     double wr,wp,wy;
     f.M.GetRPY(wr,wp,wy);

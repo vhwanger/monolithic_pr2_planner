@@ -8,11 +8,14 @@ import geometry_msgs.msg
 import std_msgs.msg
 
 class GetMobileArmPlanRequest(genpy.Message):
-  _md5sum = "f2f5d99d6fbf9e028d2e0b29efb5cd9f"
+  _md5sum = "4b661b4c7b79af2690de8766b5c56ff7"
   _type = "monolithic_pr2_planner_node/GetMobileArmPlanRequest"
   _has_header = False #flag to mark the presence of a Header object
   _full_text = """
 geometry_msgs/PoseStamped start
+
+int8 planning_mode
+float64 allocated_planning_time
 
 
 float64[] rarm_start
@@ -37,15 +40,9 @@ geometry_msgs/PoseStamped rarm_object
 
 geometry_msgs/PoseStamped larm_object
 
-float64 egraph_eps
-float64 final_egraph_eps
-float64 dec_egraph_eps
 float64 initial_eps
 float64 final_eps
 float64 dec_eps
-bool feedback_paths
-bool save_egraph
-bool use_egraph
 
 
 ================================================================================
@@ -95,8 +92,8 @@ float64 z
 float64 w
 
 """
-  __slots__ = ['start','rarm_start','larm_start','body_start','rarm_goal','larm_goal','body_goal','goal','xyz_tolerance','roll_tolerance','pitch_tolerance','yaw_tolerance','rarm_object','larm_object','egraph_eps','final_egraph_eps','dec_egraph_eps','initial_eps','final_eps','dec_eps','feedback_paths','save_egraph','use_egraph']
-  _slot_types = ['geometry_msgs/PoseStamped','float64[]','float64[]','float64[]','float64[]','float64[]','float64[]','geometry_msgs/PoseStamped','float64','float64','float64','float64','geometry_msgs/PoseStamped','geometry_msgs/PoseStamped','float64','float64','float64','float64','float64','float64','bool','bool','bool']
+  __slots__ = ['start','planning_mode','allocated_planning_time','rarm_start','larm_start','body_start','rarm_goal','larm_goal','body_goal','goal','xyz_tolerance','roll_tolerance','pitch_tolerance','yaw_tolerance','rarm_object','larm_object','initial_eps','final_eps','dec_eps']
+  _slot_types = ['geometry_msgs/PoseStamped','int8','float64','float64[]','float64[]','float64[]','float64[]','float64[]','float64[]','geometry_msgs/PoseStamped','float64','float64','float64','float64','geometry_msgs/PoseStamped','geometry_msgs/PoseStamped','float64','float64','float64']
 
   def __init__(self, *args, **kwds):
     """
@@ -106,7 +103,7 @@ float64 w
     changes.  You cannot mix in-order arguments and keyword arguments.
 
     The available fields are:
-       start,rarm_start,larm_start,body_start,rarm_goal,larm_goal,body_goal,goal,xyz_tolerance,roll_tolerance,pitch_tolerance,yaw_tolerance,rarm_object,larm_object,egraph_eps,final_egraph_eps,dec_egraph_eps,initial_eps,final_eps,dec_eps,feedback_paths,save_egraph,use_egraph
+       start,planning_mode,allocated_planning_time,rarm_start,larm_start,body_start,rarm_goal,larm_goal,body_goal,goal,xyz_tolerance,roll_tolerance,pitch_tolerance,yaw_tolerance,rarm_object,larm_object,initial_eps,final_eps,dec_eps
 
     :param args: complete set of field values, in .msg order
     :param kwds: use keyword arguments corresponding to message field names
@@ -117,6 +114,10 @@ float64 w
       #message fields cannot be None, assign default values for those that are
       if self.start is None:
         self.start = geometry_msgs.msg.PoseStamped()
+      if self.planning_mode is None:
+        self.planning_mode = 0
+      if self.allocated_planning_time is None:
+        self.allocated_planning_time = 0.
       if self.rarm_start is None:
         self.rarm_start = []
       if self.larm_start is None:
@@ -143,26 +144,16 @@ float64 w
         self.rarm_object = geometry_msgs.msg.PoseStamped()
       if self.larm_object is None:
         self.larm_object = geometry_msgs.msg.PoseStamped()
-      if self.egraph_eps is None:
-        self.egraph_eps = 0.
-      if self.final_egraph_eps is None:
-        self.final_egraph_eps = 0.
-      if self.dec_egraph_eps is None:
-        self.dec_egraph_eps = 0.
       if self.initial_eps is None:
         self.initial_eps = 0.
       if self.final_eps is None:
         self.final_eps = 0.
       if self.dec_eps is None:
         self.dec_eps = 0.
-      if self.feedback_paths is None:
-        self.feedback_paths = False
-      if self.save_egraph is None:
-        self.save_egraph = False
-      if self.use_egraph is None:
-        self.use_egraph = False
     else:
       self.start = geometry_msgs.msg.PoseStamped()
+      self.planning_mode = 0
+      self.allocated_planning_time = 0.
       self.rarm_start = []
       self.larm_start = []
       self.body_start = []
@@ -176,15 +167,9 @@ float64 w
       self.yaw_tolerance = 0.
       self.rarm_object = geometry_msgs.msg.PoseStamped()
       self.larm_object = geometry_msgs.msg.PoseStamped()
-      self.egraph_eps = 0.
-      self.final_egraph_eps = 0.
-      self.dec_egraph_eps = 0.
       self.initial_eps = 0.
       self.final_eps = 0.
       self.dec_eps = 0.
-      self.feedback_paths = False
-      self.save_egraph = False
-      self.use_egraph = False
 
   def _get_types(self):
     """
@@ -207,7 +192,7 @@ float64 w
         length = len(_x)
       buff.write(struct.pack('<I%ss'%length, length, _x))
       _x = self
-      buff.write(_struct_7d.pack(_x.start.pose.position.x, _x.start.pose.position.y, _x.start.pose.position.z, _x.start.pose.orientation.x, _x.start.pose.orientation.y, _x.start.pose.orientation.z, _x.start.pose.orientation.w))
+      buff.write(_struct_7dbd.pack(_x.start.pose.position.x, _x.start.pose.position.y, _x.start.pose.position.z, _x.start.pose.orientation.x, _x.start.pose.orientation.y, _x.start.pose.orientation.z, _x.start.pose.orientation.w, _x.planning_mode, _x.allocated_planning_time))
       length = len(self.rarm_start)
       buff.write(_struct_I.pack(length))
       pattern = '<%sd'%length
@@ -257,7 +242,7 @@ float64 w
         length = len(_x)
       buff.write(struct.pack('<I%ss'%length, length, _x))
       _x = self
-      buff.write(_struct_13d3B.pack(_x.larm_object.pose.position.x, _x.larm_object.pose.position.y, _x.larm_object.pose.position.z, _x.larm_object.pose.orientation.x, _x.larm_object.pose.orientation.y, _x.larm_object.pose.orientation.z, _x.larm_object.pose.orientation.w, _x.egraph_eps, _x.final_egraph_eps, _x.dec_egraph_eps, _x.initial_eps, _x.final_eps, _x.dec_eps, _x.feedback_paths, _x.save_egraph, _x.use_egraph))
+      buff.write(_struct_10d.pack(_x.larm_object.pose.position.x, _x.larm_object.pose.position.y, _x.larm_object.pose.position.z, _x.larm_object.pose.orientation.x, _x.larm_object.pose.orientation.y, _x.larm_object.pose.orientation.z, _x.larm_object.pose.orientation.w, _x.initial_eps, _x.final_eps, _x.dec_eps))
     except struct.error as se: self._check_types(se)
     except TypeError as te: self._check_types(te)
 
@@ -291,8 +276,8 @@ float64 w
         self.start.header.frame_id = str[start:end]
       _x = self
       start = end
-      end += 56
-      (_x.start.pose.position.x, _x.start.pose.position.y, _x.start.pose.position.z, _x.start.pose.orientation.x, _x.start.pose.orientation.y, _x.start.pose.orientation.z, _x.start.pose.orientation.w,) = _struct_7d.unpack(str[start:end])
+      end += 65
+      (_x.start.pose.position.x, _x.start.pose.position.y, _x.start.pose.position.z, _x.start.pose.orientation.x, _x.start.pose.orientation.y, _x.start.pose.orientation.z, _x.start.pose.orientation.w, _x.planning_mode, _x.allocated_planning_time,) = _struct_7dbd.unpack(str[start:end])
       start = end
       end += 4
       (length,) = _struct_I.unpack(str[start:end])
@@ -376,11 +361,8 @@ float64 w
         self.larm_object.header.frame_id = str[start:end]
       _x = self
       start = end
-      end += 107
-      (_x.larm_object.pose.position.x, _x.larm_object.pose.position.y, _x.larm_object.pose.position.z, _x.larm_object.pose.orientation.x, _x.larm_object.pose.orientation.y, _x.larm_object.pose.orientation.z, _x.larm_object.pose.orientation.w, _x.egraph_eps, _x.final_egraph_eps, _x.dec_egraph_eps, _x.initial_eps, _x.final_eps, _x.dec_eps, _x.feedback_paths, _x.save_egraph, _x.use_egraph,) = _struct_13d3B.unpack(str[start:end])
-      self.feedback_paths = bool(self.feedback_paths)
-      self.save_egraph = bool(self.save_egraph)
-      self.use_egraph = bool(self.use_egraph)
+      end += 80
+      (_x.larm_object.pose.position.x, _x.larm_object.pose.position.y, _x.larm_object.pose.position.z, _x.larm_object.pose.orientation.x, _x.larm_object.pose.orientation.y, _x.larm_object.pose.orientation.z, _x.larm_object.pose.orientation.w, _x.initial_eps, _x.final_eps, _x.dec_eps,) = _struct_10d.unpack(str[start:end])
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e) #most likely buffer underfill
@@ -402,7 +384,7 @@ float64 w
         length = len(_x)
       buff.write(struct.pack('<I%ss'%length, length, _x))
       _x = self
-      buff.write(_struct_7d.pack(_x.start.pose.position.x, _x.start.pose.position.y, _x.start.pose.position.z, _x.start.pose.orientation.x, _x.start.pose.orientation.y, _x.start.pose.orientation.z, _x.start.pose.orientation.w))
+      buff.write(_struct_7dbd.pack(_x.start.pose.position.x, _x.start.pose.position.y, _x.start.pose.position.z, _x.start.pose.orientation.x, _x.start.pose.orientation.y, _x.start.pose.orientation.z, _x.start.pose.orientation.w, _x.planning_mode, _x.allocated_planning_time))
       length = len(self.rarm_start)
       buff.write(_struct_I.pack(length))
       pattern = '<%sd'%length
@@ -452,7 +434,7 @@ float64 w
         length = len(_x)
       buff.write(struct.pack('<I%ss'%length, length, _x))
       _x = self
-      buff.write(_struct_13d3B.pack(_x.larm_object.pose.position.x, _x.larm_object.pose.position.y, _x.larm_object.pose.position.z, _x.larm_object.pose.orientation.x, _x.larm_object.pose.orientation.y, _x.larm_object.pose.orientation.z, _x.larm_object.pose.orientation.w, _x.egraph_eps, _x.final_egraph_eps, _x.dec_egraph_eps, _x.initial_eps, _x.final_eps, _x.dec_eps, _x.feedback_paths, _x.save_egraph, _x.use_egraph))
+      buff.write(_struct_10d.pack(_x.larm_object.pose.position.x, _x.larm_object.pose.position.y, _x.larm_object.pose.position.z, _x.larm_object.pose.orientation.x, _x.larm_object.pose.orientation.y, _x.larm_object.pose.orientation.z, _x.larm_object.pose.orientation.w, _x.initial_eps, _x.final_eps, _x.dec_eps))
     except struct.error as se: self._check_types(se)
     except TypeError as te: self._check_types(te)
 
@@ -487,8 +469,8 @@ float64 w
         self.start.header.frame_id = str[start:end]
       _x = self
       start = end
-      end += 56
-      (_x.start.pose.position.x, _x.start.pose.position.y, _x.start.pose.position.z, _x.start.pose.orientation.x, _x.start.pose.orientation.y, _x.start.pose.orientation.z, _x.start.pose.orientation.w,) = _struct_7d.unpack(str[start:end])
+      end += 65
+      (_x.start.pose.position.x, _x.start.pose.position.y, _x.start.pose.position.z, _x.start.pose.orientation.x, _x.start.pose.orientation.y, _x.start.pose.orientation.z, _x.start.pose.orientation.w, _x.planning_mode, _x.allocated_planning_time,) = _struct_7dbd.unpack(str[start:end])
       start = end
       end += 4
       (length,) = _struct_I.unpack(str[start:end])
@@ -572,11 +554,8 @@ float64 w
         self.larm_object.header.frame_id = str[start:end]
       _x = self
       start = end
-      end += 107
-      (_x.larm_object.pose.position.x, _x.larm_object.pose.position.y, _x.larm_object.pose.position.z, _x.larm_object.pose.orientation.x, _x.larm_object.pose.orientation.y, _x.larm_object.pose.orientation.z, _x.larm_object.pose.orientation.w, _x.egraph_eps, _x.final_egraph_eps, _x.dec_egraph_eps, _x.initial_eps, _x.final_eps, _x.dec_eps, _x.feedback_paths, _x.save_egraph, _x.use_egraph,) = _struct_13d3B.unpack(str[start:end])
-      self.feedback_paths = bool(self.feedback_paths)
-      self.save_egraph = bool(self.save_egraph)
-      self.use_egraph = bool(self.use_egraph)
+      end += 80
+      (_x.larm_object.pose.position.x, _x.larm_object.pose.position.y, _x.larm_object.pose.position.z, _x.larm_object.pose.orientation.x, _x.larm_object.pose.orientation.y, _x.larm_object.pose.orientation.z, _x.larm_object.pose.orientation.w, _x.initial_eps, _x.final_eps, _x.dec_eps,) = _struct_10d.unpack(str[start:end])
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e) #most likely buffer underfill
@@ -584,9 +563,9 @@ float64 w
 _struct_I = genpy.struct_I
 _struct_11d3I = struct.Struct("<11d3I")
 _struct_3I = struct.Struct("<3I")
-_struct_7d = struct.Struct("<7d")
-_struct_13d3B = struct.Struct("<13d3B")
+_struct_7dbd = struct.Struct("<7dbd")
 _struct_7d3I = struct.Struct("<7d3I")
+_struct_10d = struct.Struct("<10d")
 """autogenerated by genpy from monolithic_pr2_planner_node/GetMobileArmPlanResponse.msg. Do not edit."""
 import sys
 python3 = True if sys.hexversion > 0x03000000 else False
@@ -1185,6 +1164,6 @@ _struct_3I = struct.Struct("<3I")
 _struct_2i = struct.Struct("<2i")
 class GetMobileArmPlan(object):
   _type          = 'monolithic_pr2_planner_node/GetMobileArmPlan'
-  _md5sum = '08d9bbcceea1f0a6c0e72f27a2f0cdde'
+  _md5sum = 'd8a457db824f015e8c2f9227f415879b'
   _request_class  = GetMobileArmPlanRequest
   _response_class = GetMobileArmPlanResponse

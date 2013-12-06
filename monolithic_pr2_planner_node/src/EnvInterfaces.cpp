@@ -71,6 +71,7 @@ bool EnvInterfaces::planPathCallback(GetMobileArmPlan::Request &req,
     search_request->roll_tolerance = req.roll_tolerance;
     search_request->pitch_tolerance = req.pitch_tolerance;
     search_request->yaw_tolerance = req.yaw_tolerance;
+    search_request->planning_mode = req.planning_mode;
 
     res.stats_field_names.resize(18);
     res.stats.resize(18);
@@ -87,29 +88,24 @@ bool EnvInterfaces::planPathCallback(GetMobileArmPlan::Request &req,
     vector<int> soln;
     int soln_cost;
     // TODO make external parameter
-    bool isPlanFound = m_planner->replan(60.0, &soln, &soln_cost);
+    bool isPlanFound = m_planner->replan(req.allocated_planning_time, 
+                                         &soln, &soln_cost);
 
     if (isPlanFound){
-        vector<RobotState> states =  m_env->reconstructPath(soln);
+        vector<FullBodyState> states =  m_env->reconstructPath(soln);
         for (auto state : states){
-            vector<double> angles;
-            vector<double> base_state;
-            ContBaseState cont_base = state.base_state();
-            cont_base.getValues(&base_state);
             printf("base states: ");
-            for (auto value: base_state){
+            for (auto value: state.base){
                 printf("%f ", value);
             }
             printf("\n");
             printf("right arm angles: ");
-            state.right_arm().getAngles(&angles);
-            for (auto angle: angles){
+            for (auto angle: state.right_arm){
                 printf("%f ", angle);
             }
             printf("\n");
             printf("left arm angles: ");
-            state.left_arm().getAngles(&angles);
-            for (auto angle: angles){
+            for (auto angle: state.left_arm){
                 printf("%f ", angle);
             }
             printf("\n");

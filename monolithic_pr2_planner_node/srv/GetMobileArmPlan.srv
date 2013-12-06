@@ -1,6 +1,9 @@
 # start
 geometry_msgs/PoseStamped start
 
+int8 planning_mode
+float64 allocated_planning_time
+
 # added for full body experiments without gazebo
 float64[] rarm_start
 float64[] larm_start
@@ -24,15 +27,9 @@ geometry_msgs/PoseStamped rarm_object
 # left arm position on the object (in the object frame)
 geometry_msgs/PoseStamped larm_object
 
-float64 egraph_eps
-float64 final_egraph_eps
-float64 dec_egraph_eps
 float64 initial_eps
 float64 final_eps
 float64 dec_eps
-bool feedback_paths
-bool save_egraph
-bool use_egraph
 
 ---
 

@@ -22,6 +22,7 @@ namespace monolithic_pr2_planner {
         RightContArmState right_arm_start;
         KDL::Frame left_arm_object;
         KDL::Frame right_arm_object;
+        int planning_mode;
     } SearchRequestParams;
 
     enum RequestErrors { 

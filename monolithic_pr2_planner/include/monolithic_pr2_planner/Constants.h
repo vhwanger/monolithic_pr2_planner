@@ -56,5 +56,16 @@ namespace monolithic_pr2_planner {
         public:
             enum { BASE, ARM, ARM_ADAPTIVE, BASE_ADAPTIVE, TORSO };
     };
+
+    class PlanningModes {
+        public:
+            enum { BASE_ONLY, 
+                   RIGHT_ARM, 
+                   LEFT_ARM, 
+                   DUAL_ARM, 
+                   RIGHT_ARM_MOBILE, 
+                   LEFT_ARM_MOBILE, 
+                   DUAL_ARM_MOBILE };
+    };
 }
 

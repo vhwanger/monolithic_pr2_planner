@@ -2,6 +2,7 @@
 #include <angles/angles.h>
 #include <string>
 #include <ros/console.h>
+#include <stdexcept>
 
 using namespace monolithic_pr2_planner;
 using namespace angles;
@@ -11,6 +12,8 @@ IKFastPR2 ContArmState::m_ikfast_solver;
 RobotResolutionParams ContArmState::m_params;
 KDL::Frame LeftContArmState::m_object_offset;
 KDL::Frame RightContArmState::m_object_offset;
+int LeftContArmState::m_arm_side;
+int RightContArmState::m_arm_side;
 SBPLArmModelPtr LeftContArmState::m_arm_model;
 SBPLArmModelPtr RightContArmState::m_arm_model;
 
@@ -24,9 +27,6 @@ bool ContArmState::operator!=(const ContArmState& other){
 
 ContArmState::ContArmState() : 
     m_is_enforcing_joint_limits(true), m_angles(7,0){
-    //if (!m_params){
-    //    ROS_ERROR("Robot resolution parameters were not statically initialized!");
-    //}
 }
 
 ContArmState::ContArmState(vector<double> arm_state) : 
@@ -67,6 +67,7 @@ void LeftContArmState::initArmModel(ArmDescriptionParams& params){
         arm_model->initKDLChain(params.robot_description_string);
     }
     m_arm_model = arm_model;
+    m_arm_side = ArmSide::LEFT;
 }
 
 void RightContArmState::initArmModel(ArmDescriptionParams& params){
@@ -85,6 +86,7 @@ void RightContArmState::initArmModel(ArmDescriptionParams& params){
         arm_model->initKDLChain(params.robot_description_string);
     }
     m_arm_model = arm_model;
+    m_arm_side = ArmSide::RIGHT;
 }
 
 DiscObjectState ContArmState::getObjectStateRelBody(){
@@ -94,7 +96,13 @@ DiscObjectState ContArmState::getObjectStateRelBody(){
     getArmModel()->computeArmFK(m_angles, 10, &to_wrist);
 #endif
 #ifdef USE_IKFAST_SOLVER
-    to_wrist = m_ikfast_solver.fkRightArm(m_angles);
+    if (getArm() == ArmSide::RIGHT){
+        to_wrist = m_ikfast_solver.fkRightArm(m_angles);
+    } else if (getArm() == ArmSide::LEFT){
+        to_wrist = m_ikfast_solver.fkLeftArm(m_angles);
+    } else {
+        throw std::invalid_argument("Arm specified isn't the left or right??");
+    }
 #endif
     KDL::Frame f = to_wrist * getObjectOffset().Inverse();
 

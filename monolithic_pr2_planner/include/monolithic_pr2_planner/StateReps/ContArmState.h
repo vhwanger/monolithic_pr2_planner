@@ -60,7 +60,7 @@ namespace monolithic_pr2_planner {
             std::vector<double>::const_iterator getAnglesBegin() const{return m_angles.begin();};
             std::vector<double>::const_iterator getAnglesEnd() const { return m_angles.end(); };
 
-            inline ArmSide getArm() const { return m_arm_side; };
+            virtual int getArm() const = 0;
 
             virtual KDL::Frame getObjectOffset() const = 0;
             virtual void setObjectOffset(KDL::Frame& object_offset) = 0;
@@ -80,7 +80,6 @@ namespace monolithic_pr2_planner {
 
             bool m_is_enforcing_joint_limits;
             std::vector<double> m_angles;
-            ArmSide m_arm_side;
     };
     
     class LeftContArmState : public ContArmState {
@@ -89,12 +88,14 @@ namespace monolithic_pr2_planner {
             LeftContArmState(std::vector<double> angles) : ContArmState(angles) { }
             virtual SBPLArmModelPtr getArmModel() const { return m_arm_model; }
             virtual KDL::Frame getObjectOffset() const { return m_object_offset; }
+            virtual int getArm() const { return m_arm_side; };
             virtual void setObjectOffset(KDL::Frame& object_offset){ m_object_offset = object_offset; };
             virtual void setArmModel(SBPLArmModelPtr arm_model) { m_arm_model = arm_model; };
 
             static void initArmModel(ArmDescriptionParams& params);
 
         private:
+            static int m_arm_side;
             static SBPLArmModelPtr m_arm_model;
             static KDL::Frame m_object_offset;
     };
@@ -104,6 +105,7 @@ namespace monolithic_pr2_planner {
             RightContArmState(){};
             RightContArmState(std::vector<double> angles) : ContArmState(angles) { }
             virtual SBPLArmModelPtr getArmModel() const { return m_arm_model; }
+            virtual int getArm() const { return m_arm_side; };
             virtual KDL::Frame getObjectOffset() const { return m_object_offset; }
             virtual void setObjectOffset(KDL::Frame& object_offset){ m_object_offset = object_offset; };
             virtual void setArmModel(SBPLArmModelPtr arm_model) { m_arm_model = arm_model; };
@@ -111,6 +113,7 @@ namespace monolithic_pr2_planner {
             static void initArmModel(ArmDescriptionParams& params);
 
         private:
+            static int m_arm_side;
             static SBPLArmModelPtr m_arm_model;
             static KDL::Frame m_object_offset;
     };

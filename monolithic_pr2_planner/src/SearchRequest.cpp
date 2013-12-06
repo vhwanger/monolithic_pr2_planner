@@ -1,6 +1,7 @@
 #include <monolithic_pr2_planner/SearchRequest.h>
 #include <monolithic_pr2_planner/StateReps/DiscObjectState.h>
 #include <monolithic_pr2_planner/LoggerNames.h>
+#include <monolithic_pr2_planner/Constants.h>
 
 using namespace monolithic_pr2_planner;
 
@@ -18,6 +19,17 @@ bool SearchRequest::isValid(CSpaceMgrPtr& cspace){
         ROS_ERROR_NAMED(INIT_LOG, "Epsilons in search request were set wrong!");
         return false;
     }
+    if (m_params->planning_mode < 0 ||
+        m_params->planning_mode > PlanningModes::DUAL_ARM_MOBILE){
+        ROS_ERROR_NAMED(INIT_LOG, "Planning mode specified doesn't make sense: %d",
+                        m_params->planning_mode);
+        return false;
+    }
+
+
+    // TODO add in a check for dual arm to make sure the left arm can reach the
+    // object pose relative to the right arm
+
     if (!cspace->isValid(robot_start_pose)){
         ROS_ERROR_NAMED(INIT_LOG, "Starting pose is invalid.");
         return false;

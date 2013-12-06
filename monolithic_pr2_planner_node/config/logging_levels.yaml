@@ -1,9 +1,9 @@
 debug:
     logging:
-        configuration: info
-        initialization: info
-        collision_space: info
-        kinematics: info
-        hashmanager: info
-        search: info
-        motionprimitives: info
+        configuration: debug
+        initialization: debug
+        collision_space: debug
+        kinematics: debug
+        hashmanager: debug
+        search: debug
+        motionprimitives: debug

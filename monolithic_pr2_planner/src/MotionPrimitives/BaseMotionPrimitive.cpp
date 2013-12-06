@@ -57,7 +57,7 @@ bool BaseMotionPrimitive::apply(const GraphState& source_state,
         vector<ContBaseState> cont_base_interm_steps;
         // TODO make sure this skips the first and last points in the intermediate
         // steps list - they are repeats of the start and end position
-        ROS_DEBUG_NAMED(MPRIM_LOG, "Creating BaseMotionPrimitive intermediate steps");
+        //ROS_DEBUG_NAMED(MPRIM_LOG, "Creating BaseMotionPrimitive intermediate steps");
         for (auto interm_mprim_steps : getIntermSteps()){
             RobotState robot_state = source_state.robot_pose();
             ContBaseState interm_base = robot_state.base_state();
@@ -73,10 +73,10 @@ bool BaseMotionPrimitive::apply(const GraphState& source_state,
 
         }
         GraphState last_state(interm_robot_steps[interm_robot_steps.size()-1]);
-        ROS_DEBUG_NAMED(MPRIM_LOG, "last state of base mp");
-        last_state.printToDebug(MPRIM_LOG);
-        ROS_DEBUG_NAMED(MPRIM_LOG, "successor");
-        successor->printToDebug(MPRIM_LOG);
+        //ROS_DEBUG_NAMED(MPRIM_LOG, "last state of base mp");
+        //last_state.printToDebug(MPRIM_LOG);
+        //ROS_DEBUG_NAMED(MPRIM_LOG, "successor");
+        //successor->printToDebug(MPRIM_LOG);
         assert(*successor == last_state);
         t_data.interm_robot_steps(interm_robot_steps);
         t_data.cont_base_interm_steps(cont_base_interm_steps);
@@ -118,6 +118,6 @@ void BaseMotionPrimitive::computeCost(const MotionPrimitiveParams& params){
     m_cost = ceil(static_cast<double>(METER_TO_MM_MULT)*(max(linear_time, angular_time)));
     //use any additional cost multiplier
     m_cost *= getAdditionalCostMult();
-    assert(m_cost != 0.0);
+    assert(m_cost >= 0.0);
 }
 

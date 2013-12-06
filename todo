@@ -15,33 +15,19 @@ error check service request
 
 templatize state reps?
 
-fix ugly code in contarmstate
 
 maybe take out search request struct so it's a litle cleaner?
 
 do something to enforce that graphstatemotion is 12 units
 
-move ik stuff into the cont arm class
-
-move fk stuff into cont arm class (stuck because i can't get the arm model
-pointer due to fucking up the derived class and it holding the arm model pointer
-
 remove code duplication between computing the map frame object state and the
 body frame object state
-
-look for left arm motion primitive
 
 should all getter functions be duplicated in robot pose for ease?
 
 should the setter functions for xyz check bounds?
 
-collisionmgr is getting unwieldy. break it up?
-
 move the prints in robotstate into their composed objects
-
-change getter/setter to just x() and x(value)
-
-make it clear which frame object is in for computeRobotPose
 
 do something about indirection through SBPLEnv and envinterfaces?
 
@@ -58,3 +44,5 @@ fix the normalization problem in armadapdive
 
 restructure the computeCost function and when it's called since i use
 transitiondata class now
+
+maybe shove contbasestate for transitiondata into robot state?

@@ -51,7 +51,8 @@ bool ArmAdaptiveMotionPrimitive::apply(const GraphState& source_state,
     RobotPosePtr successor_robot_pose;
     bool isIKSuccess = RobotState::computeRobotPose(obj_in_body_frame, 
                                                     seed_pose, 
-                                                    successor_robot_pose);
+                                                    successor_robot_pose,
+                                                    true);
     if (isIKSuccess){
         ROS_DEBUG_NAMED(MPRIM_LOG, "successful arm adaptive motion!");
         ContObjectState new_obj_state = successor_robot_pose->getObjectStateRelMap();

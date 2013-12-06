@@ -13,6 +13,13 @@
 #include <memory>
 
 namespace monolithic_pr2_planner {
+
+    struct FullBodyState {
+        std::vector<double> base;
+        std::vector<double> left_arm;
+        std::vector<double> right_arm;
+    };
+
     /*! \brief Implements a complete environment used by the SBPL planner.
      * Contains everything from managing state IDs to collision space
      * information.
@@ -25,16 +32,18 @@ namespace monolithic_pr2_planner {
                                   int& start_id, int& goal_id);
             void GetSuccs(int sourceStateID, vector<int>* succIDs, 
                           vector<int>* costs);
-            std::vector<RobotState> reconstructPath(std::vector<int> state_ids);
+            std::vector<FullBodyState> reconstructPath(std::vector<int> state_ids);
 
         protected:
             bool setStartGoal(SearchRequestPtr search_request, 
                               int& start_id, int& goal_id);
             void configurePlanningDomain();
             void configureQuerySpecificParams(SearchRequestPtr search_request);
-            void printFinalPath(const vector<int>& state_ids,
+            std::vector<FullBodyState> getFinalPath(const vector<int>& state_ids,
                                 const vector<TransitionData>& transition_states);
             bool findBestTransition(int start_id, int end_id, TransitionData& t_data);
+            void visualizeFinalPath(std::vector<FullBodyState> path);
+            FullBodyState createFBState(const RobotState& robot);
 
             ParameterCatalog m_param_catalog;
             CSpaceMgrPtr m_cspace_mgr;

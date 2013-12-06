@@ -16,6 +16,11 @@ bool TorsoMotionPrimitive::apply(const GraphState& source_state,
         t_data.motion_type(motion_type());
         t_data.cost(cost());
     }
+    // TODO pr2cc should be doing this check instead
+    ContBaseState base_state = successor->robot_pose().base_state();
+    if (base_state.z() < 0 || base_state.z() > .31){
+        return false;
+    }
     return isSuccessorCreated;
 }
 
@@ -26,5 +31,5 @@ void TorsoMotionPrimitive::print() const {
 }
 
 void TorsoMotionPrimitive::computeCost(const MotionPrimitiveParams& params){
-    m_cost = 5000;
+    m_cost = 3000;
 }

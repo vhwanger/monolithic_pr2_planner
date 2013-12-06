@@ -31,7 +31,8 @@ namespace monolithic_pr2_planner {
             void printToDebug(char* log_level) const;
             void printToInfo(char* log_level) const;
 
-            //static void setPViz(boost::shared_ptr<PViz> pviz);
+            // this sets which arm to use for computing the object pose
+            static void setPlanningMode(int planning_mode){ m_planning_mode = planning_mode; };
             void visualize();
 
             ContObjectState getObjectStateRelMap() const;
@@ -39,7 +40,8 @@ namespace monolithic_pr2_planner {
 
             static bool computeRobotPose(const DiscObjectState& disc_obj_state,
                                          const RobotState& robot_pose,
-                                         boost::shared_ptr<RobotState>& new_robot_pose);
+                                         boost::shared_ptr<RobotState>& new_robot_pose,
+                                         bool free_angle_search=false);
             static bool workspaceInterpolate(const RobotState& start, const RobotState& end,
                                              std::vector<RobotState>* interp_steps);
 
@@ -47,10 +49,10 @@ namespace monolithic_pr2_planner {
 
 
         private:
-            //static boost::shared_ptr<PViz> m_pviz;
             static IKFastPR2 m_ikfast_solver;
             static int ik_calls;
             static int ik_time;
+            static int m_planning_mode;
             DiscBaseState m_base_state;
             RightContArmState m_right_arm;
             LeftContArmState m_left_arm;

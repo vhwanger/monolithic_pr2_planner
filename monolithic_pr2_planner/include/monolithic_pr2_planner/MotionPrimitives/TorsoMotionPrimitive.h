@@ -1,6 +1,7 @@
 #pragma once
 #include <monolithic_pr2_planner/MotionPrimitives/MotionPrimitive.h>
 #include <monolithic_pr2_planner/StateReps/GraphState.h>
+#include <monolithic_pr2_planner/StateReps/ContBaseState.h>
 #include <boost/shared_ptr.hpp>
 
 namespace monolithic_pr2_planner {
