@@ -70,16 +70,16 @@ void Environment::GetSuccs(int sourceStateID, vector<int>* succIDs,
         }
         if (m_cspace_mgr->isValidSuccessor(*successor, t_data) && 
             m_cspace_mgr->isValidTransitionStates(t_data)){
-            //ROS_DEBUG_NAMED(SEARCH_LOG, "Source state is:");
-            //source_state->printToDebug(SEARCH_LOG);
+            ROS_DEBUG_NAMED(SEARCH_LOG, "Source state is:");
+            source_state->printToDebug(SEARCH_LOG);
             //ROS_DEBUG_NAMED(SEARCH_LOG, 
             //"==================Applying Motion Primitive==================");
             //ROS_DEBUG_NAMED(MPRIM_LOG, "Applying motion:");
             //mprim->printEndCoord();
             m_hash_mgr.save(successor);
-            //ROS_DEBUG_NAMED(MPRIM_LOG, "successor state with id %d is:", 
-            //                successor->id());
-            //successor->printToDebug(MPRIM_LOG);
+            ROS_DEBUG_NAMED(MPRIM_LOG, "successor state with id %d is:", 
+                            successor->id());
+            successor->printToDebug(MPRIM_LOG);
 
 
             if (m_goal->isSatisfiedBy(successor)){
@@ -89,8 +89,8 @@ void Environment::GetSuccs(int sourceStateID, vector<int>* succIDs,
             } else {
                 succIDs->push_back(successor->id());
             }
-            //costs->push_back(1);
-            costs->push_back(mprim->cost());
+            costs->push_back(1);
+            //costs->push_back(mprim->cost());
             ROS_DEBUG_NAMED(SEARCH_LOG, "motion succeeded with cost %d", mprim->cost());
         } else {
             successor->robot_pose().visualize();

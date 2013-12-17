@@ -126,10 +126,12 @@ bool RobotState::computeRobotPose(const DiscObjectState& disc_obj_state,
     KDL::Frame r_obj_to_wrist_offset = seed_robot_pose.right_arm().getObjectOffset();
     KDL::Frame l_obj_to_wrist_offset = seed_robot_pose.left_arm().getObjectOffset();
 
-    // TODO: move this into cont arm
-    // TODO: add in the left arm computation
     KDL::Frame r_wrist_frame = obj_frame * r_obj_to_wrist_offset;
     KDL::Frame l_wrist_frame = obj_frame * l_obj_to_wrist_offset;
+
+    // store the seed angles as the actual angles in case we don't compute for
+    // the other arm. otherwise, computing a new robot pose would reset the
+    // unused arm to angles of 0
     vector<double> r_seed(7,0), r_angles(7,0), l_seed(7,0), l_angles(7,0);
     seed_robot_pose.right_arm().getAngles(&r_seed);
     r_angles = r_seed;
@@ -143,6 +145,7 @@ bool RobotState::computeRobotPose(const DiscObjectState& disc_obj_state,
     double before = tv_b.tv_usec + (tv_b.tv_sec * 1000000);
     gettimeofday(&tv_a, NULL);
 
+    // decide which arms we need to run IK for
     bool use_right_arm = (m_planning_mode == PlanningModes::RIGHT_ARM ||
                           m_planning_mode == PlanningModes::DUAL_ARM ||
                           m_planning_mode == PlanningModes::RIGHT_ARM_MOBILE ||
@@ -161,7 +164,6 @@ bool RobotState::computeRobotPose(const DiscObjectState& disc_obj_state,
     bool ik_success = arm_model->computeFastIK(r_wrist_frame, r_seed, r_angles);
     if (!ik_success){
         if (!arm_model->computeIK(r_wrist_frame, r_seed, r_angles)){
-            //ROS_DEBUG_NAMED(KIN_LOG, "Both IK failed!");
             return false;
         }
     }
@@ -192,10 +194,11 @@ bool RobotState::computeRobotPose(const DiscObjectState& disc_obj_state,
     return true;
 }
 
-// TODO need to test this a lot more
-bool RobotState::workspaceInterpolate(const RobotState& start, const RobotState& end,
-                                      vector<RobotState>* interp_steps){
-
+/*! \brief Given two robot states, determine how many interpolation steps there
+ * should be. The delta step size is based on the RPY resolution of the object
+ * pose and the XYZ spatial resolution. 
+ */
+int RobotState::numInterpSteps(const RobotState& start, const RobotState& end){
     ContObjectState start_obj = start.getObjectStateRelBody();
     ContObjectState end_obj = end.getObjectStateRelBody();
     ContBaseState start_base = start.base_state();
@@ -213,7 +216,6 @@ bool RobotState::workspaceInterpolate(const RobotState& start, const RobotState&
     d_rot = max(d_rot, fabs(dyaw));
     d_rot = max(d_rot, fabs(dbase_theta));
 
-
     double d_object = ContObjectState::distance(start_obj, end_obj);
     double d_base = ContBaseState::distance(ContBaseState(start.base_state()), 
                                          ContBaseState(end.base_state()));
@@ -226,6 +228,26 @@ bool RobotState::workspaceInterpolate(const RobotState& start, const RobotState&
     ROS_DEBUG_NAMED(MPRIM_LOG, "rot steps %d, dist_steps %d", rot_steps, dist_steps);
 
     int num_interp_steps = max(rot_steps, dist_steps);
+    return num_interp_steps;
+}
+
+/*! \brief Given two robot states, we interpolate all steps in between them. The
+ * delta step size is based on the RPY resolution of the object pose and the XYZ
+ * resolution of the base. This returns a vector of RobotStates, which are
+ * discretized to the grid (meaning if the arms move a lot, but the base barely
+ * moves, the base discrete values will likely stay the same). This determines
+ * the number of interpolation steps based on which part of the robot moves more
+ * (arms or base).
+ * TODO need to test this a lot more
+ */
+bool RobotState::workspaceInterpolate(const RobotState& start, const RobotState& end,
+                                      vector<RobotState>* interp_steps){
+    ContObjectState start_obj = start.getObjectStateRelBody();
+    ContObjectState end_obj = end.getObjectStateRelBody();
+    ContBaseState start_base = start.base_state();
+    ContBaseState end_base = end.base_state();
+
+    int num_interp_steps = numInterpSteps(start, end);
     vector<ContObjectState> interp_obj_steps;
     vector<ContBaseState> interp_base_steps;
     ROS_DEBUG_NAMED(MPRIM_LOG, "start obj");
@@ -238,6 +260,8 @@ bool RobotState::workspaceInterpolate(const RobotState& start, const RobotState&
                                                    num_interp_steps);
     assert(interp_obj_steps.size() == interp_base_steps.size());
     ROS_DEBUG_NAMED(MPRIM_LOG, "size of returned interp %lu", interp_obj_steps.size());
+
+    // should at least return the same start and end poses
     if (num_interp_steps < 2){
         assert(interp_obj_steps.size() == 2);
     } else {
@@ -257,6 +281,8 @@ bool RobotState::workspaceInterpolate(const RobotState& start, const RobotState&
     return true;
 }
 
+/*! \brief Gets the pose of the object in map frame.
+ */
 ContObjectState RobotState::getObjectStateRelMap() const {
     // This is an adaptation of computeContinuousObjectPose from the old
     // planner.  TODO: make this arm agnostic?
@@ -286,7 +312,8 @@ ContObjectState RobotState::getObjectStateRelMap() const {
     return ContObjectState(f.p.x(), f.p.y(), f.p.z(), wr, wp, wy);
 }
 
-
+/*! \brief Gets the pose of the object in base link frame.
+ */
 DiscObjectState RobotState::getObjectStateRelBody() const {
     return m_obj_state;
 }

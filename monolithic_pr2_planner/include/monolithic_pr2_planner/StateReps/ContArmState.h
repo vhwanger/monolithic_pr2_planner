@@ -49,8 +49,6 @@ namespace monolithic_pr2_planner {
             void setArm(ArmSide arm);
             void setDiscFreeAngle(int value) { setUpperArmRoll(convertDiscFreeAngleToCont(value)); };
 
-
-
             inline double convertDiscFreeAngleToCont(int disc_angle) const {
                 double free_angle_res = m_params.arm_free_angle_resolution;
                 return normalize_angle_positive(double(disc_angle)*free_angle_res);

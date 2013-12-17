@@ -21,7 +21,6 @@ bool GraphState::operator!=(const GraphState& other){
 }
 
 
-// TODO bounds checking!
 bool GraphState::applyMPrim(const GraphStateMotion& mprim){
     DiscObjectState obj_state = m_robot_pose.getObjectStateRelBody();
     obj_state.x(obj_state.x() + mprim[GraphStateElement::OBJ_X]);
@@ -31,11 +30,18 @@ bool GraphState::applyMPrim(const GraphStateMotion& mprim){
     obj_state.roll(obj_state.roll() + mprim[GraphStateElement::OBJ_ROLL]);
     obj_state.pitch(obj_state.pitch() + mprim[GraphStateElement::OBJ_PITCH]);
     obj_state.yaw(obj_state.yaw() + mprim[GraphStateElement::OBJ_YAW]);
-
-
+    
     DiscBaseState base_state = m_robot_pose.base_state();
 
-    // TODO ADD FA change!
+    RightContArmState right_arm = m_robot_pose.right_arm();
+    int r_fa = right_arm.getDiscFreeAngle() + mprim[GraphStateElement::R_FA];
+    right_arm.setDiscFreeAngle(r_fa);
+    m_robot_pose.right_arm(right_arm);
+
+    LeftContArmState left_arm = m_robot_pose.left_arm();
+    int l_fa = left_arm.getDiscFreeAngle() + mprim[GraphStateElement::L_FA];
+    left_arm.setDiscFreeAngle(l_fa);
+    m_robot_pose.left_arm(left_arm);
 
     base_state.x(base_state.x() + mprim[GraphStateElement::BASE_X]);
     base_state.y(base_state.y() + mprim[GraphStateElement::BASE_Y]);
@@ -48,23 +54,26 @@ bool GraphState::applyMPrim(const GraphStateMotion& mprim){
     if (RobotState::computeRobotPose(obj_state, m_robot_pose, new_robot_pose)){
         m_robot_pose = *new_robot_pose;
     } else {
-        ROS_ERROR("ik failed");
         return false;
     }
     return true;
 }
 
+
+
 void GraphState::printToDebug(char* logger) const {
     DiscObjectState obj_state = m_robot_pose.getObjectStateRelBody();
     DiscObjectState map_obj_state = m_robot_pose.getObjectStateRelMap();
-    ROS_DEBUG_NAMED(logger, "object in map %d %d %d %d %d %d",
+
+
+    ROS_DEBUG_NAMED(logger, "\tobject in map %d %d %d %d %d %d",
                     map_obj_state.x(),
                     map_obj_state.y(),
                     map_obj_state.z(),
                     map_obj_state.roll(),
                     map_obj_state.pitch(),
                     map_obj_state.yaw());
-                    
+
     ROS_DEBUG_NAMED(logger, "\t%d %d %d %d %d %d %d %d %d %d %d %d",
                     obj_state.x(),
                     obj_state.y(),
@@ -114,3 +123,4 @@ DiscObjectState GraphState::getObjectStateRelMap() const {
 DiscObjectState GraphState::getObjectStateRelBody() const {
     return m_robot_pose.getObjectStateRelBody();
 }
+

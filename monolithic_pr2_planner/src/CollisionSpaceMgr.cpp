@@ -111,8 +111,6 @@ bool CollisionSpaceMgr::isValidSuccessor(const GraphState& successor,
  * type of motion is a base motion because RobotState only stores the discrete
  * base state. Thus, we need to look at the continuous base state that is also
  * stored in the transition data.
- *
- * TODO need to fix this to collision check the right data in t_data
  */
 bool CollisionSpaceMgr::isValidTransitionStates(const TransitionData& t_data){
     bool onlyBaseMotion = (t_data.motion_type() == MPrim_Types::BASE ||

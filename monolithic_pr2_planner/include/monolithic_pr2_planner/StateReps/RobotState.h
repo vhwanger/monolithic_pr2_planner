@@ -27,6 +27,8 @@ namespace monolithic_pr2_planner {
             void left_free_angle(int value) { m_left_arm.setDiscFreeAngle(value); };
             void right_free_angle(int value) { m_right_arm.setDiscFreeAngle(value); };
             void base_state(const DiscBaseState& base_state) { m_base_state = base_state; };
+            void right_arm(const RightContArmState& arm) { m_right_arm = arm; };
+            void left_arm(const LeftContArmState& arm){ m_left_arm = arm; };
 
             void printToDebug(char* log_level) const;
             void printToInfo(char* log_level) const;
@@ -44,11 +46,8 @@ namespace monolithic_pr2_planner {
                                          bool free_angle_search=false);
             static bool workspaceInterpolate(const RobotState& start, const RobotState& end,
                                              std::vector<RobotState>* interp_steps);
-
-
-
-
         private:
+            static int numInterpSteps(const RobotState& start, const RobotState& end);
             static IKFastPR2 m_ikfast_solver;
             static int ik_calls;
             static int ik_time;
