@@ -94,10 +94,7 @@ void BaseMotionPrimitive::computeCost(const MotionPrimitiveParams& params){
                                                              final_angle));
     assert((linear_time > 0) || (angular_distance > 0));
 
-    double turn_time_rads = static_cast<double>(params.turn_45_deg_in_place_time)*M_PI/4.0;
-    double angular_time = angular_distance/turn_time_rads;
-    //double angular_time = angular_distance/((M_PI/4.0)/
-    //params.turn_45_deg_in_place_time);
+    double angular_time = angular_distance/params.angular_vel;
 
     //make the cost the max of the two times
     m_cost = ceil(static_cast<double>(METER_TO_MM_MULT)*(max(linear_time, angular_time)));

@@ -31,7 +31,7 @@ namespace monolithic_pr2_planner {
         std::string arm_motion_primitive_file;
         std::string base_motion_primitive_file;
         double nominal_vel; // m/s
-        double turn_45_deg_in_place_time; // sec
+        double angular_vel; // rad/sec
     } MotionPrimitiveParams;
 
     typedef struct {

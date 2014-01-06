@@ -34,8 +34,9 @@ void ParameterCatalog::setMotionPrimitiveParams(MotionPrimitiveParams& params){
     m_nodehandle.param("planner/nominalvel_mpersecs", params.nominal_vel, 
              0.5);
     m_nodehandle.param("planner/timetoturn45degsinplace_secs",
-             params.turn_45_deg_in_place_time,
+             params.angular_vel,
              0.5);
+    params.angular_vel = 1/(params.angular_vel/45 * 180/M_PI); // rad/s
 }
 
 void ParameterCatalog::setLeftArmParams(ArmDescriptionParams& params){

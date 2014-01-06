@@ -47,5 +47,5 @@ void ArmMotionPrimitive::computeIntermSteps(const GraphState& source_state,
 }
 
 void ArmMotionPrimitive::computeCost(const MotionPrimitiveParams& params){
-    m_cost = 200;
+    m_cost = 40;
 }
