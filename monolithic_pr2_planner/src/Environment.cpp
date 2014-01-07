@@ -89,8 +89,7 @@ void Environment::GetSuccs(int sourceStateID, vector<int>* succIDs,
             } else {
                 succIDs->push_back(successor->id());
             }
-            costs->push_back(1);
-            //costs->push_back(mprim->cost());
+            costs->push_back(mprim->cost());
             ROS_DEBUG_NAMED(SEARCH_LOG, "motion succeeded with cost %d", mprim->cost());
         } else {
             successor->robot_pose().visualize();
@@ -124,7 +123,8 @@ bool Environment::setStartGoal(SearchRequestPtr search_request,
     start_pose.visualize();
 
 
-    m_goal = make_shared<GoalState>(search_request, m_heur);
+    m_goal = search_request->createGoalState();
+    m_heur->setGoal(*m_goal); 
 
     // TODO fix this! shouldn't be saving the start state twice.
     GraphStatePtr fake_goal = make_shared<GraphState>(*start_graph_state);
@@ -154,8 +154,10 @@ void Environment::configurePlanningDomain(){
     // used for collision space and discretizing plain xyz into grid world 
     OccupancyGridUser::init(m_param_catalog.m_occupancy_grid_params,
                             m_param_catalog.m_robot_resolution_params);
-    // init empty heuristic
+    // init empty heuristic. This gets filled in by the collision space mgr
+    // later.
     m_heur = make_shared<Heuristic>();
+    m_base_heur = make_shared<BaseHeuristic>();
 
     // used for discretization of robot movements
     ContArmState::setRobotResolutionParams(m_param_catalog.m_robot_resolution_params);

@@ -20,7 +20,8 @@ int Heuristic::getGoalHeuristic(GraphStatePtr state){
     return cost;
 }
 
-void Heuristic::setGoal(DiscObjectState& state){
+void Heuristic::setGoal(GoalState& goal_state){
+    DiscObjectState state = goal_state.getObjectState(); 
     m_bfs->run(state.x(),
                state.y(),
                state.z());

@@ -8,6 +8,7 @@ using namespace monolithic_pr2_planner;
 
 Node::Node(ros::NodeHandle nh) : m_env(new Environment(nh)), m_env_interface(m_env){
     m_env_interface.bindPlanPathToEnv("/sbpl_planning/plan_path");
+    m_env_interface.bindNavMapToTopic("/projected_map");
     //m_env_interface.bindCollisionSpaceToTopic("collision_map_out");
 
     std::string map_filename;

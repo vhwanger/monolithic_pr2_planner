@@ -3,6 +3,7 @@
 #include <monolithic_pr2_planner/StateReps/ContArmState.h>
 #include <monolithic_pr2_planner/CollisionSpaceMgr.h>
 #include <monolithic_pr2_planner/StateReps/RobotState.h>
+#include <monolithic_pr2_planner/StateReps/GoalState.h>
 #include <kdl/frames.hpp>
 #include <vector>
 
@@ -38,6 +39,7 @@ namespace monolithic_pr2_planner {
             SearchRequest(SearchRequestParamsPtr params);
             bool isValid(CSpaceMgrPtr& cspace);
             SearchRequestParamsPtr m_params;
+            GoalStatePtr createGoalState();
     };
     typedef boost::shared_ptr<SearchRequest> SearchRequestPtr;
 }

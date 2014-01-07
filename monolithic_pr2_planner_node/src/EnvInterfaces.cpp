@@ -28,8 +28,8 @@ EnvInterfaces::EnvInterfaces(boost::shared_ptr<monolithic_pr2_planner::Environme
 }
 
 void EnvInterfaces::getParams(){
-    m_nodehandle.param<std::string>("reference_frame", m_params.ref_frame, 
-                                    std::string("map"));
+    m_nodehandle.param<string>("reference_frame", m_params.ref_frame, 
+                                    string("map"));
 }
 
 void EnvInterfaces::bindPlanPathToEnv(string service_name){
@@ -118,7 +118,7 @@ bool EnvInterfaces::planPathCallback(GetMobileArmPlan::Request &req,
 
 }
 
-bool EnvInterfaces::bindCollisionSpaceToTopic(std::string topic_name){
+bool EnvInterfaces::bindCollisionSpaceToTopic(string topic_name){
     m_collision_space_interface.bindCollisionSpaceToTopic(topic_name, 
                                                           m_tf, 
                                                           m_params.ref_frame);
@@ -126,6 +126,16 @@ bool EnvInterfaces::bindCollisionSpaceToTopic(std::string topic_name){
 }
 
 
-void EnvInterfaces::initCollisionSpaceFromfile(std::string filename){
+void EnvInterfaces::initCollisionSpaceFromfile(string filename){
     m_collision_space_interface.loadMap(filename);
+}
+
+void EnvInterfaces::bindNavMapToTopic(string topic){
+    m_nav_map = m_nodehandle.subscribe(topic, 1, &EnvInterfaces::loadNavMap, this);
+}
+
+void EnvInterfaces::loadNavMap(const nav_msgs::OccupancyGridPtr& map){
+    ROS_DEBUG_NAMED(CONFIG_LOG, "received navmap of size %u %u",
+                    map->info.width, map->info.height);
+    m_env->getBaseHeuristic()->loadMap(map->data);
 }

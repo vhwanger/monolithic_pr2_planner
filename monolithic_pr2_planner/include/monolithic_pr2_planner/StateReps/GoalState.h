@@ -1,8 +1,6 @@
 #pragma once
 #include <monolithic_pr2_planner/StateReps/GraphState.h>
 #include <monolithic_pr2_planner/StateReps/ContObjectState.h>
-#include <monolithic_pr2_planner/SearchRequest.h>
-#include <monolithic_pr2_planner/Heuristic.h>
 #include <vector>
 
 namespace monolithic_pr2_planner {
@@ -11,9 +9,9 @@ namespace monolithic_pr2_planner {
     class GoalState {
         public:
             GoalState(){ };
-            GoalState(SearchRequestPtr search_request, HeuristicPtr heur);
+            GoalState(DiscObjectState obj_goal, double xyz_tol, 
+                     double roll_tol, double pitch_tol, double yaw_tol);
             bool isSatisfiedBy(const GraphStatePtr& graph_state);
-            unsigned int getHeuristic(GraphStatePtr graph_state);
             void storeAsSolnState(const GraphStatePtr& state){ m_full_goal_state = state; };
             GraphStatePtr getSolnState(){ return m_full_goal_state; };
             bool isSolnStateID(int state_id);
@@ -28,7 +26,6 @@ namespace monolithic_pr2_planner {
             std::vector<double> m_tolerances;
             double l_free_angle;
             double r_free_angle;
-            HeuristicPtr m_heur;
     };
     typedef boost::shared_ptr<GoalState> GoalStatePtr;
 }

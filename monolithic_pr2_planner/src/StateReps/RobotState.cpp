@@ -284,8 +284,6 @@ bool RobotState::workspaceInterpolate(const RobotState& start, const RobotState&
 /*! \brief Gets the pose of the object in map frame.
  */
 ContObjectState RobotState::getObjectStateRelMap() const {
-    // This is an adaptation of computeContinuousObjectPose from the old
-    // planner.  TODO: make this arm agnostic?
     std::vector<double> angles;
     SBPLArmModelPtr arm_model;
     KDL::Frame offset;
@@ -301,7 +299,7 @@ ContObjectState RobotState::getObjectStateRelMap() const {
         offset = m_right_arm.getObjectOffset().Inverse();
     }
 
-    // don't remember what 10 is for. ask ben.
+    // 10 is the link number for the wrist
     KDL::Frame to_wrist;
     arm_model->computeFK(angles, m_base_state.getBodyPose(), 10, &to_wrist);
     KDL::Frame f = to_wrist * offset;

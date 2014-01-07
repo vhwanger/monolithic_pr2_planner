@@ -8,6 +8,7 @@
 #include <ros/ros.h>
 #include <tf/transform_listener.h>
 #include <sbpl/planners/araplanner.h>
+#include <nav_msgs/OccupancyGrid.h>
 
 namespace monolithic_pr2_planner_node {
     struct InterfaceParams {
@@ -22,9 +23,11 @@ namespace monolithic_pr2_planner_node {
                                   GetMobileArmPlan::Response &res);
             void bindPlanPathToEnv(std::string service_name);
             bool bindCollisionSpaceToTopic(std::string topic_name);
+            void bindNavMapToTopic(std::string topic_name);
             void initCollisionSpaceFromfile(std::string filename);
 
         private:
+            void loadNavMap(const nav_msgs::OccupancyGridPtr& map);
             ros::NodeHandle m_nodehandle;
             InterfaceParams m_params;
             boost::shared_ptr<monolithic_pr2_planner::Environment> m_env;
@@ -32,5 +35,6 @@ namespace monolithic_pr2_planner_node {
             CollisionSpaceInterface m_collision_space_interface;
             ros::ServiceServer m_plan_service;
             std::unique_ptr<ARAPlanner> m_planner;
+            ros::Subscriber m_nav_map;
     };
 }

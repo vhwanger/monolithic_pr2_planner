@@ -20,19 +20,20 @@ bool GraphState::operator!=(const GraphState& other){
     return !(*this == other);
 }
 
-
+/*! \brief applies a generic mprim vector to this graph state.
+ */
 bool GraphState::applyMPrim(const GraphStateMotion& mprim){
+    // object state change
     DiscObjectState obj_state = m_robot_pose.getObjectStateRelBody();
     obj_state.x(obj_state.x() + mprim[GraphStateElement::OBJ_X]);
     obj_state.y(obj_state.y() + mprim[GraphStateElement::OBJ_Y]);
     obj_state.z(obj_state.z() + mprim[GraphStateElement::OBJ_Z]);
-
     obj_state.roll(obj_state.roll() + mprim[GraphStateElement::OBJ_ROLL]);
     obj_state.pitch(obj_state.pitch() + mprim[GraphStateElement::OBJ_PITCH]);
     obj_state.yaw(obj_state.yaw() + mprim[GraphStateElement::OBJ_YAW]);
-    
     DiscBaseState base_state = m_robot_pose.base_state();
 
+    // free angle change
     RightContArmState right_arm = m_robot_pose.right_arm();
     int r_fa = right_arm.getDiscFreeAngle() + mprim[GraphStateElement::R_FA];
     right_arm.setDiscFreeAngle(r_fa);
@@ -43,13 +44,14 @@ bool GraphState::applyMPrim(const GraphStateMotion& mprim){
     left_arm.setDiscFreeAngle(l_fa);
     m_robot_pose.left_arm(left_arm);
 
+    // base change
     base_state.x(base_state.x() + mprim[GraphStateElement::BASE_X]);
     base_state.y(base_state.y() + mprim[GraphStateElement::BASE_Y]);
     base_state.z(base_state.z() + mprim[GraphStateElement::BASE_Z]);
-
     base_state.theta(base_state.theta() + mprim[GraphStateElement::BASE_THETA]);
     m_robot_pose.base_state(base_state);
 
+    // compute the new pose (runs IK)
     RobotPosePtr new_robot_pose;
     if (RobotState::computeRobotPose(obj_state, m_robot_pose, new_robot_pose)){
         m_robot_pose = *new_robot_pose;
@@ -58,8 +60,6 @@ bool GraphState::applyMPrim(const GraphStateMotion& mprim){
     }
     return true;
 }
-
-
 
 void GraphState::printToDebug(char* logger) const {
     DiscObjectState obj_state = m_robot_pose.getObjectStateRelBody();

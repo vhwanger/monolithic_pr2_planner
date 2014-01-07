@@ -3,8 +3,6 @@ exceptnion stuff for static configuration
 maybe change the name of occupancygriduser to something like discretizer? it
 uses a bunch of stuff other than occup grid
 
-delete arm model files
-
 change getANgles to return a vector rather than referenc?
 
 deal with unsigned int stateid -> maybe change it to ints?
@@ -17,11 +15,6 @@ templatize state reps?
 
 
 maybe take out search request struct so it's a litle cleaner?
-
-do something to enforce that graphstatemotion is 12 units
-
-remove code duplication between computing the map frame object state and the
-body frame object state
 
 should all getter functions be duplicated in robot pose for ease?
 
@@ -48,3 +41,5 @@ transitiondata class now
 maybe shove contbasestate for transitiondata into robot state?
 
 change mprimmgr to add and remove mprims depending on the planning request
+
+make the planner wait for base heuristic map to get loaded

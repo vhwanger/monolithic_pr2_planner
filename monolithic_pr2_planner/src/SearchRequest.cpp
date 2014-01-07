@@ -37,3 +37,10 @@ bool SearchRequest::isValid(CSpaceMgrPtr& cspace){
     return true;
 }
 
+GoalStatePtr SearchRequest::createGoalState(){
+    return boost::make_shared<GoalState>(m_params->obj_goal,
+                                         m_params->xyz_tolerance,
+                                         m_params->roll_tolerance,
+                                         m_params->pitch_tolerance,
+                                         m_params->yaw_tolerance);
+}

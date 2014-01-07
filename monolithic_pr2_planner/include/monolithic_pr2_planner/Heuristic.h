@@ -3,6 +3,7 @@
 #include <monolithic_pr2_planner/StateReps/DiscObjectState.h>
 #include <monolithic_pr2_planner/StateReps/GraphState.h>
 #include <monolithic_pr2_planner/OccupancyGridUser.h>
+#include <monolithic_pr2_planner/StateReps/GoalState.h>
 #include <memory>
 #include <vector>
 #include <boost/shared_ptr.hpp>
@@ -15,8 +16,7 @@ namespace monolithic_pr2_planner {
         public:
             Heuristic();
             int getGoalHeuristic(GraphStatePtr state);
-            // TODO cheating for now. should accept a graph state
-            void setGoal(DiscObjectState& state);
+            void setGoal(GoalState& state);
             void loadObstaclesFromOccupGrid();
             void visualize();
         private:

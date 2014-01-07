@@ -3,17 +3,24 @@
 
 using namespace monolithic_pr2_planner;
 
-GoalState::GoalState(SearchRequestPtr search_request, HeuristicPtr heur):
-    m_goal_state(search_request->m_params->obj_goal), m_tolerances(4,0),
-    m_heur(heur) {
-    // TODO: should i run an IK check here just to test feasibility?
-    heur->setGoal(m_goal_state); 
-    m_tolerances[Tolerances::XYZ] = search_request->m_params->xyz_tolerance;
-    m_tolerances[Tolerances::ROLL] = search_request->m_params->roll_tolerance;
-    m_tolerances[Tolerances::PITCH] = search_request->m_params->pitch_tolerance;
-    m_tolerances[Tolerances::YAW] = search_request->m_params->yaw_tolerance;
-}
+//GoalState::GoalState(SearchRequestPtr search_request):
+//    m_goal_state(search_request->m_params->obj_goal), m_tolerances(4,0){
+//
+//    m_tolerances[Tolerances::XYZ] = search_request->m_params->xyz_tolerance;
+//    m_tolerances[Tolerances::ROLL] = search_request->m_params->roll_tolerance;
+//    m_tolerances[Tolerances::PITCH] = search_request->m_params->pitch_tolerance;
+//    m_tolerances[Tolerances::YAW] = search_request->m_params->yaw_tolerance;
+//}
 
+GoalState::GoalState(DiscObjectState obj_goal, double xyz_tol, 
+                     double roll_tol, double pitch_tol, double yaw_tol):
+    m_goal_state(obj_goal), m_tolerances(4,0){
+
+    m_tolerances[Tolerances::XYZ] = xyz_tol;
+    m_tolerances[Tolerances::ROLL] = roll_tol;
+    m_tolerances[Tolerances::PITCH] = pitch_tol;
+    m_tolerances[Tolerances::YAW] = yaw_tol;
+}
 bool GoalState::isSatisfiedBy(const GraphStatePtr& graph_state){
     // not sure why there's a .005 here. ask ben
     ContObjectState c_tol(m_tolerances[Tolerances::XYZ]-.005, 
