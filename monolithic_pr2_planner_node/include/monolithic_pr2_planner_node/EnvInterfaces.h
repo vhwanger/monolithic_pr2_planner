@@ -8,6 +8,7 @@
 #include <ros/ros.h>
 #include <tf/transform_listener.h>
 #include <sbpl/planners/araplanner.h>
+#include <sbpl/planners/planner.h>
 
 namespace monolithic_pr2_planner_node {
     struct InterfaceParams {
@@ -31,6 +32,6 @@ namespace monolithic_pr2_planner_node {
             tf::TransformListener m_tf;
             CollisionSpaceInterface m_collision_space_interface;
             ros::ServiceServer m_plan_service;
-            std::unique_ptr<ARAPlanner> m_planner;
+            std::unique_ptr<SBPLPlanner> m_planner;
     };
 }
