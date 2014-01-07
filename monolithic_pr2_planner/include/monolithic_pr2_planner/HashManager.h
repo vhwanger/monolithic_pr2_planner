@@ -1,3 +1,4 @@
+#pragma once
 #include <monolithic_pr2_planner/StateReps/GraphState.h>
 #include <vector>
 #include <boost/shared_ptr.hpp>
@@ -23,4 +24,5 @@ namespace monolithic_pr2_planner {
             std::vector<GraphStatePtr> m_state_id_to_graph_table;
             std::vector<std::vector<GraphStatePtr> > m_coord_to_state_id_table;
     };
+    typedef boost::shared_ptr<HashManager> HashManagerPtr;
 }

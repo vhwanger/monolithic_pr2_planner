@@ -9,18 +9,12 @@
 #include <monolithic_pr2_planner/MotionPrimitives/MotionPrimitivesMgr.h>
 #include <monolithic_pr2_planner/Heuristic.h>
 #include <monolithic_pr2_planner/BaseHeuristic.h>
+#include <monolithic_pr2_planner/PathPostProcessor.h>
 #include <stdexcept>
 #include <vector>
 #include <memory>
 
 namespace monolithic_pr2_planner {
-
-    struct FullBodyState {
-        std::vector<double> base;
-        std::vector<double> left_arm;
-        std::vector<double> right_arm;
-    };
-
     /*! \brief Implements a complete environment used by the SBPL planner.
      * Contains everything from managing state IDs to collision space
      * information.
@@ -39,17 +33,13 @@ namespace monolithic_pr2_planner {
         protected:
             bool setStartGoal(SearchRequestPtr search_request, 
                               int& start_id, int& goal_id);
+            int saveFakeGoalState(const GraphStatePtr& graph_state);
             void configurePlanningDomain();
             void configureQuerySpecificParams(SearchRequestPtr search_request);
-            std::vector<FullBodyState> getFinalPath(const vector<int>& state_ids,
-                                const vector<TransitionData>& transition_states);
-            bool findBestTransition(int start_id, int end_id, TransitionData& t_data);
-            void visualizeFinalPath(std::vector<FullBodyState> path);
-            FullBodyState createFBState(const RobotState& robot);
 
             ParameterCatalog m_param_catalog;
             CSpaceMgrPtr m_cspace_mgr;
-            HashManager m_hash_mgr;
+            HashManagerPtr m_hash_mgr;
             ros::NodeHandle m_nodehandle;
             GoalStatePtr m_goal;
             MotionPrimitivesMgr m_mprims;
@@ -59,15 +49,15 @@ namespace monolithic_pr2_planner {
         // SBPL interface stuff
         public:
             bool InitializeEnv(const char* sEnvFile){return false;};
-            bool InitializeMDPCfg(MDPConfig *MDPCfg);
+            bool InitializeMDPCfg(MDPConfig *MDPCfg){ return true; };
             int  GetFromToHeuristic(int FromStateID, int ToStateID){ throw std::runtime_error("unimplement");  };
             int  GetGoalHeuristic(int stateID);
             int  GetStartHeuristic(int stateID) { throw std::runtime_error("unimplement"); };
             void GetPreds(int TargetStateID, std::vector<int>* PredIDV, std::vector<int>* CostV){};
             void SetAllActionsandAllOutcomes(CMDPSTATE* state){};
             void SetAllPreds(CMDPSTATE* state){};
-            int  SizeofCreatedEnv();
-            void PrintState(int stateID, bool bVerbose, FILE* fOut=NULL);
+            int  SizeofCreatedEnv(){ return m_hash_mgr->size(); };
+            void PrintState(int stateID, bool bVerbose, FILE* fOut=NULL){};
             void PrintEnv_Config(FILE* fOut){};
 
     };

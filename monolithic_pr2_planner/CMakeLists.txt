@@ -57,6 +57,7 @@ rosbuild_add_library(monolithic_pr2_planner src/StateReps/RobotState.cpp
                                             src/TransitionData.cpp
                                             src/Visualizer.cpp
                                             src/BaseHeuristic.cpp
+                                            src/PathPostProcessor.cpp
                                             )
 target_link_libraries(monolithic_pr2_planner ${SBPL_LIBRARIES} bfs3d)
 #rosbuild_add_boost_directories()
