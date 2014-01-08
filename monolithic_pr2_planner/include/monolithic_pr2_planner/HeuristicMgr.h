@@ -13,12 +13,16 @@ namespace monolithic_pr2_planner {
      */
     class HeuristicMgr {
         public:
-            // Add methods for all possible kinds of heuristics. Whenever a new heuristic type is added, a corresponding add<type>Heur() method needs to be added here. Returns the id of the heuristic in the internal m_heuristics vector.
+            // Add methods for all possible kinds of heuristics. Whenever a new
+            // heuristic type is added, a corresponding add<type>Heur() method
+            // needs to be added here. Returns the id of the heuristic in the
+            // internal m_heuristics vector.
             int add3DHeur();
             int add2DHeur();
-            // ... and so on
 
-            // Updates the collision map for the heuristics that need them. Doesn't take in an argument because each 3D heuristic shares the occupancy grid singleton.
+            // Updates the collision map for the heuristics that need them.
+            // Doesn't take in an argument because each 3D heuristic shares the
+            // occupancy grid singleton.
             void update3DHeuristicMaps();
 
             // Updates the 2D map for the heuristics that need them
