@@ -6,3 +6,4 @@
 #define HASH_LOG ((char*)"hashmanager")
 #define SEARCH_LOG ((char*)"search")
 #define MPRIM_LOG ((char*)"motionprimitives")
+#define HEUR_LOG ((char*)"heuristics")

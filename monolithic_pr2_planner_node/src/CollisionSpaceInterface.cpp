@@ -10,8 +10,9 @@ using namespace monolithic_pr2_planner;
 using namespace boost::filesystem;
 using namespace boost;
 
-CollisionSpaceInterface::CollisionSpaceInterface(CSpaceMgrPtr cspace_mgr):
-    m_cspace_mgr(cspace_mgr){
+CollisionSpaceInterface::CollisionSpaceInterface(CSpaceMgrPtr cspace_mgr, HeuristicMgrPtr heur_mgr):
+    m_cspace_mgr(cspace_mgr),
+    m_heur_mgr(heur_mgr) {
     m_cmap_pub = m_nodehandle.advertise<arm_navigation_msgs::CollisionMap>("environment", 1);
     m_pcl_pub = m_nodehandle.advertise<sensor_msgs::PointCloud2>("pcl_environment", 1);
 }
@@ -167,5 +168,13 @@ void CollisionSpaceInterface::loadMap(std::string filename){
     int mapsize_x, mapsize_y;
     VoxelList voxels = getVoxelsFromFile(filename, mapsize_x, mapsize_y);
     m_cspace_mgr->loadMap(voxels);
+
 }
 
+void CollisionSpaceInterface::update3DHeuristicMaps(){
+    m_heur_mgr->update3DHeuristicMaps();
+}
+
+void CollisionSpaceInterface::update2DHeuristicMaps(std::vector<signed char>& data){
+    // m_heur_mgr.update2DHeuristicMaps(map->data);
+}

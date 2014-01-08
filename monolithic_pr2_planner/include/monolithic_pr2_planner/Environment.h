@@ -7,8 +7,7 @@
 #include <monolithic_pr2_planner/SearchRequest.h>
 #include <monolithic_pr2_planner/StateReps/GoalState.h>
 #include <monolithic_pr2_planner/MotionPrimitives/MotionPrimitivesMgr.h>
-#include <monolithic_pr2_planner/Heuristic.h>
-#include <monolithic_pr2_planner/BaseHeuristic.h>
+#include <monolithic_pr2_planner/HeuristicMgr.h>
 #include <monolithic_pr2_planner/PathPostProcessor.h>
 #include <stdexcept>
 #include <vector>
@@ -23,7 +22,7 @@ namespace monolithic_pr2_planner {
         public:
             Environment(ros::NodeHandle nh);
             CSpaceMgrPtr getCollisionSpace(){ return m_cspace_mgr; };
-            BaseHeuristicPtr getBaseHeuristic(){ return m_base_heur; };
+            HeuristicMgrPtr getHeuristicMgr(){ return m_heur_mgr; };
             bool configureRequest(SearchRequestParamsPtr search_request_params,
                                   int& start_id, int& goal_id);
             void GetSuccs(int sourceStateID, vector<int>* succIDs, 
@@ -43,8 +42,7 @@ namespace monolithic_pr2_planner {
             ros::NodeHandle m_nodehandle;
             GoalStatePtr m_goal;
             MotionPrimitivesMgr m_mprims;
-            HeuristicPtr m_heur;
-            BaseHeuristicPtr m_base_heur;
+            HeuristicMgrPtr m_heur_mgr;
 
         // SBPL interface stuff
         public:

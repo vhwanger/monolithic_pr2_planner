@@ -17,7 +17,8 @@ using namespace boost;
 // stateid2mapping pointer inherited from sbpl interface. needed for planner.
 Environment::Environment(ros::NodeHandle nh) : 
     m_hash_mgr(new HashManager(&StateID2IndexMapping)), 
-    m_nodehandle(nh), m_mprims(m_goal) {
+    m_nodehandle(nh), m_mprims(m_goal), 
+    m_heur_mgr(new HeuristicMgr()) {
     m_param_catalog.fetch(nh);
     configurePlanningDomain();
 }
@@ -33,7 +34,10 @@ bool Environment::configureRequest(SearchRequestParamsPtr search_request_params,
 }
 
 int Environment::GetGoalHeuristic(int stateID){
-    return m_heur->getGoalHeuristic(m_hash_mgr->getGraphState(stateID));
+    // For now, return the max of all the heuristics
+    std::vector<int> values = m_heur_mgr->getGoalHeuristic(m_hash_mgr->getGraphState(stateID));
+    // return values[0];
+    return *std::max_element(values.begin(), values.end());
 }
 
 void Environment::GetSuccs(int sourceStateID, vector<int>* succIDs, 
@@ -125,7 +129,7 @@ bool Environment::setStartGoal(SearchRequestPtr search_request,
     BaseAdaptiveMotionPrimitive::goal(*m_goal);
 
     // informs the heuristic about the goal
-    m_heur->setGoal(*m_goal); 
+    m_heur_mgr->setGoal(*m_goal);
     return true;
 }
 
@@ -147,11 +151,8 @@ int Environment::saveFakeGoalState(const GraphStatePtr& start_graph_state){
 void Environment::configurePlanningDomain(){
     // used for collision space and discretizing plain xyz into grid world 
     OccupancyGridUser::init(m_param_catalog.m_occupancy_grid_params,
-                            m_param_catalog.m_robot_resolution_params);
-    // init empty heuristic. This gets filled in by the collision space mgr
-    // later.
-    m_heur = make_shared<Heuristic>();
-    m_base_heur = make_shared<BaseHeuristic>();
+                        m_param_catalog.m_robot_resolution_params);
+    
 
     // used for discretization of robot movements
     ContArmState::setRobotResolutionParams(m_param_catalog.m_robot_resolution_params);
@@ -163,6 +164,9 @@ void Environment::configurePlanningDomain(){
     ROS_INFO_NAMED(CONFIG_LOG, "Using KDL");
 #endif
 
+    // Initialize the heuristics
+    m_heur_mgr->add3DHeur();
+
     // used for arm kinematics
     LeftContArmState::initArmModel(m_param_catalog.m_left_arm_params);
     RightContArmState::initArmModel(m_param_catalog.m_right_arm_params);
@@ -173,8 +177,7 @@ void Environment::configurePlanningDomain(){
     LeftContArmState l_arm;
     RightContArmState r_arm;
     m_cspace_mgr = make_shared<CollisionSpaceMgr>(r_arm.getArmModel(),
-                                                  l_arm.getArmModel(),
-                                                  m_heur);
+                                                  l_arm.getArmModel());
 
     // load up motion primitives
     m_mprims.loadMPrims(m_param_catalog.m_motion_primitive_params);

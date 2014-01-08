@@ -21,7 +21,7 @@ using namespace KDL;
 // loads it up with a pointer to the collision space mgr. it doesn't bind to any
 // topic.
 EnvInterfaces::EnvInterfaces(boost::shared_ptr<monolithic_pr2_planner::Environment> env) : 
-    m_env(env), m_collision_space_interface(env->getCollisionSpace()){
+    m_env(env), m_collision_space_interface(env->getCollisionSpace(), env->getHeuristicMgr()){
         getParams();
     bool forward_search = true;
     m_planner.reset(new ARAPlanner(m_env.get(), forward_search));
@@ -77,6 +77,9 @@ bool EnvInterfaces::planPathCallback(GetMobileArmPlan::Request &req,
     res.stats.resize(18);
     int start_id, goal_id;
     bool retVal = m_env->configureRequest(search_request, start_id, goal_id);
+    if(!retVal){
+        return false;
+    }
 
     m_planner->set_initialsolution_eps(search_request->initial_epsilon);
     bool return_first_soln = true;
@@ -128,6 +131,7 @@ bool EnvInterfaces::bindCollisionSpaceToTopic(string topic_name){
 
 void EnvInterfaces::initCollisionSpaceFromfile(string filename){
     m_collision_space_interface.loadMap(filename);
+    m_collision_space_interface.update3DHeuristicMaps();
 }
 
 void EnvInterfaces::bindNavMapToTopic(string topic){
@@ -137,5 +141,5 @@ void EnvInterfaces::bindNavMapToTopic(string topic){
 void EnvInterfaces::loadNavMap(const nav_msgs::OccupancyGridPtr& map){
     ROS_DEBUG_NAMED(CONFIG_LOG, "received navmap of size %u %u",
                     map->info.width, map->info.height);
-    m_env->getBaseHeuristic()->loadMap(map->data);
+    m_collision_space_interface.update2DHeuristicMaps(map->data);
 }

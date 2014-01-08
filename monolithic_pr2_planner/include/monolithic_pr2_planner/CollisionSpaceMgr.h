@@ -6,7 +6,6 @@
 #include <monolithic_pr2_planner/ParameterCatalog.h>
 #include <monolithic_pr2_planner/OccupancyGridUser.h>
 #include <monolithic_pr2_planner/TransitionData.h>
-#include <monolithic_pr2_planner/Heuristic.h>
 #include <pr2_collision_checker/pr2_collision_space.h>
 #include <pr2_collision_checker/sbpl_arm_model.h>
 #include <arm_navigation_msgs/CollisionMap.h>
@@ -21,8 +20,7 @@ namespace monolithic_pr2_planner {
     class CollisionSpaceMgr : public OccupancyGridUser {
         public:
             CollisionSpaceMgr(SBPLArmModelPtr right_arm,
-                              SBPLArmModelPtr left_arm,
-                              HeuristicPtr heur);
+                              SBPLArmModelPtr left_arm);
             bool isValid(DiscObjectState& obj_state);
             bool isValid(RobotState& robot_pose);
             bool isValidSuccessor(const GraphState& successor,
@@ -34,7 +32,6 @@ namespace monolithic_pr2_planner {
 
         private:
             boost::shared_ptr<pr2_collision_checker::PR2CollisionSpace> m_cspace;
-            HeuristicPtr m_heur;
     };
     typedef boost::shared_ptr<CollisionSpaceMgr> CSpaceMgrPtr;
 }

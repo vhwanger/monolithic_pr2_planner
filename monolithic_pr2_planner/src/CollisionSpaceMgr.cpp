@@ -13,8 +13,7 @@ using namespace boost;
 using namespace std;
 
 CollisionSpaceMgr::CollisionSpaceMgr(SBPLArmModelPtr right_arm,
-                                     SBPLArmModelPtr left_arm, 
-                                     HeuristicPtr heur):m_heur(heur){
+                                     SBPLArmModelPtr left_arm){
     m_cspace = make_shared<PR2CollisionSpace>(right_arm,
                                               left_arm,
                                               m_occupancy_grid);
@@ -36,14 +35,11 @@ void CollisionSpaceMgr::updateMap(const arm_navigation_msgs::CollisionMap& map){
         points.push_back(vect);
     }
     m_occupancy_grid->addPointsToField(points);
-    m_heur->loadObstaclesFromOccupGrid();
-    //m_heur->visualize();
 }
 
 
 bool CollisionSpaceMgr::loadMap(const vector<Eigen::Vector3d>& points){
     m_occupancy_grid->addPointsToField(points);
-    m_heur->loadObstaclesFromOccupGrid();
     return true;
 }
 

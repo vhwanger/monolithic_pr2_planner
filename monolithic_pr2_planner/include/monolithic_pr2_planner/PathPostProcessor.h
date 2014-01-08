@@ -2,6 +2,7 @@
 #include <monolithic_pr2_planner/MotionPrimitives/MotionPrimitive.h>
 #include <monolithic_pr2_planner/HashManager.h>
 #include <monolithic_pr2_planner/CollisionSpaceMgr.h>
+#include <monolithic_pr2_planner/StateReps/GoalState.h>
 #include <vector>
 
 namespace monolithic_pr2_planner {
