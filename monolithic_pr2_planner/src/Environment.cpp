@@ -54,7 +54,7 @@ void Environment::GetSuccs(int sourceStateID, vector<int>* succIDs,
     GraphStatePtr source_state = m_hash_mgr->getGraphState(sourceStateID);
     ROS_DEBUG_NAMED(SEARCH_LOG, "Source state is:");
     source_state->robot_pose().printToDebug(SEARCH_LOG);
-    source_state->robot_pose().visualize();
+    //source_state->robot_pose().visualize();
     sleep(.5);
 
     for (auto mprim : m_mprims.getMotionPrims()){
@@ -85,7 +85,7 @@ void Environment::GetSuccs(int sourceStateID, vector<int>* succIDs,
             costs->push_back(mprim->cost());
             ROS_DEBUG_NAMED(SEARCH_LOG, "motion succeeded with cost %d", mprim->cost());
         } else {
-            successor->robot_pose().visualize();
+            //successor->robot_pose().visualize();
             ROS_DEBUG_NAMED(SEARCH_LOG, "successor failed collision checking");
         }
     }

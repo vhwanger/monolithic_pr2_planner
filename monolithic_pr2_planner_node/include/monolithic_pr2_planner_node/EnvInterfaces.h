@@ -26,6 +26,10 @@ namespace monolithic_pr2_planner_node {
             bool bindCollisionSpaceToTopic(std::string topic_name);
             void bindNavMapToTopic(std::string topic_name);
             void initCollisionSpaceFromfile(std::string filename);
+            void packageStats(std::vector<std::string>& stat_names,
+                              std::vector<double>& stats,
+                              int solution_cost,
+                              int solution_size);
 
         private:
             void loadNavMap(const nav_msgs::OccupancyGridPtr& map);
