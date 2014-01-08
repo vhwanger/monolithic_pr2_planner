@@ -7,3 +7,4 @@ debug:
         hashmanager: debug
         search: debug
         motionprimitives: debug
+        heuristics: debug

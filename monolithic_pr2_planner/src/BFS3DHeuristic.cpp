@@ -1,4 +1,4 @@
-#include <monolithic_pr2_planner/Heuristic.h>
+#include <monolithic_pr2_planner/BFS3DHeuristic.h>
 #include <monolithic_pr2_planner/LoggerNames.h>
 #include <monolithic_pr2_planner/Visualizer.h>
 
@@ -6,13 +6,13 @@ using namespace monolithic_pr2_planner;
 using namespace sbpl_arm_planner;
 using namespace std;
 
-Heuristic::Heuristic(){ 
+BFS3DHeuristic::BFS3DHeuristic(){ 
     int dimX, dimY, dimZ;
     m_occupancy_grid->getGridSize(dimX, dimY, dimZ);
     m_bfs.reset(new BFS_3D(dimX, dimY, dimZ));
 }
 
-int Heuristic::getGoalHeuristic(GraphStatePtr state){
+int BFS3DHeuristic::getGoalHeuristic(GraphStatePtr state){
     DiscObjectState obj_state = state->getObjectStateRelMap();
     int cost = m_bfs->getDistance(obj_state.x(), obj_state.y(), obj_state.z());
     ROS_DEBUG_NAMED(SEARCH_LOG, "dijkstra's cost to %d %d %d is %d", 
@@ -20,16 +20,20 @@ int Heuristic::getGoalHeuristic(GraphStatePtr state){
     return cost;
 }
 
-void Heuristic::setGoal(GoalState& goal_state){
+void BFS3DHeuristic::setGoal(GoalState& goal_state){
     DiscObjectState state = goal_state.getObjectState(); 
     m_bfs->run(state.x(),
                state.y(),
                state.z());
-    ROS_DEBUG_NAMED(CONFIG_LOG, "running heuristic on new goal %d %d %d",
+    ROS_DEBUG_NAMED(CONFIG_LOG, "running BFS3Dheuristic on new goal %d %d %d",
                     state.x(), state.y(), state.z());
 }
 
-void Heuristic::loadObstaclesFromOccupGrid(){
+void BFS3DHeuristic::update3DHeuristicMap(){
+    loadObstaclesFromOccupGrid();
+}
+
+void BFS3DHeuristic::loadObstaclesFromOccupGrid(){
     int dimX, dimY, dimZ;
     m_occupancy_grid->getGridSize(dimX, dimY, dimZ);
     int walls = 0;
@@ -43,12 +47,13 @@ void Heuristic::loadObstaclesFromOccupGrid(){
             }
         }
     }
-    ROS_DEBUG_NAMED(CONFIG_LOG, "Initialized heuristic with %d walls", walls);
+    ROS_DEBUG_NAMED(CONFIG_LOG, "Initialized BFS3Dheuristic with %d walls", walls);
     ROS_DEBUG_NAMED(CONFIG_LOG, "using gripper sphere radius %f", 
                     m_resolution_params.gripper_sphere_radius);
+
 }
 
-void Heuristic::visualize(){
+void BFS3DHeuristic::visualize(){
     int dimX, dimY, dimZ;
     m_occupancy_grid->getGridSize(dimX, dimY, dimZ);
     vector<vector<double> > obstacles; 

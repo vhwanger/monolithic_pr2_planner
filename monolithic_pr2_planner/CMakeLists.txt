@@ -53,7 +53,9 @@ rosbuild_add_library(monolithic_pr2_planner src/StateReps/RobotState.cpp
                                             src/CollisionSpaceMgr.cpp
                                             src/ParameterCatalog.cpp
                                             src/HashManager.cpp
-                                            src/Heuristic.cpp
+                                            src/BFS3DHeuristic.cpp
+                                            src/AbstractHeuristic.cpp
+                                            src/HeuristicMgr.cpp
                                             src/TransitionData.cpp
                                             src/Visualizer.cpp
                                             src/BaseHeuristic.cpp
