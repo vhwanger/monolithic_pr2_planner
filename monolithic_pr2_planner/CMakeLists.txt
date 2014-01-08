@@ -47,18 +47,20 @@ rosbuild_add_library(monolithic_pr2_planner src/StateReps/RobotState.cpp
                                             src/MotionPrimitives/BaseAdaptiveMotionPrimitive.cpp
                                             src/MotionPrimitives/ArmAdaptiveMotionPrimitive.cpp
                                             src/MotionPrimitives/TorsoMotionPrimitive.cpp
+
+                                            src/Heuristics/BFS3DHeuristic.cpp
+                                            src/Heuristics/BFS2DHeuristic.cpp
+                                            src/Heuristics/HeuristicMgr.cpp
+                                            src/Heuristics/AbstractHeuristic.cpp
+
                                             src/SearchRequest.cpp
                                             src/Environment.cpp
                                             src/OccupancyGridUser.cpp
                                             src/CollisionSpaceMgr.cpp
                                             src/ParameterCatalog.cpp
                                             src/HashManager.cpp
-                                            src/BFS3DHeuristic.cpp
-                                            src/AbstractHeuristic.cpp
-                                            src/HeuristicMgr.cpp
                                             src/TransitionData.cpp
                                             src/Visualizer.cpp
-                                            src/BaseHeuristic.cpp
                                             src/PathPostProcessor.cpp
                                             )
 target_link_libraries(monolithic_pr2_planner ${SBPL_LIBRARIES} bfs3d)

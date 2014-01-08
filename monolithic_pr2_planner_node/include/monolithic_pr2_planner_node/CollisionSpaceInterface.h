@@ -8,7 +8,7 @@
 #include <leatherman/utils.h>
 #include <leatherman/file.h>
 #include <leatherman/binvox.h>
-#include <monolithic_pr2_planner/HeuristicMgr.h>
+#include <monolithic_pr2_planner/Heuristics/HeuristicMgr.h>
 #include <nav_msgs/OccupancyGrid.h>
 
 namespace monolithic_pr2_planner_node {

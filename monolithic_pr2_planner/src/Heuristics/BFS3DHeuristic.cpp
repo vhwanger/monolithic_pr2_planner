@@ -1,4 +1,4 @@
-#include <monolithic_pr2_planner/BFS3DHeuristic.h>
+#include <monolithic_pr2_planner/Heuristics/BFS3DHeuristic.h>
 #include <monolithic_pr2_planner/LoggerNames.h>
 #include <monolithic_pr2_planner/Visualizer.h>
 
@@ -40,7 +40,8 @@ void BFS3DHeuristic::loadObstaclesFromOccupGrid(){
     for (int z = 0; z < dimZ - 2; z++){
         for (int y = 0; y < dimY - 2; y++){
             for (int x = 0; x < dimX - 2; x++){
-                if(m_occupancy_grid->getDistance(x,y,z) <= m_resolution_params.gripper_sphere_radius){
+                double gripper_radius = m_resolution_params.gripper_sphere_radius;
+                if(m_occupancy_grid->getDistance(x,y,z) <= gripper_radius){
                     m_bfs->setWall(x + 1, y + 1, z + 1); //, true);
                     walls++;
                 }
@@ -60,7 +61,8 @@ void BFS3DHeuristic::visualize(){
     for (int z = 0; z < dimZ - 2; z++){
         for (int y = 0; y < dimY - 2; y++){
             for (int x = 0; x < dimX - 2; x++){
-                if(m_occupancy_grid->getDistance(x,y,z) <= m_resolution_params.gripper_sphere_radius){
+                double gripper_radius = m_resolution_params.gripper_sphere_radius;
+                if(m_occupancy_grid->getDistance(x,y,z) <= gripper_radius){
                     vector<double> point;
                     point.push_back(x+1);
                     point.push_back(y+1);

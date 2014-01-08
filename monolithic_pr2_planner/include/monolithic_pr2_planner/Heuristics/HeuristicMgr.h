@@ -2,7 +2,7 @@
 #include <monolithic_pr2_planner/StateReps/GraphState.h>
 #include <monolithic_pr2_planner/OccupancyGridUser.h>
 #include <monolithic_pr2_planner/StateReps/GoalState.h>
-#include <monolithic_pr2_planner/AbstractHeuristic.h>
+#include <monolithic_pr2_planner/Heuristics/AbstractHeuristic.h>
 #include <monolithic_pr2_planner/LoggerNames.h>
 #include <memory>
 #include <vector>

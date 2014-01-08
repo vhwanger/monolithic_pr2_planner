@@ -1,8 +1,8 @@
 #include <monolithic_pr2_planner/StateReps/GraphState.h>
 #include <monolithic_pr2_planner/OccupancyGridUser.h>
 #include <monolithic_pr2_planner/StateReps/GoalState.h>
-#include <monolithic_pr2_planner/HeuristicMgr.h>
-#include <monolithic_pr2_planner/BFS3DHeuristic.h>
+#include <monolithic_pr2_planner/Heuristics/HeuristicMgr.h>
+#include <monolithic_pr2_planner/Heuristics/BFS3DHeuristic.h>
 #include <memory>
 #include <vector>
 #include <boost/shared_ptr.hpp>
@@ -22,6 +22,10 @@ int HeuristicMgr::add2DHeur(){
     return 0;
 }
 
+// most heuristics won't need both 2d and 3d maps. however, the abstract
+// heuristic type has function stubs for both of them so we don't need to pick
+// and choose who to update. it is up to the implementor to implement a derived
+// function for the following, otherwise they won't do anything.
 void HeuristicMgr::update2DHeuristicMaps(const std::vector<signed char>& data){
     for (size_t i = 0; i < m_heuristics.size(); ++i){
         m_heuristics[i]->update2DHeuristicMap(data);

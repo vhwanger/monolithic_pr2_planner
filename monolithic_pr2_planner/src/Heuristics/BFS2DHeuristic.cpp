@@ -1,4 +1,4 @@
-#include <monolithic_pr2_planner/BaseHeuristic.h>
+#include <monolithic_pr2_planner/Heuristics/BFS2DHeuristic.h>
 #include <monolithic_pr2_planner/LoggerNames.h>
 using namespace monolithic_pr2_planner;
 

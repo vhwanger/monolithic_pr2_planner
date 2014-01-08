@@ -7,7 +7,7 @@
 #include <monolithic_pr2_planner/SearchRequest.h>
 #include <monolithic_pr2_planner/StateReps/GoalState.h>
 #include <monolithic_pr2_planner/MotionPrimitives/MotionPrimitivesMgr.h>
-#include <monolithic_pr2_planner/HeuristicMgr.h>
+#include <monolithic_pr2_planner/Heuristics/HeuristicMgr.h>
 #include <monolithic_pr2_planner/PathPostProcessor.h>
 #include <stdexcept>
 #include <vector>
