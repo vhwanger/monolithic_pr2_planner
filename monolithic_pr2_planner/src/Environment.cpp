@@ -164,8 +164,9 @@ void Environment::configurePlanningDomain(){
     ROS_INFO_NAMED(CONFIG_LOG, "Using KDL");
 #endif
 
-    // Initialize the heuristics
-    m_heur_mgr->add3DHeur();
+    // Initialize the heuristics. The (optional) parameter defines the cost multiplier.
+    // TODO: It's 40 for now, until the actual cost for arm costs are computed.
+    m_heur_mgr->add3DHeur(40);
 
     // used for arm kinematics
     LeftContArmState::initArmModel(m_param_catalog.m_left_arm_params);

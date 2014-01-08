@@ -70,8 +70,8 @@ int main(int argc, char** argv){
     pose.pose.orientation.w = qw;
 
     geometry_msgs::PoseStamped rarm_offset;
-    rarm_offset.pose.position.x = -.18;
-    rarm_offset.pose.position.y = -.1;
+    rarm_offset.pose.position.x = 0;
+    rarm_offset.pose.position.y = 0;
     rarm_offset.pose.orientation.z = 0;
     rarm_offset.pose.orientation.x = 0;
     rarm_offset.pose.orientation.y = 0;
@@ -79,8 +79,8 @@ int main(int argc, char** argv){
     rarm_offset.pose.orientation.w = 1;
 
     geometry_msgs::PoseStamped larm_offset;
-    larm_offset.pose.position.x = -.18;
-    larm_offset.pose.position.y = .1;
+    larm_offset.pose.position.x = 0;
+    larm_offset.pose.position.y = 0;
     larm_offset.pose.orientation.z = 0;
     larm_offset.pose.orientation.x = 0;
     larm_offset.pose.orientation.y = 0;
@@ -90,7 +90,7 @@ int main(int argc, char** argv){
     srv.request.larm_object = larm_offset;
 
     srv.request.goal = pose;
-    srv.request.initial_eps = 100;
+    srv.request.initial_eps = 50;
     srv.request.final_eps = 9;
     srv.request.dec_eps = .1;
     srv.request.xyz_tolerance = .1;
