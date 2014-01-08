@@ -17,7 +17,7 @@ namespace monolithic_pr2_planner {
             // heuristic type is added, a corresponding add<type>Heur() method
             // needs to be added here. Returns the id of the heuristic in the
             // internal m_heuristics vector.
-            int add3DHeur();
+            int add3DHeur(const int cost_multiplier=1);
             int add2DHeur();
 
             // Updates the collision map for the heuristics that need them.

@@ -17,7 +17,7 @@ int BFS3DHeuristic::getGoalHeuristic(GraphStatePtr state){
     int cost = m_bfs->getDistance(obj_state.x(), obj_state.y(), obj_state.z());
     ROS_DEBUG_NAMED(SEARCH_LOG, "dijkstra's cost to %d %d %d is %d", 
                     obj_state.x(), obj_state.y(), obj_state.z(), cost);
-    return cost;
+    return getCostMultiplier()*cost;
 }
 
 void BFS3DHeuristic::setGoal(GoalState& goal_state){
