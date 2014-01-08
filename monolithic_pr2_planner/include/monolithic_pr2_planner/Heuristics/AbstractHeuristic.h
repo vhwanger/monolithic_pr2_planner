@@ -19,6 +19,14 @@ namespace monolithic_pr2_planner {
 
             // For 2D heuristics at the base that need only the map
             virtual void update2DHeuristicMap(const std::vector<signed char>& data) {};
+
+            // Set the cost_multiplier
+            void setCostMultiplier(const int cost_multiplier);
+
+            // Get the cost multiplier
+            int getCostMultiplier();
+        private:
+            int m_cost_multiplier;
     };
     typedef boost::shared_ptr<AbstractHeuristic> AbstractHeuristicPtr;
 }

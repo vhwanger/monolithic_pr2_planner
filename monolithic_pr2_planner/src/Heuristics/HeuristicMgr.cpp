@@ -5,8 +5,12 @@
 using namespace monolithic_pr2_planner;
 using namespace boost;
 
-int HeuristicMgr::add3DHeur(){
+int HeuristicMgr::add3DHeur(const int cost_multiplier){
+
+    // Initialize the new heuristic.
     AbstractHeuristicPtr new_3d_heur = make_shared<BFS3DHeuristic>();
+    // MUST set the cost multiplier here. If not, it is taken as 1.
+    new_3d_heur->setCostMultiplier(cost_multiplier);
     // Add it to the list of heuristics
     m_heuristics.push_back(new_3d_heur);
     return m_heuristics.size() - 1;
