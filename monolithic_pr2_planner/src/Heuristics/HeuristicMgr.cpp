@@ -1,6 +1,11 @@
+#include <monolithic_pr2_planner/StateReps/GraphState.h>
+#include <monolithic_pr2_planner/OccupancyGridUser.h>
+#include <monolithic_pr2_planner/StateReps/GoalState.h>
 #include <monolithic_pr2_planner/Heuristics/HeuristicMgr.h>
 #include <monolithic_pr2_planner/Heuristics/BFS3DHeuristic.h>
-#include <monolithic_pr2_planner/LoggerNames.h>
+#include <memory>
+#include <vector>
+#include <boost/shared_ptr.hpp>
 
 using namespace monolithic_pr2_planner;
 using namespace boost;
