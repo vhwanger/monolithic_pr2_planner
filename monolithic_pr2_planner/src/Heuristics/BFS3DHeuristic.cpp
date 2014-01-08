@@ -1,6 +1,7 @@
 #include <monolithic_pr2_planner/Heuristics/BFS3DHeuristic.h>
 #include <monolithic_pr2_planner/LoggerNames.h>
 #include <monolithic_pr2_planner/Visualizer.h>
+#include <monolithic_pr2_planner/StateReps/DiscObjectState.h>
 
 using namespace monolithic_pr2_planner;
 using namespace sbpl_arm_planner;

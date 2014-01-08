@@ -1,6 +1,5 @@
 #pragma once
 #include <bfs3d/BFS_3D.h>
-#include <monolithic_pr2_planner/StateReps/DiscObjectState.h>
 #include <monolithic_pr2_planner/StateReps/GraphState.h>
 #include <monolithic_pr2_planner/OccupancyGridUser.h>
 #include <monolithic_pr2_planner/StateReps/GoalState.h>

@@ -1,8 +1,6 @@
 #pragma once
 #include <monolithic_pr2_planner/StateReps/GraphState.h>
-#include <monolithic_pr2_planner/OccupancyGridUser.h>
 #include <monolithic_pr2_planner/StateReps/GoalState.h>
-#include <memory>
 #include <vector>
 #include <boost/shared_ptr.hpp>
 
