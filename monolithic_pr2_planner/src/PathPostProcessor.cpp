@@ -60,8 +60,8 @@ void PathPostProcessor::visualizeFinalPath(vector<FullBodyState> path){
         bp.y = base[1];
         bp.z = base[2];
         bp.theta = base[3];
-        //Visualizer::pviz->visualizeRobot(r_arm, l_arm, bp, 150, "robot", 0);
-        //usleep(10000);
+        Visualizer::pviz->visualizeRobot(r_arm, l_arm, bp, 150, "robot", 0);
+        usleep(1000);
     }
 }
 

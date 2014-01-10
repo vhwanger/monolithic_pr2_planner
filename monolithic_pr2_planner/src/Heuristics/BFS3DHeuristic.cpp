@@ -25,7 +25,7 @@ void BFS3DHeuristic::setGoal(GoalState& goal_state){
     m_bfs->run(state.x(),
                state.y(),
                state.z());
-    ROS_DEBUG_NAMED(CONFIG_LOG, "running BFS3Dheuristic on new goal %d %d %d",
+    ROS_DEBUG_NAMED(HEUR_LOG, "running BFS3Dheuristic on new goal %d %d %d",
                     state.x(), state.y(), state.z());
 }
 
@@ -48,8 +48,8 @@ void BFS3DHeuristic::loadObstaclesFromOccupGrid(){
             }
         }
     }
-    ROS_DEBUG_NAMED(CONFIG_LOG, "Initialized BFS3Dheuristic with %d walls", walls);
-    ROS_DEBUG_NAMED(CONFIG_LOG, "using gripper sphere radius %f", 
+    ROS_DEBUG_NAMED(HEUR_LOG, "Initialized BFS3Dheuristic with %d walls", walls);
+    ROS_DEBUG_NAMED(HEUR_LOG, "using gripper sphere radius %f", 
                     m_resolution_params.gripper_sphere_radius);
 
 }

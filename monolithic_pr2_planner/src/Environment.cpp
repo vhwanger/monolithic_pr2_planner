@@ -166,6 +166,7 @@ void Environment::configurePlanningDomain(){
     // Initialize the heuristics. The (optional) parameter defines the cost multiplier.
     // TODO: It's 40 for now, until the actual cost for arm costs are computed.
     m_heur_mgr->add3DHeur(40);
+    m_heur_mgr->add2DHeur(10);
 
     // used for arm kinematics
     LeftContArmState::initArmModel(m_param_catalog.m_left_arm_params);
