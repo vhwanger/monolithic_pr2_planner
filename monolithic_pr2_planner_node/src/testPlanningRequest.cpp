@@ -90,7 +90,7 @@ int main(int argc, char** argv){
     srv.request.larm_object = larm_offset;
 
     srv.request.goal = pose;
-    srv.request.initial_eps = 50;
+    srv.request.initial_eps = 10;
     srv.request.final_eps = 9;
     srv.request.dec_eps = .1;
     srv.request.xyz_tolerance = .1;
@@ -105,6 +105,10 @@ int main(int argc, char** argv){
     if (client.call(srv))
     {
         ROS_INFO("called service");
+        for (size_t i=0; i < srv.response.stats_field_names.size(); i++){
+            ROS_INFO("%s: %f", srv.response.stats_field_names[i].c_str(),
+                               srv.response.stats[i]);
+        }
     }
     else
     {

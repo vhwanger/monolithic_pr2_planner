@@ -90,35 +90,69 @@ bool EnvInterfaces::planPathCallback(GetMobileArmPlan::Request &req,
     m_planner->force_planning_from_scratch();
     vector<int> soln;
     int soln_cost;
-    // TODO make external parameter
     bool isPlanFound = m_planner->replan(req.allocated_planning_time, 
                                          &soln, &soln_cost);
 
     if (isPlanFound){
         vector<FullBodyState> states =  m_env->reconstructPath(soln);
-        for (auto state : states){
-            printf("base states: ");
-            for (auto value: state.base){
-                printf("%f ", value);
-            }
-            printf("\n");
-            printf("right arm angles: ");
-            for (auto angle: state.right_arm){
-                printf("%f ", angle);
-            }
-            printf("\n");
-            printf("left arm angles: ");
-            for (auto angle: state.left_arm){
-                printf("%f ", angle);
-            }
-            printf("\n");
-        }
+        vector<string> stat_names;
+        vector<double> stats;
+        packageStats(stat_names, stats, soln_cost, states.size());
+        res.stats_field_names = stat_names;
+        res.stats = stats;
+        //for (auto state : states){
+        //    printf("base states: ");
+        //    for (auto value: state.base){
+        //        printf("%f ", value);
+        //    }
+        //    printf("\n");
+        //    printf("right arm angles: ");
+        //    for (auto angle: state.right_arm){
+        //        printf("%f ", angle);
+        //    }
+        //    printf("\n");
+        //    printf("left arm angles: ");
+        //    for (auto angle: state.left_arm){
+        //        printf("%f ", angle);
+        //    }
+        //    printf("\n");
+        //}
     } else {
         ROS_INFO("No plan found!");
     }
-
     return isPlanFound;
+}
 
+void EnvInterfaces::packageStats(vector<string>& stat_names, 
+                                 vector<double>& stats,
+                                 int solution_cost,
+                                 size_t solution_size){
+    
+    stat_names.resize(10);
+    stats.resize(10);
+    stat_names[0] = "total plan time";
+    stat_names[1] = "initial solution planning time";
+    stat_names[2] = "initial epsilon";
+    stat_names[3] = "initial solution expansions";
+    stat_names[4] = "final epsilon planning time";
+    stat_names[5] = "final epsilon";
+    stat_names[6] = "solution epsilon";
+    stat_names[7] = "expansions";
+    stat_names[8] = "solution cost";
+    stat_names[9] = "path length";
+
+    // TODO fix the total planning time
+    //stats[0] = totalPlanTime;
+    stats[0] = m_planner->get_initial_eps_planning_time();
+    stats[1] = m_planner->get_initial_eps_planning_time();
+    stats[2] = m_planner->get_initial_eps();
+    stats[3] = m_planner->get_n_expands_init_solution();
+    stats[4] = m_planner->get_final_eps_planning_time();
+    stats[5] = m_planner->get_final_epsilon();
+    stats[6] = m_planner->get_solution_eps();
+    stats[7] = m_planner->get_n_expands();
+    stats[8] = static_cast<double>(solution_cost);
+    stats[9] = static_cast<double>(solution_size);
 }
 
 bool EnvInterfaces::bindCollisionSpaceToTopic(string topic_name){
