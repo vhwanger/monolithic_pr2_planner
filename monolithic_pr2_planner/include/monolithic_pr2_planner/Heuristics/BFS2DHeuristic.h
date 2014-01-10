@@ -16,6 +16,7 @@ namespace monolithic_pr2_planner {
             void loadMap(const std::vector<signed char>& data);
             int getGoalHeuristic(GraphStatePtr state);
             void update2DHeuristicMap(const std::vector<signed char>& data);
+            void visualize();
         private:
             std::unique_ptr<sbpl_bfs_2d> m_bfs;
             unsigned int m_size_col;

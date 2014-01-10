@@ -1,5 +1,6 @@
 #include <monolithic_pr2_planner/Heuristics/BFS2DHeuristic.h>
 #include <monolithic_pr2_planner/LoggerNames.h>
+#include <monolithic_pr2_planner/Visualizer.h>
 using namespace monolithic_pr2_planner;
 
 BFS2DHeuristic::BFS2DHeuristic(){
@@ -38,6 +39,7 @@ void BFS2DHeuristic::loadMap(const std::vector<signed char>& data){
         }
     }
     ROS_DEBUG_NAMED(HEUR_LOG, "[BFS2D] updated grid of size %d %d from the map", m_size_col, m_size_row);
+    visualize();
 }
 
 void BFS2DHeuristic::setGoal(GoalState& goal_state){
@@ -57,4 +59,29 @@ int BFS2DHeuristic::getGoalHeuristic(GraphStatePtr state){
     int cost = m_bfs->get_distance(obj_state.x(), obj_state.y());
     ROS_DEBUG_NAMED(HEUR_LOG, "[BFS2D] 2Ddijkstra's cost to %d %d is %d", obj_state.x(), obj_state.y(), cost);
     return getCostMultiplier()*cost;
+}
+
+void BFS2DHeuristic::visualize(){
+    int dimX, dimY, dimZ;
+    int threshold = 255;
+    m_occupancy_grid->getGridSize(dimX, dimY, dimZ);
+    vector<vector<double> > obstacles; 
+    for (int z = 0; z < dimZ - 2; z++){
+        for (int y = 0; y < dimY - 2; y++){
+            for (int x = 0; x < dimX - 2; x++){
+                if(m_grid[x][y] >= threshold){
+                    vector<double> point;
+                    point.push_back(x+1);
+                    point.push_back(y+1);
+                    point.push_back(0.1);
+                    point.push_back(.1);
+                    point.push_back(.1);
+                    point.push_back(.1);
+
+                    obstacles.push_back(point);
+                }
+            }
+        }
+    }
+    Visualizer::pviz->visualizeObstacles(obstacles);
 }
