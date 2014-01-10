@@ -1,6 +1,5 @@
 #pragma once
 #include <monolithic_pr2_planner/StateReps/GraphState.h>
-#include <monolithic_pr2_planner/OccupancyGridUser.h>
 #include <monolithic_pr2_planner/StateReps/GoalState.h>
 #include <memory>
 #include <vector>
@@ -13,13 +12,15 @@ namespace monolithic_pr2_planner {
     class AbstractHeuristic{
         public:
             AbstractHeuristic();
+
+            // The function that has to return the heuristic value at the queried graph state
             virtual int getGoalHeuristic(GraphStatePtr state) = 0;
             virtual void setGoal(GoalState& state) = 0;
 
-            // For 3D heuristics that need the obstacles
+            // For 3D heuristics that need the obstacles - this function has to be implemented for the heuristic to receive the call for obstacle grid update.
             virtual void update3DHeuristicMap() {};
 
-            // For 2D heuristics at the base that need only the map
+            // For 2D heuristics at the base that need only the map - this function has to be implemented for the heuristic to receive the call for map update.
             virtual void update2DHeuristicMap(const std::vector<signed char>& data) {};
 
             // Set the cost_multiplier
