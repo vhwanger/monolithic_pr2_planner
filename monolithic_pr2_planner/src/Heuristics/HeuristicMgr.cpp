@@ -3,6 +3,7 @@
 #include <monolithic_pr2_planner/StateReps/GoalState.h>
 #include <monolithic_pr2_planner/Heuristics/HeuristicMgr.h>
 #include <monolithic_pr2_planner/Heuristics/BFS3DHeuristic.h>
+#include <monolithic_pr2_planner/Heuristics/BFS2DHeuristic.h>
 #include <memory>
 #include <vector>
 #include <boost/shared_ptr.hpp>
@@ -21,9 +22,14 @@ int HeuristicMgr::add3DHeur(const int cost_multiplier){
     return m_heuristics.size() - 1;
 }
 
-int HeuristicMgr::add2DHeur(){
-    // Not implemented yet.
-    return 0;
+int HeuristicMgr::add2DHeur(const int cost_multiplier){
+    // Initialize the new heuristic
+    AbstractHeuristicPtr new_2d_heur = make_shared<BFS2DHeuristic>();
+    // Set cost multiplier here.
+    new_2d_heur->setCostMultiplier(cost_multiplier);
+    // Add to the list of heuristics
+    m_heuristics.push_back(new_2d_heur);
+    return m_heuristics.size() - 1;
 }
 
 // most heuristics won't need both 2d and 3d maps. however, the abstract
@@ -44,6 +50,7 @@ void HeuristicMgr::update3DHeuristicMaps(){
 
 void HeuristicMgr::setGoal(GoalState& state){
     for (size_t i = 0; i < m_heuristics.size(); ++i){
+        ROS_DEBUG_NAMED(HEUR_LOG, "[HeurMgr] Setting goal for heuristic %d", int(i));
         m_heuristics[i]->setGoal(state);
     }
 }
