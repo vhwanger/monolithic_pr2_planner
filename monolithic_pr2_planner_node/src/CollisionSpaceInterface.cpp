@@ -29,9 +29,9 @@ bool CollisionSpaceInterface::getVoxelsFromMesh(std::string resource,
     if(!mesh_type.empty()){
         if(mesh_type.compare("dae") == 0)
             stl_resource = leatherman::replaceExtension(resource, "stl");
-        ROS_WARN("Collada file found. Will try to use the STL version instead. (%s)", 
+        ROS_DEBUG_NAMED(INIT_LOG, "Collada file found. Will try to use the STL version instead. (%s)", 
                  resource.c_str());
-        ROS_WARN("STL filename: %s", stl_resource.c_str());
+        ROS_DEBUG_NAMED(INIT_LOG, "STL filename: %s", stl_resource.c_str());
     }
 
     // get triangles
@@ -46,7 +46,7 @@ bool CollisionSpaceInterface::getVoxelsFromMesh(std::string resource,
     // scale the vertices
     double scale = leatherman::getColladaFileScale(resource);
     leatherman::scaleVertices(vertices, scale, scale, scale, scaled_vertices);
-    ROS_INFO("Scaled the vertices uniformly by a factor of %0.3f.", scale);
+    ROS_DEBUG_NAMED(INIT_LOG, "Scaled the vertices uniformly by a factor of %0.3f.", scale);
 
     // voxelize!
     sbpl::Voxelizer::voxelizeMesh(scaled_vertices, triangles, pose, 0.02, voxels, false);
@@ -142,7 +142,7 @@ vector<Eigen::Vector3d> CollisionSpaceInterface::getVoxelsFromFile(std::string f
     mapsize_x = maxx-minx;
     mapsize_y = maxy-miny;
 
-    ROS_INFO_NAMED(CONFIG_LOG, "bounds (%f, %f, %f) to (%f, %f, %f)",
+    ROS_DEBUG_NAMED(CONFIG_LOG, "bounds (%f, %f, %f) to (%f, %f, %f)",
             minx,miny,minz,maxx,maxy,maxz);
 
     //make a point cloud for visualization

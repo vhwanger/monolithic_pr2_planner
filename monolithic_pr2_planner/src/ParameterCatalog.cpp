@@ -191,7 +191,7 @@ bool ParameterCatalog::setFileNameFromParamServer(const std::string param_name,
     path input_path(filename.c_str());
     if (exists(input_path)){
        *parameter = filename;
-        ROS_INFO_NAMED(CONFIG_LOG, "Pulling in data from %s", filename.c_str());
+        ROS_DEBUG_NAMED(CONFIG_LOG, "Pulling in data from %s", filename.c_str());
     } else {
        *parameter = filename;
         ROS_ERROR_NAMED(CONFIG_LOG, "Failed to find file '%s' to load in parameters for %s", 

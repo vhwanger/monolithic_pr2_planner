@@ -16,7 +16,7 @@ void OccupancyGridUser::init(OccupancyGridParams& params, RobotResolutionParams&
                                                           params.origin.x, 
                                                           params.origin.y,
                                                           params.origin.z);
-    ROS_INFO_NAMED(INIT_LOG, "occupancy grid initialized");
+    ROS_DEBUG_NAMED(INIT_LOG, "occupancy grid initialized");
     m_occupancy_grid->setReferenceFrame(params.reference_frame);
     m_resolution_params = r_params;
 }
