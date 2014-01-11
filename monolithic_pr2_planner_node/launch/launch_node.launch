@@ -2,7 +2,7 @@
   <!--<node name="map_server" pkg="map_server" type="map_server" args="$(find monolithic_pr2_planner_node)/maps/freezer.yaml" />-->
   <node name="octomap_server" pkg="octomap_server" type="octomap_server_node">
         <!--args="$(find monolithic_pr2_planner_node)/maps/freezer.bt">-->
-    <param name="resolution" value="0.025" />
+    <param name="resolution" value="0.02" />
     <param name="sensor_model/range" value="4.0" />
 
     <param name="sensor_model/hit" value= "0.8" />
@@ -24,6 +24,8 @@
     <remap from="cloud_in" to="pcl_environment" />
 
   </node>
+  <node pkg="monolithic_pr2_planner_node" type="stlToOctomap"
+  name="stlToOctomap" args="package://monolithic_pr2_planner_node/maps/max_kitchen.dae"/>
     <param name="robot_description" command="$(find xacro)/xacro.py '$(find pr2_description)/robots/pr2.urdf.xacro'" />
     <node pkg="monolithic_pr2_planner_node" type="node" name="monolithic_pr2_planner_node" output="screen">
         <rosparam command="load" file="$(find monolithic_pr2_planner_node)/config/logging_levels.yaml" />
