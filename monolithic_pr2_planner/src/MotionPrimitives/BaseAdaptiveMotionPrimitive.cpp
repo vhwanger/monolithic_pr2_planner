@@ -281,8 +281,8 @@ void BaseAdaptiveMotionPrimitive::computeIntermSteps(const GraphState& source_st
 //}
 
 void BaseAdaptiveMotionPrimitive::print() const {
-    ROS_DEBUG_NAMED(CONFIG_LOG, "Base Adaptive Primitive");
-    ROS_DEBUG_NAMED(CONFIG_LOG, "\tcost: %d", cost());
+    ROS_DEBUG_NAMED(MPRIM_LOG, "Base Adaptive Primitive");
+    ROS_DEBUG_NAMED(MPRIM_LOG, "\tcost: %d", cost());
     printEndCoord();
     printIntermSteps();
 }

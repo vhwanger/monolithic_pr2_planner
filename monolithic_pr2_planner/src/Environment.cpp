@@ -55,7 +55,6 @@ void Environment::GetSuccs(int sourceStateID, vector<int>* succIDs,
     ROS_DEBUG_NAMED(SEARCH_LOG, "Source state is:");
     source_state->robot_pose().printToDebug(SEARCH_LOG);
     //source_state->robot_pose().visualize();
-    sleep(.5);
 
     for (auto mprim : m_mprims.getMotionPrims()){
         ROS_DEBUG_NAMED(SEARCH_LOG, "Applying motion:");
@@ -158,10 +157,10 @@ void Environment::configurePlanningDomain(){
     ContArmState::setRobotResolutionParams(m_param_catalog.m_robot_resolution_params);
 
 #ifdef USE_IKFAST_SOLVER
-    ROS_INFO_NAMED(CONFIG_LOG, "Using IKFast");
+    ROS_DEBUG_NAMED(CONFIG_LOG, "Using IKFast");
 #endif
 #ifdef USE_KDL_SOLVER
-    ROS_INFO_NAMED(CONFIG_LOG, "Using KDL");
+    ROS_DEBUG_NAMED(CONFIG_LOG, "Using KDL");
 #endif
 
     // Initialize the heuristics. The (optional) parameter defines the cost multiplier.

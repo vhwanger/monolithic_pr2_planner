@@ -25,7 +25,6 @@ namespace monolithic_pr2_planner_node {
             void bindPlanPathToEnv(std::string service_name);
             bool bindCollisionSpaceToTopic(std::string topic_name);
             void bindNavMapToTopic(std::string topic_name);
-            void initCollisionSpaceFromfile(std::string filename);
             void packageStats(std::vector<std::string>& stat_names,
                               std::vector<double>& stats,
                               int solution_cost,
@@ -33,6 +32,10 @@ namespace monolithic_pr2_planner_node {
 
         private:
             void loadNavMap(const nav_msgs::OccupancyGridPtr& map);
+            void crop2DMap(const nav_msgs::OccupancyGridPtr& map,
+                           double new_origin_x, double new_origin_y,
+                           double width, double height,
+                           vector<signed char>& final_map);
             ros::NodeHandle m_nodehandle;
             InterfaceParams m_params;
             boost::shared_ptr<monolithic_pr2_planner::Environment> m_env;
@@ -41,5 +44,6 @@ namespace monolithic_pr2_planner_node {
             ros::ServiceServer m_plan_service;
             std::unique_ptr<SBPLPlanner> m_planner;
             ros::Subscriber m_nav_map;
+            ros::Publisher m_heur_map_pub;
     };
 }

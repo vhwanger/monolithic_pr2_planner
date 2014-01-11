@@ -25,6 +25,7 @@ EnvInterfaces::EnvInterfaces(boost::shared_ptr<monolithic_pr2_planner::Environme
         getParams();
     bool forward_search = true;
     m_planner.reset(new ARAPlanner(m_env.get(), forward_search));
+    m_heur_map_pub = m_nodehandle.advertise<nav_msgs::OccupancyGrid>("heur_map", 1);
 }
 
 void EnvInterfaces::getParams(){
@@ -162,18 +163,72 @@ bool EnvInterfaces::bindCollisionSpaceToTopic(string topic_name){
     return true;
 }
 
-
-void EnvInterfaces::initCollisionSpaceFromfile(string filename){
-    m_collision_space_interface.loadMap(filename);
-    m_collision_space_interface.update3DHeuristicMaps();
-}
-
 void EnvInterfaces::bindNavMapToTopic(string topic){
     m_nav_map = m_nodehandle.subscribe(topic, 1, &EnvInterfaces::loadNavMap, this);
 }
 
+void EnvInterfaces::crop2DMap(const nav_msgs::OccupancyGridPtr& map,
+                              double new_origin_x, double new_origin_y,
+                              double width, double height, 
+                              vector<signed char>& final_map){
+    vector<vector<signed char> > tmp_map(map->info.height);
+    for (unsigned int i=0; i < map->info.height; i++){
+        for (unsigned int j=0; j < map->info.width; j++){
+            tmp_map[i].push_back(map->data.at(i*map->info.height+j));
+        }
+    }
+
+    double res = map->info.resolution;
+    int new_origin_x_idx = (new_origin_x-map->info.origin.position.x)/res;
+    int new_origin_y_idx = (new_origin_y-map->info.origin.position.y)/res;
+    int new_width = width/res + 1;
+    int new_height = height/res + 1;
+    ROS_DEBUG_NAMED(HEUR_LOG, "new origin: %d %d, width and height: %d %d",
+                              new_origin_x_idx, new_origin_y_idx, new_width, 
+                              new_height);
+    ROS_DEBUG_NAMED(HEUR_LOG, "size of map %lu %lu", tmp_map.size(), 
+                                                     tmp_map[0].size());
+
+    vector<vector<signed char> > new_map(new_height);
+    int row_count = 0;
+    for (int i=new_origin_y_idx; i < new_origin_y_idx + new_height; i++){
+        for (int j=new_origin_x_idx; j < new_origin_x_idx + new_width; j++){
+            new_map[row_count].push_back(tmp_map[i][j]);
+        }
+        row_count++;
+    }
+    final_map.resize(new_width * new_height);
+    ROS_DEBUG_NAMED(HEUR_LOG, "size of final map: %lu", final_map.size());
+    for (size_t i=0; i < new_map.size(); i++){
+        for (size_t j=0; j < new_map[i].size(); j++){
+            final_map[i*new_map[i].size() + j] = new_map[i][j];
+        }
+    }
+}
+
 void EnvInterfaces::loadNavMap(const nav_msgs::OccupancyGridPtr& map){
-    ROS_DEBUG_NAMED(CONFIG_LOG, "received navmap of size %u %u",
-                    map->info.width, map->info.height);
-    m_collision_space_interface.update2DHeuristicMaps(map->data);
+    ROS_DEBUG_NAMED(CONFIG_LOG, "received navmap of size %u %u, resolution %f",
+                    map->info.width, map->info.height, map->info.resolution);
+    ROS_DEBUG_NAMED(CONFIG_LOG, "origin is at %f %f", map->info.origin.position.x,
+                                                      map->info.origin.position.y);
+    // TODO look up the values for this cropping from the occup grid parameters
+    vector<signed char> final_map;
+
+    double width = 9;
+    double height = 6;
+    crop2DMap(map, 0, 0, width, height, final_map);
+    nav_msgs::OccupancyGrid heur_map;
+    heur_map.header.frame_id = "/map";
+    heur_map.header.stamp = ros::Time::now();
+    heur_map.info.map_load_time = ros::Time::now();
+    heur_map.info.resolution = map->info.resolution;
+    // done in the crop function too.
+    heur_map.info.width = (width/map->info.resolution+1);
+    heur_map.info.height = (height/map->info.resolution+1);
+    heur_map.info.origin.position.x = 0;
+    heur_map.info.origin.position.y = 0;
+    heur_map.data = final_map;
+    m_heur_map_pub.publish(heur_map);
+
+    m_collision_space_interface.update2DHeuristicMaps(final_map);
 }

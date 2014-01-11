@@ -9,15 +9,7 @@ using namespace monolithic_pr2_planner;
 Node::Node(ros::NodeHandle nh) : m_env(new Environment(nh)), m_env_interface(m_env){
     m_env_interface.bindPlanPathToEnv("/sbpl_planning/plan_path");
     m_env_interface.bindNavMapToTopic("/projected_map");
-    //m_env_interface.bindCollisionSpaceToTopic("collision_map_out");
-
-    std::string map_filename;
-    nh.param<std::string>("map_filename", map_filename, "");
-    if (map_filename == ""){
-        ROS_ERROR("Tried to load map from filename on param server, "
-                  "but couldn't find the parameter!");
-    }
-    m_env_interface.initCollisionSpaceFromfile(map_filename);
+    m_env_interface.bindCollisionSpaceToTopic("collision_map_out");
 }
 
 
@@ -48,7 +40,7 @@ void setLoggersFromParamServer(ros::NodeHandle nh){
     changeLoggerLevel(std::string("ros.monolithic_pr2_planner_node") + 
                                   std::string(".") + 
                                   std::string(CONFIG_LOG), level);
-    ROS_INFO_NAMED(CONFIG_LOG, "configuration logging level set to %s", level.c_str());
+    ROS_DEBUG_NAMED(CONFIG_LOG, "configuration logging level set to %s", level.c_str());
 
     nh.param<std::string>("debug/logging/initialization", 
                           level, "info");
@@ -58,7 +50,7 @@ void setLoggersFromParamServer(ros::NodeHandle nh){
     changeLoggerLevel(std::string("ros.monolithic_pr2_planner_node") + 
                                   std::string(".") + 
                                   std::string(INIT_LOG), level);
-    ROS_INFO_NAMED(CONFIG_LOG, "initialization logging level set to %s", level.c_str());
+    ROS_DEBUG_NAMED(CONFIG_LOG, "initialization logging level set to %s", level.c_str());
 
     nh.param<std::string>("debug/logging/collision_space", 
                           level, "info");
@@ -68,7 +60,7 @@ void setLoggersFromParamServer(ros::NodeHandle nh){
     changeLoggerLevel(std::string("ros.monolithic_pr2_planner_node") + 
                                   std::string(".") + 
                                   std::string(CSPACE_LOG), level);
-    ROS_INFO_NAMED(CONFIG_LOG, "collision space logging level set to %s", level.c_str());
+    ROS_DEBUG_NAMED(CONFIG_LOG, "collision space logging level set to %s", level.c_str());
 
     nh.param<std::string>("debug/logging/kinematics", 
                           level, "info");
@@ -78,7 +70,7 @@ void setLoggersFromParamServer(ros::NodeHandle nh){
     changeLoggerLevel(std::string("ros.monolithic_pr2_planner_node") + 
                                   std::string(".") + 
                                   std::string(KIN_LOG), level);
-    ROS_INFO_NAMED(CONFIG_LOG, "kinematics logging level set to %s", level.c_str());
+    ROS_DEBUG_NAMED(CONFIG_LOG, "kinematics logging level set to %s", level.c_str());
 
     nh.param<std::string>("debug/logging/hashmanager", 
                           level, "info");
@@ -88,7 +80,7 @@ void setLoggersFromParamServer(ros::NodeHandle nh){
     changeLoggerLevel(std::string("ros.monolithic_pr2_planner_node") + 
                                   std::string(".") + 
                                   std::string(HASH_LOG), level);
-    ROS_INFO_NAMED(CONFIG_LOG, "hashmanager logging level set to %s", level.c_str());
+    ROS_DEBUG_NAMED(CONFIG_LOG, "hashmanager logging level set to %s", level.c_str());
 
     nh.param<std::string>("debug/logging/search", 
                           level, "info");
@@ -98,7 +90,7 @@ void setLoggersFromParamServer(ros::NodeHandle nh){
     changeLoggerLevel(std::string("ros.monolithic_pr2_planner_node") + 
                                   std::string(".") + 
                                   std::string(SEARCH_LOG), level);
-    ROS_INFO_NAMED(CONFIG_LOG, "search logging level set to %s", level.c_str());
+    ROS_DEBUG_NAMED(CONFIG_LOG, "search logging level set to %s", level.c_str());
 
     nh.param<std::string>("debug/logging/motionprimitives", 
                           level, "info");
@@ -108,7 +100,7 @@ void setLoggersFromParamServer(ros::NodeHandle nh){
     changeLoggerLevel(std::string("ros.monolithic_pr2_planner_node") + 
                                   std::string(".") + 
                                   std::string(MPRIM_LOG), level);
-    ROS_INFO_NAMED(CONFIG_LOG, "search logging level set to %s", level.c_str());
+    ROS_DEBUG_NAMED(CONFIG_LOG, "search logging level set to %s", level.c_str());
 
     nh.param<std::string>("debug/logging/heuristics", 
                           level, "info");
@@ -118,7 +110,7 @@ void setLoggersFromParamServer(ros::NodeHandle nh){
     changeLoggerLevel(std::string("ros.monolithic_pr2_planner_node") + 
                                   std::string(".") + 
                                   std::string(HEUR_LOG), level);
-    ROS_INFO_NAMED(CONFIG_LOG, "search logging level set to %s", level.c_str());
+    ROS_DEBUG_NAMED(CONFIG_LOG, "search logging level set to %s", level.c_str());
 }
 
 int main(int argc, char** argv){

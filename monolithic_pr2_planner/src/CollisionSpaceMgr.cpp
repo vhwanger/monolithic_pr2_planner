@@ -18,9 +18,10 @@ CollisionSpaceMgr::CollisionSpaceMgr(SBPLArmModelPtr right_arm,
                                               left_arm,
                                               m_occupancy_grid);
     if (!m_cspace->init()){
-        ROS_ERROR("cspace failed to initialize!");
+        ROS_ERROR("cspace failed to initialize! Exiting.");
+        exit(1);
     }
-    ROS_INFO_NAMED(INIT_LOG, "Launched collision space manager");
+    ROS_DEBUG_NAMED(INIT_LOG, "Launched collision space manager");
 }
 
 /*! \brief Updates the internal collision map of the collision checker.
@@ -55,11 +56,12 @@ bool CollisionSpaceMgr::isValid(RobotState& robot_pose){
     double dist_temp;
     int debug_code;
     ROS_DEBUG_NAMED(CSPACE_LOG, "collision checking pose");
-    ROS_DEBUG_NAMED(CSPACE_LOG, "body pose is %f %f %f", body_pose.x, body_pose.y, body_pose.z);
+    ROS_DEBUG_NAMED(CSPACE_LOG, "body pose is %f %f %f", body_pose.x, 
+                                body_pose.y, body_pose.z);
     robot_pose.printToDebug(CSPACE_LOG);
     Visualizer::pviz->visualizeRobot(r_arm, l_arm, body_pose, 150, 
                                     std::string("planner"), 0);
-    return m_cspace->checkAllMotion(l_arm, r_arm, body_pose, true, dist_temp, 
+    return m_cspace->checkAllMotion(l_arm, r_arm, body_pose, false, dist_temp, 
                                     debug_code);
 }
 /*! \brief Given the transition data from a state expansion, this does a smart
@@ -87,12 +89,15 @@ bool CollisionSpaceMgr::isValidSuccessor(const GraphState& successor,
     bool onlyArmMotion = (t_data.motion_type() == MPrim_Types::ARM ||
                           t_data.motion_type() == MPrim_Types::ARM_ADAPTIVE);
     if (onlyBaseMotion){
-        return m_cspace->checkBaseMotion(l_arm, r_arm, body_pose, verbose, dist, debug);
+        return m_cspace->checkBaseMotion(l_arm, r_arm, body_pose, verbose, dist,
+                                         debug);
     } else if (onlyArmMotion){
-        bool isvalid = m_cspace->checkArmsMotion(l_arm, r_arm, body_pose, verbose, dist, debug);
+        bool isvalid = m_cspace->checkArmsMotion(l_arm, r_arm, body_pose, 
+                                                 verbose, dist, debug);
         return isvalid;
     } else if (t_data.motion_type() == MPrim_Types::TORSO){
-        return m_cspace->checkSpineMotion(l_arm, r_arm, body_pose, verbose, dist, debug);
+        return m_cspace->checkSpineMotion(l_arm, r_arm, body_pose, verbose, 
+                                          dist, debug);
     } else {
         throw std::invalid_argument("not a valid motion primitive type");
     }

@@ -64,10 +64,10 @@ void LeftContArmState::initArmModel(ArmDescriptionParams& params){
     SBPLArmModelPtr arm_model = boost::make_shared<sbpl_arm_planner::SBPLArmModel>(fp_arm);
     arm_model->setResolution(params.env_resolution);
     if (!params.robot_description_string.compare("ROS_PARAM")){
-        ROS_INFO("getting kdl chain from paramserver");
+        ROS_DEBUG_NAMED(CONFIG_LOG, "getting kdl chain from paramserver");
         arm_model->initKDLChainFromParamServer();
     } else {
-        ROS_INFO("getting kdl chain from string");
+        ROS_DEBUG_NAMED(CONFIG_LOG, "getting kdl chain from string");
         arm_model->initKDLChain(params.robot_description_string);
     }
     m_arm_model = arm_model;
@@ -83,10 +83,10 @@ void RightContArmState::initArmModel(ArmDescriptionParams& params){
     SBPLArmModelPtr arm_model = boost::make_shared<sbpl_arm_planner::SBPLArmModel>(fp_arm);
     arm_model->setResolution(params.env_resolution);
     if (!params.robot_description_string.compare("ROS_PARAM")){
-        ROS_INFO("getting kdl chain from paramserver");
+        ROS_DEBUG_NAMED(CONFIG_LOG, "getting kdl chain from paramserver");
         arm_model->initKDLChainFromParamServer();
     } else {
-        ROS_INFO("getting kdl chain from string");
+        ROS_DEBUG_NAMED(CONFIG_LOG, "getting kdl chain from string");
         arm_model->initKDLChain(params.robot_description_string);
     }
     m_arm_model = arm_model;
