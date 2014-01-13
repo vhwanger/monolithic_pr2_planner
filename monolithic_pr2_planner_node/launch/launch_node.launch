@@ -36,7 +36,9 @@
         <param name="planner/base_motion_primitive_file" value="$(find monolithic_pr2_planner)/config/full_body_base.mprim" />
         <param name="planner/left_arm_description_file" value="$(find monolithic_pr2_planner)/config/pr2_left_arm.cfg" />
         <param name="planner/right_arm_description_file" value="$(find monolithic_pr2_planner)/config/pr2_right_arm.cfg" />
-    </node>
 
+        <!-- Param for the costmap2D -->
+        <rosparam file="$(find monolithic_pr2_planner)/config/costmap_2d.yaml" command="load" ns="costmap_2d" />
+    </node>
 
 </launch>
