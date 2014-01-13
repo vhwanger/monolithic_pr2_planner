@@ -30,17 +30,17 @@ namespace monolithic_pr2_planner {
 
 
             int obj_x(){ return m_robot_pose.getObjectStateRelBody().x(); };
-            int obj_y(){ return m_robot_pose.getObjectStateRelBody().y(); };;
-            int obj_z(){ return m_robot_pose.getObjectStateRelBody().z(); };;
+            int obj_y(){ return m_robot_pose.getObjectStateRelBody().y(); };
+            int obj_z(){ return m_robot_pose.getObjectStateRelBody().z(); };
             int obj_roll(){ return m_robot_pose.getObjectStateRelBody().roll(); };;
             int obj_pitch(){ return m_robot_pose.getObjectStateRelBody().pitch(); };;
             int obj_yaw(){ return m_robot_pose.getObjectStateRelBody().yaw(); };;
             int obj_right_fa();
             int obj_left_fa();
-            int base_x();
-            int base_y();
-            int base_z();
-            int base_theta();
+            int base_x(){return m_robot_pose.base_state().x(); };
+            int base_y(){return m_robot_pose.base_state().y(); };
+            int base_z(){return m_robot_pose.base_state().z(); };
+            int base_theta(){return m_robot_pose.base_state().theta(); };
 
         private:
             int m_id;

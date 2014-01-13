@@ -47,22 +47,27 @@ int main(int argc, char** argv){
     left_arm_start[5] = -1.305254;
     left_arm_start[6] = -0.370584;
 
-    body_start[0] = 3.5;
-    body_start[1] = 1;
+    body_start[0] = 1.5;
+    body_start[1] = 2;
     body_start[2] = .1;
-    body_start[3] = 0;
+    body_start[3] = -M_PI/2;
+
+    // body_start[0] = 1.5;
+    // body_start[1] = 2.5;
+    // body_start[2] = 0.1;
+    // body_start[3] = 0;
 
     srv.request.rarm_start = right_arm_start;
     srv.request.larm_start = left_arm_start;
     srv.request.body_start = body_start;
 
-    KDL::Rotation rot = KDL::Rotation::RPY(0,0,M_PI/2);
+    KDL::Rotation rot = KDL::Rotation::RPY(0,0,0);
     double qx, qy, qz, qw;
     rot.GetQuaternion(qx, qy, qz, qw);
 
     geometry_msgs::PoseStamped pose;
-    pose.pose.position.x = 7;
-    pose.pose.position.y = 4.3;
+    pose.pose.position.x = 5.0;
+    pose.pose.position.y = 1.0;
     pose.pose.position.z = 1.0;
     pose.pose.orientation.x = qx;
     pose.pose.orientation.y = qy;
@@ -90,7 +95,7 @@ int main(int argc, char** argv){
     srv.request.larm_object = larm_offset;
 
     srv.request.goal = pose;
-    srv.request.initial_eps = 10;
+    srv.request.initial_eps = 100;
     srv.request.final_eps = 9;
     srv.request.dec_eps = .1;
     srv.request.xyz_tolerance = .1;

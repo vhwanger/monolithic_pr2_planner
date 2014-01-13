@@ -54,7 +54,8 @@ void Environment::GetSuccs(int sourceStateID, vector<int>* succIDs,
     GraphStatePtr source_state = m_hash_mgr->getGraphState(sourceStateID);
     ROS_DEBUG_NAMED(SEARCH_LOG, "Source state is:");
     source_state->robot_pose().printToDebug(SEARCH_LOG);
-    //source_state->robot_pose().visualize();
+    source_state->robot_pose().visualize();
+    usleep(10000);
 
     for (auto mprim : m_mprims.getMotionPrims()){
         ROS_DEBUG_NAMED(SEARCH_LOG, "Applying motion:");
@@ -165,8 +166,8 @@ void Environment::configurePlanningDomain(){
 
     // Initialize the heuristics. The (optional) parameter defines the cost multiplier.
     // TODO: It's 40 for now, until the actual cost for arm costs are computed.
-    m_heur_mgr->add3DHeur(40);
-    m_heur_mgr->add2DHeur(10);
+    // m_heur_mgr->add3DHeur(40);
+    m_heur_mgr->add2DHeur(20);
 
     // used for arm kinematics
     LeftContArmState::initArmModel(m_param_catalog.m_left_arm_params);
