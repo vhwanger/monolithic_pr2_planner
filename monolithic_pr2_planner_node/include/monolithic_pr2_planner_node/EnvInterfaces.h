@@ -13,8 +13,8 @@
 
 
 
-#include <monolithic_pr2_planner/ExperimentFramework/ExpInterface.h>
 #include <monolithic_pr2_planner_node/ompl_pr2_planner.h>
+#include <monolithic_pr2_planner/ExperimentFramework/randomStartGoalGenerator.h>
 
 namespace monolithic_pr2_planner_node {
     struct InterfaceParams {
@@ -28,12 +28,15 @@ namespace monolithic_pr2_planner_node {
             bool planPathCallback(GetMobileArmPlan::Request &req, 
                                   GetMobileArmPlan::Response &res);
             void bindPlanPathToEnv(std::string service_name);
+            void bindExperimentToEnv(std::string service_name);
             bool bindCollisionSpaceToTopic(std::string topic_name);
             void bindNavMapToTopic(std::string topic_name);
             void packageStats(std::vector<std::string>& stat_names,
                               std::vector<double>& stats,
                               int solution_cost,
                               size_t solution_size);
+            bool experimentCallback(GetMobileArmPlan::Request &req,
+                                    GetMobileArmPlan::Response &res);
 
         private:
             void loadNavMap(const nav_msgs::OccupancyGridPtr& map);
@@ -47,11 +50,12 @@ namespace monolithic_pr2_planner_node {
             tf::TransformListener m_tf;
             CollisionSpaceInterface m_collision_space_interface;
             ros::ServiceServer m_plan_service;
+            ros::ServiceServer m_experiment_service;
             std::unique_ptr<SBPLPlanner> m_planner;
             ros::Subscriber m_nav_map;
             ros::Publisher m_heur_map_pub;
 
-            ExpInterface m_exp_interface;
+            StartGoalGenerator m_generator;
             OMPLPR2Planner m_ompl_planner;
     };
 }
