@@ -53,7 +53,7 @@ bool EnvInterfaces::experimentCallback(GetMobileArmPlan::Request &req,
     ROS_INFO("running simulations!");
     vector<pair<RobotState, RobotState> > start_goal_pairs;
     RobotState::setPlanningMode(PlanningModes::RIGHT_ARM_MOBILE);
-    m_generator.generateUniformPairs(10, start_goal_pairs);
+    m_generator.generateUniformPairs(2, start_goal_pairs);
 
     for (auto& start_goal : start_goal_pairs){
         ROS_INFO("using start:");
