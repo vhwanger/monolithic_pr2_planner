@@ -117,7 +117,7 @@ bool OMPLPR2Planner::createStartGoal(FullState& ompl_start, FullState& ompl_goal
     (*(ompl_goal->as<VectorState>(0)))[6] = 0;//req.rarm_goal[2];
     (*(ompl_goal->as<VectorState>(0)))[7] = 0;//req.larm_goal[2];
     (*(ompl_goal->as<VectorState>(0)))[8] = .1;
-    ompl_goal->as<SE2State>(1)->setXY(4,1);
+    ompl_goal->as<SE2State>(1)->setXY(6,5);
     // may need to normalize the theta?
     ompl_goal->as<SE2State>(1)->setYaw(0);
     
@@ -133,6 +133,7 @@ bool OMPLPR2Planner::createStartGoal(FullState& ompl_start, FullState& ompl_goal
 // same state.
 bool OMPLPR2Planner::convertFullState(ompl::base::State* state, RobotState& robot_state){
     ContObjectState obj_state;
+    // fix the l_arm angles
     LeftContArmState l_arm;
     RightContArmState r_arm;
     ContBaseState base;
@@ -191,11 +192,14 @@ bool OMPLPR2Planner::planPathCallback(monolithic_pr2_planner_node::GetMobileArmP
         //fprintf(stat_out,"%f, %f\n",t1-t0,t3-t2);
         //fclose(stat_out);
         geo_path.interpolate();
+        ROS_INFO("path size of %lu", geo_path.getStateCount());
         for(unsigned int i=0; i<geo_path.getStateCount(); i++){
             ompl::base::State* state = geo_path.getState(i);
             RobotState robot_state;
             if (!convertFullState(state, robot_state))
                 ROS_ERROR("ik failed on path reconstruction!");
+            robot_state.visualize();
+            usleep(10000);
 
         }
     }

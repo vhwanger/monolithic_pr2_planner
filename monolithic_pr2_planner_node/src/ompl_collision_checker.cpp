@@ -57,7 +57,6 @@ bool omplFullBodyCollisionChecker::isValid(const ompl::base::State *state) const
     if ( m_cspace->isValid(*new_robot_state)){
         return true;
     } else {
-        new_robot_state->visualize();
         return false;
     }
 }
