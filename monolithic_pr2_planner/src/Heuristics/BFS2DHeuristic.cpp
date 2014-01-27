@@ -61,7 +61,7 @@ int BFS2DHeuristic::getGoalHeuristic(GraphStatePtr state){
         return 0;
     }
     int cost = m_bfs->get_distance(obj_state.x(), obj_state.y());
-    ROS_DEBUG_NAMED(HEUR_LOG, "[BFS2D] 2Ddijkstra's cost to %d %d is %d", 
-                              obj_state.x(), obj_state.y(), cost);
+    //ROS_DEBUG_NAMED(HEUR_LOG, "[BFS2D] 2Ddijkstra's cost to %d %d is %d", 
+    //                          obj_state.x(), obj_state.y(), cost);
     return getCostMultiplier()*cost;
 }

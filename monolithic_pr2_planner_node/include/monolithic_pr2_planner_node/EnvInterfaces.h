@@ -11,6 +11,10 @@
 #include <nav_msgs/OccupancyGrid.h>
 #include <sbpl/planners/planner.h>
 
+
+
+#include <monolithic_pr2_planner/ExperimentFramework/ExpInterface.h>
+
 namespace monolithic_pr2_planner_node {
     struct InterfaceParams {
         std::string ref_frame;
@@ -45,5 +49,7 @@ namespace monolithic_pr2_planner_node {
             std::unique_ptr<SBPLPlanner> m_planner;
             ros::Subscriber m_nav_map;
             ros::Publisher m_heur_map_pub;
+
+            ExpInterface m_exp_interface;
     };
 }
