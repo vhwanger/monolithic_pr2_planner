@@ -5,6 +5,7 @@
 #include <tf_conversions/tf_kdl.h>
 #include <kdl/frames.hpp>
 #include <monolithic_pr2_planner/LoggerNames.h>
+#include <angles/angles.h>
 
 using namespace monolithic_pr2_planner;
 using namespace monolithic_pr2_planner_node;
@@ -56,7 +57,7 @@ OMPLPR2Planner::OMPLPR2Planner(const CSpaceMgrPtr& cspace){
     
     //Define our SpaceInformation (combines the state space and collision checker)
     ompl::base::SpaceInformationPtr si(new ompl::base::SpaceInformation(fullBodySpace));
-    omplFullBodyCollisionChecker* m_collision_checker = new omplFullBodyCollisionChecker(si);
+    m_collision_checker = new omplFullBodyCollisionChecker(si);
     m_collision_checker->initialize(cspace);
 
     ompl::base::StateValidityChecker* temp2 = m_collision_checker;
@@ -97,10 +98,11 @@ bool OMPLPR2Planner::createStartGoal(FullState& ompl_start, FullState& ompl_goal
     ompl_start->as<SE2State>(1)->setXY(base_start.x(),
                                        base_start.y());
     // may need to normalize the theta?
-    ompl_start->as<SE2State>(1)->setYaw(base_start.theta());
+    double normalized_theta = angles::normalize_angle(base_start.theta());
+    ompl_start->as<SE2State>(1)->setYaw(normalized_theta);
     ROS_INFO("obj xyz (%f %f %f) base xytheta (%f %f %f)",
              obj_state.x(), obj_state.y(), obj_state.z(),
-             base_start.x(), base_start.y(), base_start.theta());
+             base_start.x(), base_start.y(), normalized_theta);
 
     ContObjectState goal_obj_state = req.right_arm_goal.getObjectStateRelBody();
     (*(ompl_goal->as<VectorState>(0)))[0] = goal_obj_state.x();
@@ -113,9 +115,11 @@ bool OMPLPR2Planner::createStartGoal(FullState& ompl_start, FullState& ompl_goal
     (*(ompl_goal->as<VectorState>(0)))[7] = req.left_arm_goal.getUpperArmRollAngle();//req.larm_goal[2];
     (*(ompl_goal->as<VectorState>(0)))[8] = req.base_goal.z();
     ompl_goal->as<SE2State>(1)->setXY(req.base_goal.x(),req.base_goal.y());
-    ompl_goal->as<SE2State>(1)->setYaw(req.base_goal.theta());
+    normalized_theta = angles::normalize_angle(req.base_goal.theta());
+    ompl_goal->as<SE2State>(1)->setYaw(normalized_theta);
     
-    return true;
+    return (planner->getSpaceInformation()->isValid(ompl_goal.get()) && 
+            planner->getSpaceInformation()->isValid(ompl_start.get()));
 }
 
 // takes in an ompl state and returns a proper robot state that represents the
@@ -152,9 +156,15 @@ bool OMPLPR2Planner::convertFullState(ompl::base::State* state, RobotState& robo
 
 bool OMPLPR2Planner::planPathCallback(SearchRequestParams& search_request){
     ROS_INFO("running ompl planner!");
+    planner->clear();
+    planner->getProblemDefinition()->clearSolutionPaths();
+    search_request.left_arm_start.getAngles(&m_collision_checker->l_arm_init);
     FullState ompl_start(fullBodySpace);
     FullState ompl_goal(fullBodySpace);
-    createStartGoal(ompl_start, ompl_goal, search_request);
+    if (!createStartGoal(ompl_start, ompl_goal, search_request))
+        return false;
+    pdef->clearGoal();
+    pdef->clearStartStates();
     pdef->setStartAndGoalStates(ompl_start,ompl_goal);
     ompl::base::GoalState* temp_goal = new ompl::base::GoalState(planner->getSpaceInformation());
     temp_goal->setState(ompl_goal);

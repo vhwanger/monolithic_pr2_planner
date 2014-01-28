@@ -53,7 +53,7 @@ bool EnvInterfaces::experimentCallback(GetMobileArmPlan::Request &req,
     ROS_INFO("running simulations!");
     vector<pair<RobotState, RobotState> > start_goal_pairs;
     RobotState::setPlanningMode(PlanningModes::RIGHT_ARM_MOBILE);
-    m_generator.generateUniformPairs(2, start_goal_pairs);
+    m_generator.generateUniformPairs(10, start_goal_pairs);
 
     for (auto& start_goal : start_goal_pairs){
         ROS_INFO("using start:");
@@ -105,7 +105,9 @@ bool EnvInterfaces::experimentCallback(GetMobileArmPlan::Request &req,
         //exp happening here. note - the configureRequest call must happen before
         //the ompl planner is called (because we have to configure RobotState's IK
         //solver from the planning request.
-        m_ompl_planner.planPathCallback(*search_request);
+        if (!m_ompl_planner.planPathCallback(*search_request)){
+            ROS_WARN("bad start goal for ompl");
+        }
     }
 
     return true;

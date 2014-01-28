@@ -33,4 +33,5 @@ class OMPLPR2Planner{
         ompl::base::ProblemDefinition* pdef;
         ompl::base::Planner* planner;
         ompl::geometric::PathSimplifier* pathSimplifier;
+        omplFullBodyCollisionChecker* m_collision_checker;
 };
