@@ -37,7 +37,8 @@ int Environment::GetGoalHeuristic(int stateID){
     // For now, return the max of all the heuristics
     std::vector<int> values = m_heur_mgr->getGoalHeuristic(m_hash_mgr->getGraphState(stateID));
     // return values[0];
-    return *std::max_element(values.begin(), values.end());
+    int val = *std::max_element(values.begin(), values.end());
+    return val;
 }
 
 void Environment::GetSuccs(int sourceStateID, vector<int>* succIDs, 
@@ -54,7 +55,7 @@ void Environment::GetSuccs(int sourceStateID, vector<int>* succIDs,
     GraphStatePtr source_state = m_hash_mgr->getGraphState(sourceStateID);
     ROS_DEBUG_NAMED(SEARCH_LOG, "Source state is:");
     source_state->robot_pose().printToDebug(SEARCH_LOG);
-    //source_state->robot_pose().visualize();
+    source_state->robot_pose().visualize();
 
     for (auto mprim : m_mprims.getMotionPrims()){
         ROS_DEBUG_NAMED(SEARCH_LOG, "Applying motion:");
@@ -117,7 +118,12 @@ bool Environment::setStartGoal(SearchRequestPtr search_request,
 
     m_goal = search_request->createGoalState();
 
-    goal_id = saveFakeGoalState(start_graph_state);
+    if (m_hash_mgr->size() < 2){
+        goal_id = saveFakeGoalState(start_graph_state);
+        ROS_ERROR("goal id is %d", goal_id);
+    } else {
+        goal_id = 1;
+    }
 
     ROS_INFO_NAMED(SEARCH_LOG, "Goal state created:");
     ContObjectState c_goal = m_goal->getObjectState();

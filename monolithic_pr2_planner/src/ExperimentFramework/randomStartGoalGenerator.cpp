@@ -24,8 +24,10 @@ RobotState StartGoalGenerator::generateRandomState(int region_id){
         //obj_state.pitch(randomDouble(-1.396, 1.396));
         //obj_state.yaw(randomDouble(-1.396, 1.396));
         obj_state.roll(randomDouble(0, 2*M_PI));
-        obj_state.pitch(randomDouble(0, 2*M_PI));
-        obj_state.yaw(randomDouble(0, 2*M_PI));
+        obj_state.pitch(0);
+        obj_state.yaw(0);
+        //obj_state.pitch(randomDouble(0, 2*M_PI));
+        //obj_state.yaw(randomDouble(0, 2*M_PI));
 
         //ROS_INFO("random object state is");
         //obj_state.printToDebug(HEUR_LOG);

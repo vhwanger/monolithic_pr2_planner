@@ -55,11 +55,9 @@ bool EnvInterfaces::experimentCallback(GetMobileArmPlan::Request &req,
     RobotState::setPlanningMode(PlanningModes::RIGHT_ARM_MOBILE);
     m_generator.generateUniformPairs(10, start_goal_pairs);
 
+    int counter = 0;
     for (auto& start_goal : start_goal_pairs){
-        ROS_INFO("using start:");
-        start_goal.first.printToInfo(SEARCH_LOG);
-        ROS_INFO("using goal:");
-        start_goal.second.printToInfo(SEARCH_LOG);
+        ROS_INFO("running trial %d", counter);
         SearchRequestParamsPtr search_request = make_shared<SearchRequestParams>();
         search_request->initial_epsilon = req.initial_eps;
         search_request->final_epsilon = req.final_eps;
@@ -71,6 +69,7 @@ bool EnvInterfaces::experimentCallback(GetMobileArmPlan::Request &req,
         search_request->right_arm_start = start_goal.first.right_arm();
         search_request->left_arm_goal = start_goal.second.left_arm();
         search_request->right_arm_goal = start_goal.second.right_arm();
+        search_request->obj_goal= start_goal.second.getObjectStateRelMap();
 
         KDL::Frame rarm_offset, larm_offset;
         rarm_offset.p.x(req.rarm_object.pose.position.x);
@@ -105,8 +104,55 @@ bool EnvInterfaces::experimentCallback(GetMobileArmPlan::Request &req,
         //exp happening here. note - the configureRequest call must happen before
         //the ompl planner is called (because we have to configure RobotState's IK
         //solver from the planning request.
-        if (!m_ompl_planner.planPathCallback(*search_request)){
+        if (!m_ompl_planner.checkRequest(*search_request)){
             ROS_WARN("bad start goal for ompl");
+        } else {
+            m_ompl_planner.planPathCallback(*search_request, counter);
+
+            // arastar
+            ROS_INFO("running arastar trial %d", counter);
+            m_planner->set_initialsolution_eps(search_request->initial_epsilon);
+            bool return_first_soln = false;
+            m_planner->set_search_mode(return_first_soln);
+            m_planner->set_start(start_id);
+            m_planner->set_goal(goal_id);
+            m_planner->force_planning_from_scratch();
+            vector<int> soln;
+            int soln_cost;
+
+            double start = ros::Time::now().toSec();
+            bool isPlanFound = m_planner->replan(req.allocated_planning_time, 
+                                                 &soln, &soln_cost);
+            double end = ros::Time::now().toSec();
+
+
+            vector<double> stats;
+            vector<string> stat_names;
+            vector<FullBodyState> states;
+            if (isPlanFound){
+                states =  m_env->reconstructPath(soln);
+                packageStats(stat_names, stats, soln_cost, states.size());
+                stats[0] = end-start;
+                m_stats_writer.writeARA(stats, states, counter);
+                res.stats_field_names = stat_names;
+                res.stats = stats;
+            } else {
+                packageStats(stat_names, stats, soln_cost, states.size());
+                ROS_INFO("No plan found!");
+            }
+
+            printf("%f %f %f %f %f %f %f %f %f %f\n", 
+                    stats[0],
+                    stats[1],
+                    stats[2],
+                    stats[3],
+                    stats[4],
+                    stats[5],
+                    stats[6],
+                    stats[7],
+                    stats[8],
+                    stats[9]);
+                    counter++;
         }
     }
 
@@ -158,7 +204,7 @@ bool EnvInterfaces::planPathCallback(GetMobileArmPlan::Request &req,
     }
 
     m_planner->set_initialsolution_eps(search_request->initial_epsilon);
-    bool return_first_soln = true;
+    bool return_first_soln = false;
     m_planner->set_search_mode(return_first_soln);
     m_planner->set_start(start_id);
     ROS_INFO("setting goal id to %d", goal_id);
@@ -173,7 +219,6 @@ bool EnvInterfaces::planPathCallback(GetMobileArmPlan::Request &req,
         vector<FullBodyState> states =  m_env->reconstructPath(soln);
         vector<string> stat_names;
         vector<double> stats;
-        packageStats(stat_names, stats, soln_cost, states.size());
         res.stats_field_names = stat_names;
         res.stats = stats;
     } else {

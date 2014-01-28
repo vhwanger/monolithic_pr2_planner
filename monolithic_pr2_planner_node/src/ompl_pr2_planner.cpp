@@ -124,12 +124,12 @@ bool OMPLPR2Planner::createStartGoal(FullState& ompl_start, FullState& ompl_goal
 
 // takes in an ompl state and returns a proper robot state that represents the
 // same state.
-bool OMPLPR2Planner::convertFullState(ompl::base::State* state, RobotState& robot_state){
+bool OMPLPR2Planner::convertFullState(ompl::base::State* state, RobotState& robot_state,
+                                      ContBaseState& base){
     ContObjectState obj_state;
     // fix the l_arm angles
     LeftContArmState l_arm;
     RightContArmState r_arm;
-    ContBaseState base;
     const ompl::base::CompoundState* s = dynamic_cast<const ompl::base::CompoundState*> (state);
     obj_state.x((*(s->as<VectorState>(0)))[0]);
     obj_state.y((*(s->as<VectorState>(0)))[1]);
@@ -154,7 +154,16 @@ bool OMPLPR2Planner::convertFullState(ompl::base::State* state, RobotState& robo
     return true;
 }
 
-bool OMPLPR2Planner::planPathCallback(SearchRequestParams& search_request){
+bool OMPLPR2Planner::checkRequest(SearchRequestParams& search_request){
+    planner->clear();
+    planner->getProblemDefinition()->clearSolutionPaths();
+    search_request.left_arm_start.getAngles(&m_collision_checker->l_arm_init);
+    FullState ompl_start(fullBodySpace);
+    FullState ompl_goal(fullBodySpace);
+    return createStartGoal(ompl_start, ompl_goal, search_request);
+}
+
+bool OMPLPR2Planner::planPathCallback(SearchRequestParams& search_request, int trial_id){
     ROS_INFO("running ompl planner!");
     planner->clear();
     planner->getProblemDefinition()->clearSolutionPaths();
@@ -174,10 +183,15 @@ bool OMPLPR2Planner::planPathCallback(SearchRequestParams& search_request){
     //if(planner_id_==2 || planner_id_==3){
         pdef->setGoal(temp_goal2);
     //}
+    double t0 = ros::Time::now().toSec();
     planner->solve(60.0);
+    double t1 = ros::Time::now().toSec();
+    double planning_time = t1-t0;
     ompl::base::PathPtr path = planner->getProblemDefinition()->getSolutionPath();
+    RRTData data;
     if (path){
         ROS_INFO("OMPL found a solution!");
+        data.planned = true;
         ompl::geometric::PathGeometric geo_path = static_cast<ompl::geometric::PathGeometric&>(*path);
         double t2 = ros::Time::now().toSec();
         bool b1 = pathSimplifier->reduceVertices(geo_path);
@@ -186,115 +200,31 @@ bool OMPLPR2Planner::planPathCallback(SearchRequestParams& search_request){
         //bool b3 = pathSimplifier->shortcutPath(geo_path);
         //ROS_ERROR("shortcut:%d\n",b3);
         double t3 = ros::Time::now().toSec();
-        //filename = "/tmp/ompl_stats_" + planner_string_ + ".csv";
-        //FILE* stat_out = fopen(filename.c_str(),"a");
-        //fprintf(stat_out,"%f, %f\n",t1-t0,t3-t2);
-        //fclose(stat_out);
+        double reduction_time = t3-t2;
+
+        data.plan_time = planning_time;
+        data.shortcut_time = reduction_time;
+        vector<RobotState> robot_states;
+        vector<ContBaseState> base_states;
+
         geo_path.interpolate();
         ROS_INFO("path size of %lu", geo_path.getStateCount());
         for(unsigned int i=0; i<geo_path.getStateCount(); i++){
             ompl::base::State* state = geo_path.getState(i);
             RobotState robot_state;
-            if (!convertFullState(state, robot_state))
+            ContBaseState base;
+            if (!convertFullState(state, robot_state, base)){
                 ROS_ERROR("ik failed on path reconstruction!");
+            }
+            robot_states.push_back(robot_state);
+            base_states.push_back(base);
             robot_state.visualize();
             usleep(10000);
-
         }
+        m_stats_writer.writeRRT(trial_id, data);
+    } else {
+        data.planned = false;
     }
 
     return true;
 }
-    //    // do something with the solution
-    //    fstream path_stream;
-    //    std::string filename = "/tmp/ompl_stats_" + planner_string_ + ".txt";
-    //    path_stream.open(filename.c_str(),fstream::out | fstream::app);
-    //    path->print(path_stream);
-    //    path_stream.close();
-
-    //    ompl::geometric::PathGeometric geo_path = static_cast<ompl::geometric::PathGeometric&>(*path);
-    //    double t2 = ros::Time::now().toSec();
-    //    bool b1 = pathSimplifier->reduceVertices(geo_path);
-    //    bool b2 = pathSimplifier->collapseCloseVertices(geo_path);
-    //    ROS_ERROR("reduce:%d collapse:%d\n",b1,b2);
-    //    //bool b3 = pathSimplifier->shortcutPath(geo_path);
-    //    //ROS_ERROR("shortcut:%d\n",b3);
-    //    double t3 = ros::Time::now().toSec();
-    //    filename = "/tmp/ompl_stats_" + planner_string_ + ".csv";
-    //    FILE* stat_out = fopen(filename.c_str(),"a");
-    //    fprintf(stat_out,"%f, %f\n",t1-t0,t3-t2);
-    //    fclose(stat_out);
-    //    geo_path.interpolate();
-
-    //    char buf[64];
-    //    filename = "/tmp/ompl_paths_" + planner_string_ + "/%.4d.csv";
-
-    //    sprintf(buf,filename.c_str(),filenum_);
-    //    filenum_++;
-    //    FILE* traj_file = fopen(buf, "w");
-    //    for(unsigned int i=0; i<geo_path.getStateCount(); i++){
-    //        ompl::base::State* state = geo_path.getState(i);
-    //        const ompl::base::CompoundState* s = dynamic_cast<const ompl::base::CompoundState*> (state);
-
-    //        vector<double> wpose(12,0);
-    //        wpose[0] = (*(s->as<ompl::base::RealVectorStateSpace::StateType>(0)))[1];
-    //        wpose[1] = (*(s->as<ompl::base::RealVectorStateSpace::StateType>(0)))[2];
-    //        wpose[2] = (*(s->as<ompl::base::RealVectorStateSpace::StateType>(0)))[3];
-    //        wpose[3] = 0;
-    //        wpose[4] = 0;
-    //        wpose[5] = (*(s->as<ompl::base::RealVectorStateSpace::StateType>(0)))[4];
-    //        wpose[6] = (*(s->as<ompl::base::RealVectorStateSpace::StateType>(0)))[6];
-    //        wpose[7] = (*(s->as<ompl::base::RealVectorStateSpace::StateType>(0)))[5];
-    //        wpose[8] = s->as<ompl::base::SE2StateSpace::StateType>(1)->getX();
-    //        wpose[9] = s->as<ompl::base::SE2StateSpace::StateType>(1)->getY();
-    //        wpose[10] = (*(s->as<ompl::base::RealVectorStateSpace::StateType>(0)))[0];
-    //        wpose[11] = s->as<ompl::base::SE2StateSpace::StateType>(1)->getYaw();
-
-    //        vector<double> arm0(7,0); //right arm angles
-    //        vector<double> arm1(7,0); //left arm angles
-    //        arm0[2] = (*(s->as<ompl::base::RealVectorStateSpace::StateType>(0)))[6];
-    //        arm1[2] = (*(s->as<ompl::base::RealVectorStateSpace::StateType>(0)))[5];
-
-    //        if(sbpl_arm_env_.convertWorldPoseToAngles(wpose, arm0, arm1, false)){
-    //            ROS_DEBUG("IK is valid");
-    //            BodyPose body;
-    //            body.x = s->as<ompl::base::SE2StateSpace::StateType>(1)->getX();
-    //            body.y = s->as<ompl::base::SE2StateSpace::StateType>(1)->getY();
-    //            body.theta = s->as<ompl::base::SE2StateSpace::StateType>(1)->getYaw();
-    //            body.z = (*(s->as<ompl::base::RealVectorStateSpace::StateType>(0)))[0];
-
-    //            /*
-    //               short unsigned int blah_x, blah_y, blah_z, blah_yaw;
-    //               sbpl_arm_env_.computeObjectPose(body,arm0,blah_x,blah_y,blah_z,blah_yaw);
-    //               geometry_msgs::Point p;
-    //               sbpl_arm_env_.discToWorldXYZ(blah_x,blah_y,blah_z,p.x,p.y,p.z,true);
-    //               marker.points.push_back(p);
-    //               pviz_.visualizeRobot(arm0, arm1, body, i*color_inc, "waypoint_"+boost::lexical_cast<std::string>(i),i);
-    //               usleep(3000);
-    //               */
-
-    //            fprintf(traj_file, "%0.4f, ", body.x);
-    //            fprintf(traj_file, "%0.4f, ", body.y);
-    //            fprintf(traj_file, "%0.4f, ", body.theta);
-    //            fprintf(traj_file, "%0.4f, ", body.z);
-    //            for(size_t j=0; j<arm0.size(); ++j)
-    //                fprintf(traj_file, "%0.4f, ", arm0[j]);
-    //            for(size_t j=0; j<arm1.size(); ++j)
-    //                fprintf(traj_file, "%0.4f, ", arm1[j]);
-    //            fprintf(traj_file,"\n");
-    //        }
-    //        else{
-    //            ROS_ERROR("IK is not valid");
-    //        }
-    //    }
-    //    fclose(traj_file);
-    //    //marker_pub_.publish(marker);
-
-    //    planner->getProblemDefinition()->clearSolutionPaths();
-
-    //    if(planner_id_==0 || planner_id_==2 || planner_id_==3)
-    //        planner->clear();
-    //    else
-    //        planner->as<ompl::geometric::PRM>()->clearQuery();
-    //    return true;
-    //}

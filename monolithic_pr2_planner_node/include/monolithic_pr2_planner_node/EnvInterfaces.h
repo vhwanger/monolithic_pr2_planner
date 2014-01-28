@@ -10,6 +10,7 @@
 #include <sbpl/planners/araplanner.h>
 #include <nav_msgs/OccupancyGrid.h>
 #include <sbpl/planners/planner.h>
+#include <monolithic_pr2_planner_node/StatsWriter.h>
 
 
 
@@ -57,5 +58,6 @@ namespace monolithic_pr2_planner_node {
 
             StartGoalGenerator m_generator;
             OMPLPR2Planner m_ompl_planner;
+            StatsWriter m_stats_writer;
     };
 }
