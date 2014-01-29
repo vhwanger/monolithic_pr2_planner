@@ -10,6 +10,7 @@ namespace monolithic_pr2_planner {
         std::vector<double> base;
         std::vector<double> left_arm;
         std::vector<double> right_arm;
+        std::vector<double> obj;
     };
     class PathPostProcessor {
         public:

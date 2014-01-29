@@ -240,7 +240,6 @@ bool OMPLPR2Planner::planPathCallback(SearchRequestParams& search_request, int t
         double t2 = ros::Time::now().toSec();
         bool b1 = pathSimplifier->reduceVertices(geo_path);
         bool b2 = pathSimplifier->collapseCloseVertices(geo_path);
-        ROS_ERROR("reduce:%d collapse:%d\n",b1,b2);
         bool b3 = pathSimplifier->shortcutPath(geo_path);
         //ROS_ERROR("shortcut:%d\n",b3);
         double t3 = ros::Time::now().toSec();
@@ -252,7 +251,6 @@ bool OMPLPR2Planner::planPathCallback(SearchRequestParams& search_request, int t
         vector<ContBaseState> base_states;
 
         geo_path.interpolate();
-        ROS_INFO("path size of %lu", geo_path.getStateCount());
         for(unsigned int i=0; i<geo_path.getStateCount(); i++){
             ompl::base::State* state = geo_path.getState(i);
             RobotState robot_state;

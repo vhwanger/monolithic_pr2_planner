@@ -10,12 +10,12 @@ StatsWriter::StatsWriter(int planner_id):m_planner_id(planner_id){
 }
 
 void StatsWriter::write(int trial_id, RRTData data){
-    if (m_planner_id == PRM_P)
-        ROS_INFO("writing PRM stats");
-    if (m_planner_id == RRT)
-        ROS_INFO("writing RRT stats");
-    if (m_planner_id == RRTSTAR)
-        ROS_INFO("writing RRTStar stats");
+    //if (m_planner_id == PRM_P)
+    //    ROS_INFO("writing PRM stats");
+    //if (m_planner_id == RRT)
+    //    ROS_INFO("writing RRT stats");
+    //if (m_planner_id == RRTSTAR)
+    //    ROS_INFO("writing RRTStar stats");
     stringstream ss;
     if (m_planner_id == PRM_P)
         ss << "/tmp/prm_" << std::setfill('0') << std::setw(2) << trial_id << ".stats";
@@ -98,28 +98,29 @@ void StatsWriter::writeARA(std::vector<double> stats_v, std::vector<FullBodyStat
             vector<double> l_arm = states[i].left_arm;
             vector<double> r_arm = states[i].right_arm;
             vector<double> base = states[i].base;
+            vector<double> obj = states[i].obj;
 
-            fprintf(path, "%f %f %f %f %f %f %f\n",
-                    r_arm[0], 
-                    r_arm[1], 
-                    r_arm[2], 
-                    r_arm[3], 
-                    r_arm[4], 
-                    r_arm[5], 
-                    r_arm[6]);
-            fprintf(path, "%f %f %f %f %f %f %f\n",
-                    l_arm[0], 
-                    l_arm[1], 
-                    l_arm[2], 
-                    l_arm[3], 
-                    l_arm[4], 
-                    l_arm[5], 
-                    l_arm[6]);
-            fprintf(path, "%f %f %f %f\n",
+            // theta is in [2]
+            fprintf(path, "%f %f %f %f ",
                     base[0],
                     base[1],
-                    base[2],
-                    base[3]);
+                    base[3],
+                    base[2]);
+            fprintf(path, "%f %f %f %f %f %f %f ",
+                          r_arm[0], 
+                          r_arm[1], 
+                          r_arm[2], 
+                          r_arm[3], 
+                          r_arm[4], 
+                          r_arm[5], 
+                          r_arm[6]);
+            fprintf(path, "%f %f %f %f %f %f\n",
+                        obj[0],
+                        obj[1],
+                        obj[2],
+                        obj[3],
+                        obj[4],
+                        obj[5]);
         }
         fclose(path);
     }
