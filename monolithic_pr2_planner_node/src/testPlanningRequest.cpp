@@ -91,14 +91,14 @@ int main(int argc, char** argv){
 
     srv.request.goal = pose;
     srv.request.initial_eps = 10;
-    srv.request.final_eps = 9;
+    srv.request.final_eps = 10;
     srv.request.dec_eps = .1;
     srv.request.xyz_tolerance = .1;
     srv.request.roll_tolerance = .1;
     srv.request.pitch_tolerance = .1;
     srv.request.yaw_tolerance = .1;
 
-    srv.request.allocated_planning_time = 60;
+    srv.request.allocated_planning_time = 30;
 
     srv.request.planning_mode = monolithic_pr2_planner::PlanningModes::RIGHT_ARM_MOBILE;
 

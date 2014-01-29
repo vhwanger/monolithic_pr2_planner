@@ -204,7 +204,7 @@ bool EnvInterfaces::planPathCallback(GetMobileArmPlan::Request &req,
     }
 
     m_planner->set_initialsolution_eps(search_request->initial_epsilon);
-    bool return_first_soln = false;
+    bool return_first_soln = true;
     m_planner->set_search_mode(return_first_soln);
     m_planner->set_start(start_id);
     ROS_INFO("setting goal id to %d", goal_id);
