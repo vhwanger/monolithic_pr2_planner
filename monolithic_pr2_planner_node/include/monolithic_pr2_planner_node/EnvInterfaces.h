@@ -57,7 +57,9 @@ namespace monolithic_pr2_planner_node {
             ros::Publisher m_heur_map_pub;
 
             StartGoalGenerator m_generator;
-            OMPLPR2Planner m_ompl_planner;
+            OMPLPR2Planner m_rrt;
+            OMPLPR2Planner m_prm;
+            OMPLPR2Planner m_rrtstar;
             StatsWriter m_stats_writer;
     };
 }

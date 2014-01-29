@@ -5,8 +5,111 @@
 using namespace std;
 using namespace monolithic_pr2_planner;
 
-StatsWriter::StatsWriter(){ }
+StatsWriter::StatsWriter(int planner_id):m_planner_id(planner_id){
+     
+}
 
+void StatsWriter::write(int trial_id, RRTData data){
+    if (m_planner_id == PRM_P)
+        writePRM(trial_id, data);
+    if (m_planner_id == RRT)
+        writeRRT(trial_id, data);
+    if (m_planner_id == RRTSTAR)
+        writeRRTStar(trial_id, data);
+}
+
+void StatsWriter::writeRRTStar(int trial_id, RRTData data){
+    ROS_INFO("writing RRTStar stats");
+    stringstream ss;
+    ss << "/tmp/rrtstar_" << trial_id << ".stats";
+    FILE* stats = fopen(ss.str().c_str(), "w");
+    if (data.planned){
+        fprintf(stats, "%f %f\n", data.plan_time, data.shortcut_time);
+        stringstream ss2;
+        ss2 << "/tmp/rrtstar_" << trial_id << ".path";
+        FILE* path = fopen(ss2.str().c_str(), "w");
+        for (size_t i=0; i < data.robot_state.size(); i++){
+            vector<double> l_arm;
+            vector<double> r_arm;
+            vector<double> base;
+
+            data.robot_state[i].right_arm().getAngles(&r_arm);
+            data.robot_state[i].left_arm().getAngles(&l_arm);
+
+            fprintf(path, "%f %f %f %f %f %f %f\n",
+                          r_arm[0], 
+                          r_arm[1], 
+                          r_arm[2], 
+                          r_arm[3], 
+                          r_arm[4], 
+                          r_arm[5], 
+                          r_arm[6]);
+            fprintf(path, "%f %f %f %f %f %f %f\n",
+                          l_arm[0], 
+                          l_arm[1], 
+                          l_arm[2], 
+                          l_arm[3], 
+                          l_arm[4], 
+                          l_arm[5], 
+                          l_arm[6]);
+            fprintf(path, "%f %f %f %f\n",
+                          data.base[i].x(),
+                          data.base[i].y(),
+                          data.base[i].z(),
+                          data.base[i].theta());
+        }
+        fclose(path);
+    } else {
+        fprintf(stats, "failed to plan\n");
+    }
+    fclose(stats);
+}
+void StatsWriter::writePRM(int trial_id, RRTData data){
+    ROS_INFO("writing PRM stats");
+    stringstream ss;
+    ss << "/tmp/prm_" << trial_id << ".stats";
+    FILE* stats = fopen(ss.str().c_str(), "w");
+    if (data.planned){
+        fprintf(stats, "%f %f\n", data.plan_time, data.shortcut_time);
+        stringstream ss2;
+        ss2 << "/tmp/prm_" << trial_id << ".path";
+        FILE* path = fopen(ss2.str().c_str(), "w");
+        for (size_t i=0; i < data.robot_state.size(); i++){
+            vector<double> l_arm;
+            vector<double> r_arm;
+            vector<double> base;
+
+            data.robot_state[i].right_arm().getAngles(&r_arm);
+            data.robot_state[i].left_arm().getAngles(&l_arm);
+
+            fprintf(path, "%f %f %f %f %f %f %f\n",
+                          r_arm[0], 
+                          r_arm[1], 
+                          r_arm[2], 
+                          r_arm[3], 
+                          r_arm[4], 
+                          r_arm[5], 
+                          r_arm[6]);
+            fprintf(path, "%f %f %f %f %f %f %f\n",
+                          l_arm[0], 
+                          l_arm[1], 
+                          l_arm[2], 
+                          l_arm[3], 
+                          l_arm[4], 
+                          l_arm[5], 
+                          l_arm[6]);
+            fprintf(path, "%f %f %f %f\n",
+                          data.base[i].x(),
+                          data.base[i].y(),
+                          data.base[i].z(),
+                          data.base[i].theta());
+        }
+        fclose(path);
+    } else {
+        fprintf(stats, "failed to plan\n");
+    }
+    fclose(stats);
+}
 void StatsWriter::writeRRT(int trial_id, RRTData data){
     ROS_INFO("writing rrt stats");
     stringstream ss;

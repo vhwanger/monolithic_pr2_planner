@@ -4,6 +4,9 @@
 #include <monolithic_pr2_planner/StateReps/ContBaseState.h>
 #include <monolithic_pr2_planner/PathPostProcessor.h>
 #include <vector>
+#define RRT 1
+#define PRM_P 2
+#define RRTSTAR 3
 
 struct RRTData {
     bool planned;
@@ -15,15 +18,19 @@ struct RRTData {
 
 class StatsWriter {
     public:
-        StatsWriter();
+        StatsWriter(int planner_id=-1);
         void writeARA(std::vector<double> stats, 
                       std::vector<monolithic_pr2_planner::FullBodyState> states, 
                       int trial_id);
         void writeMHA();
         void writeRRT(int trial_id, RRTData data);
+        void writePRM(int trial_id, RRTData data);
+        void writeRRTStar(int trial_id, RRTData data);
+        void write(int trial_id, RRTData data);
     private:
         FILE* ara;
         FILE* mha;
         FILE* rrt;
         FILE* prm;
+        int m_planner_id;
 };

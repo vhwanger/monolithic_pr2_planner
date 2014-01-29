@@ -22,7 +22,11 @@ using namespace KDL;
 // topic.
 EnvInterfaces::EnvInterfaces(boost::shared_ptr<monolithic_pr2_planner::Environment> env) : 
     m_env(env), m_collision_space_interface(env->getCollisionSpace(), env->getHeuristicMgr()),
-    m_generator(env->getCollisionSpace()), m_ompl_planner(env->getCollisionSpace()){
+    m_generator(env->getCollisionSpace()), 
+    m_rrt(env->getCollisionSpace(), RRT),
+    m_prm(env->getCollisionSpace(), PRM_P),
+    m_rrtstar(env->getCollisionSpace(), RRTSTAR)
+{
         getParams();
     bool forward_search = true;
     m_planner.reset(new ARAPlanner(m_env.get(), forward_search));
@@ -53,106 +57,110 @@ bool EnvInterfaces::experimentCallback(GetMobileArmPlan::Request &req,
     ROS_INFO("running simulations!");
     vector<pair<RobotState, RobotState> > start_goal_pairs;
     RobotState::setPlanningMode(PlanningModes::RIGHT_ARM_MOBILE);
-    m_generator.generateUniformPairs(10, start_goal_pairs);
 
     int counter = 0;
-    for (auto& start_goal : start_goal_pairs){
-        ROS_INFO("running trial %d", counter);
-        SearchRequestParamsPtr search_request = make_shared<SearchRequestParams>();
-        search_request->initial_epsilon = req.initial_eps;
-        search_request->final_epsilon = req.final_eps;
-        search_request->decrement_epsilon = req.dec_eps;
-        
-        search_request->base_start = start_goal.first.base_state();
-        search_request->base_goal = start_goal.second.base_state();
-        search_request->left_arm_start = start_goal.first.left_arm();
-        search_request->right_arm_start = start_goal.first.right_arm();
-        search_request->left_arm_goal = start_goal.second.left_arm();
-        search_request->right_arm_goal = start_goal.second.right_arm();
-        search_request->obj_goal= start_goal.second.getObjectStateRelMap();
+    while (counter < 10){
+        m_generator.generateUniformPairs(10, start_goal_pairs);
+        for (auto& start_goal : start_goal_pairs){
+            ROS_INFO("running trial %d", counter);
+            SearchRequestParamsPtr search_request = make_shared<SearchRequestParams>();
+            search_request->initial_epsilon = req.initial_eps;
+            search_request->final_epsilon = req.final_eps;
+            search_request->decrement_epsilon = req.dec_eps;
+            
+            search_request->base_start = start_goal.first.base_state();
+            search_request->base_goal = start_goal.second.base_state();
+            search_request->left_arm_start = start_goal.first.left_arm();
+            search_request->right_arm_start = start_goal.first.right_arm();
+            search_request->left_arm_goal = start_goal.second.left_arm();
+            search_request->right_arm_goal = start_goal.second.right_arm();
+            search_request->obj_goal= start_goal.second.getObjectStateRelMap();
 
-        KDL::Frame rarm_offset, larm_offset;
-        rarm_offset.p.x(req.rarm_object.pose.position.x);
-        rarm_offset.p.y(req.rarm_object.pose.position.y);
-        rarm_offset.p.z(req.rarm_object.pose.position.z);
-        larm_offset.p.x(req.larm_object.pose.position.x);
-        larm_offset.p.y(req.larm_object.pose.position.y);
-        larm_offset.p.z(req.larm_object.pose.position.z);
+            KDL::Frame rarm_offset, larm_offset;
+            rarm_offset.p.x(req.rarm_object.pose.position.x);
+            rarm_offset.p.y(req.rarm_object.pose.position.y);
+            rarm_offset.p.z(req.rarm_object.pose.position.z);
+            larm_offset.p.x(req.larm_object.pose.position.x);
+            larm_offset.p.y(req.larm_object.pose.position.y);
+            larm_offset.p.z(req.larm_object.pose.position.z);
 
-        rarm_offset.M = Rotation::Quaternion(req.rarm_object.pose.orientation.x, 
-                                             req.rarm_object.pose.orientation.y, 
-                                             req.rarm_object.pose.orientation.z, 
-                                             req.rarm_object.pose.orientation.w);
-        larm_offset.M = Rotation::Quaternion(req.larm_object.pose.orientation.x, 
-                                             req.larm_object.pose.orientation.y, 
-                                             req.larm_object.pose.orientation.z, 
-                                             req.larm_object.pose.orientation.w);
-        search_request->left_arm_object = larm_offset;
-        search_request->right_arm_object = rarm_offset;
-        search_request->xyz_tolerance = req.xyz_tolerance;
-        search_request->roll_tolerance = req.roll_tolerance;
-        search_request->pitch_tolerance = req.pitch_tolerance;
-        search_request->yaw_tolerance = req.yaw_tolerance;
-        search_request->planning_mode = req.planning_mode;
+            rarm_offset.M = Rotation::Quaternion(req.rarm_object.pose.orientation.x, 
+                                                 req.rarm_object.pose.orientation.y, 
+                                                 req.rarm_object.pose.orientation.z, 
+                                                 req.rarm_object.pose.orientation.w);
+            larm_offset.M = Rotation::Quaternion(req.larm_object.pose.orientation.x, 
+                                                 req.larm_object.pose.orientation.y, 
+                                                 req.larm_object.pose.orientation.z, 
+                                                 req.larm_object.pose.orientation.w);
+            search_request->left_arm_object = larm_offset;
+            search_request->right_arm_object = rarm_offset;
+            search_request->xyz_tolerance = req.xyz_tolerance;
+            search_request->roll_tolerance = req.roll_tolerance;
+            search_request->pitch_tolerance = req.pitch_tolerance;
+            search_request->yaw_tolerance = req.yaw_tolerance;
+            search_request->planning_mode = req.planning_mode;
 
-        res.stats_field_names.resize(18);
-        res.stats.resize(18);
-        int start_id, goal_id;
-        if(!m_env->configureRequest(search_request, start_id, goal_id))
-            return false;
+            res.stats_field_names.resize(18);
+            res.stats.resize(18);
+            int start_id, goal_id;
+            if(!m_env->configureRequest(search_request, start_id, goal_id))
+                return false;
 
-        //exp happening here. note - the configureRequest call must happen before
-        //the ompl planner is called (because we have to configure RobotState's IK
-        //solver from the planning request.
-        if (!m_ompl_planner.checkRequest(*search_request)){
-            ROS_WARN("bad start goal for ompl");
-        } else {
-            m_ompl_planner.planPathCallback(*search_request, counter);
-
-            // arastar
-            ROS_INFO("running arastar trial %d", counter);
-            m_planner->set_initialsolution_eps(search_request->initial_epsilon);
-            bool return_first_soln = false;
-            m_planner->set_search_mode(return_first_soln);
-            m_planner->set_start(start_id);
-            m_planner->set_goal(goal_id);
-            m_planner->force_planning_from_scratch();
-            vector<int> soln;
-            int soln_cost;
-
-            double start = ros::Time::now().toSec();
-            bool isPlanFound = m_planner->replan(req.allocated_planning_time, 
-                                                 &soln, &soln_cost);
-            double end = ros::Time::now().toSec();
-
-
-            vector<double> stats;
-            vector<string> stat_names;
-            vector<FullBodyState> states;
-            if (isPlanFound){
-                states =  m_env->reconstructPath(soln);
-                packageStats(stat_names, stats, soln_cost, states.size());
-                stats[0] = end-start;
-                m_stats_writer.writeARA(stats, states, counter);
-                res.stats_field_names = stat_names;
-                res.stats = stats;
+            //exp happening here. note - the configureRequest call must happen before
+            //the ompl planner is called (because we have to configure RobotState's IK
+            //solver from the planning request.
+            if (!m_rrt.checkRequest(*search_request)){
+                ROS_WARN("bad start goal for ompl");
             } else {
-                packageStats(stat_names, stats, soln_cost, states.size());
-                ROS_INFO("No plan found!");
-            }
+                m_rrt.planPathCallback(*search_request, counter);
+                m_prm.planPathCallback(*search_request, counter);
+                m_rrtstar.planPathCallback(*search_request, counter);
 
-            printf("%f %f %f %f %f %f %f %f %f %f\n", 
-                    stats[0],
-                    stats[1],
-                    stats[2],
-                    stats[3],
-                    stats[4],
-                    stats[5],
-                    stats[6],
-                    stats[7],
-                    stats[8],
-                    stats[9]);
-                    counter++;
+                // arastar
+                ROS_INFO("running arastar trial %d", counter);
+                m_planner->set_initialsolution_eps(search_request->initial_epsilon);
+                bool return_first_soln = false;
+                m_planner->set_search_mode(return_first_soln);
+                m_planner->set_start(start_id);
+                m_planner->set_goal(goal_id);
+                m_planner->force_planning_from_scratch();
+                vector<int> soln;
+                int soln_cost;
+
+                double start = ros::Time::now().toSec();
+                bool isPlanFound = m_planner->replan(req.allocated_planning_time, 
+                                                     &soln, &soln_cost);
+                double end = ros::Time::now().toSec();
+
+
+                vector<double> stats;
+                vector<string> stat_names;
+                vector<FullBodyState> states;
+                if (isPlanFound){
+                    states =  m_env->reconstructPath(soln);
+                    packageStats(stat_names, stats, soln_cost, states.size());
+                    stats[0] = end-start;
+                    m_stats_writer.writeARA(stats, states, counter);
+                    res.stats_field_names = stat_names;
+                    res.stats = stats;
+                } else {
+                    packageStats(stat_names, stats, soln_cost, states.size());
+                    ROS_INFO("No plan found!");
+                }
+
+                printf("%f %f %f %f %f %f %f %f %f %f\n", 
+                        stats[0],
+                        stats[1],
+                        stats[2],
+                        stats[3],
+                        stats[4],
+                        stats[5],
+                        stats[6],
+                        stats[7],
+                        stats[8],
+                        stats[9]);
+                        counter++;
+            }
         }
     }
 
