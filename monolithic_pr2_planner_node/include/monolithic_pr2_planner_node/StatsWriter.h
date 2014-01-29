@@ -2,6 +2,7 @@
 #include <ros/ros.h>
 #include <monolithic_pr2_planner/StateReps/RobotState.h>
 #include <monolithic_pr2_planner/StateReps/ContBaseState.h>
+#include <monolithic_pr2_planner/StateReps/ContObjectState.h>
 #include <monolithic_pr2_planner/PathPostProcessor.h>
 #include <vector>
 #define RRT 1
@@ -12,6 +13,7 @@ struct RRTData {
     bool planned;
     double plan_time;
     double shortcut_time;
+    size_t path_length;
     std::vector<monolithic_pr2_planner::RobotState> robot_state; 
     std::vector<monolithic_pr2_planner::ContBaseState> base; 
 };

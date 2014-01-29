@@ -2,6 +2,7 @@
 #include <monolithic_pr2_planner/StateReps/DiscObjectState.h>
 #include <monolithic_pr2_planner/StateReps/ContArmState.h>
 #include <monolithic_pr2_planner/SearchRequest.h>
+#include <monolithic_pr2_planner/Visualizer.h>
 #include <tf_conversions/tf_kdl.h>
 #include <kdl/frames.hpp>
 #include <monolithic_pr2_planner/LoggerNames.h>
@@ -259,14 +260,24 @@ bool OMPLPR2Planner::planPathCallback(SearchRequestParams& search_request, int t
             if (!convertFullState(state, robot_state, base)){
                 ROS_ERROR("ik failed on path reconstruction!");
             }
+            vector<double> l_arm, r_arm;
             robot_states.push_back(robot_state);
             base_states.push_back(base);
-            robot_state.visualize();
+
+            robot_state.right_arm().getAngles(&r_arm);
+            robot_state.left_arm().getAngles(&l_arm);
+            BodyPose bp = base.body_pose();
+            Visualizer::pviz->visualizeRobot(r_arm, l_arm, bp, 150, "robot", 0);
             usleep(10000);
         }
+        data.robot_state = robot_states;
+        data.base = base_states;
+        data.path_length = geo_path.getStateCount();
         m_stats_writer.write(trial_id, data);
     } else {
         data.planned = false;
+        ROS_ERROR("failed to plan");
+        return false;
     }
 
     return true;
