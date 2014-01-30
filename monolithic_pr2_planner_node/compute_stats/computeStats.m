@@ -1,15 +1,16 @@
 function comparison = computeStats(path)
-  num = 1;
+  num = 10;
 
   prm_stats = computeMethodStats([path '/prm_'],num,0)
   rrt_stats = computeMethodStats([path '/rrt_'],num,0)
   rrtstar_stats = computeMethodStats([path '/rrtstar_'],num,0)
   ara_stats = computeMethodStats([path '/ara_'],num,1)
+  mha_stats = computeMethodStats([path '/mha_'],num,1)
 
-  other_methods = [prm_stats rrt_stats rrtstar_stats];
+  other_methods = [prm_stats rrt_stats rrtstar_stats ara_stats];
   %other_methods = [cbirrt_stats multi_ompl_stats];
 
-  comparison = compareMethods(ara_stats,other_methods);
+  comparison = compareMethods(mha_stats,other_methods);
 
   %displayComparison(comparison);
 end
@@ -22,8 +23,8 @@ function stats = computeMethodStats(folder_name,num,sbpl)
   arm_abs = [];
   time = [];
   for i=1:num
-    path_filename = [folder_name num2str(i-1,'%02d') '.path']
-    stat_filename = [folder_name num2str(i-1,'%02d') '.stats']
+    path_filename = [folder_name num2str(i-1,'%02d') '.path'];
+    stat_filename = [folder_name num2str(i-1,'%02d') '.stats'];
     if exist(path_filename, 'file')~=2 || exist(stat_filename, 'file')~=2
       base(i) = -1;
       spine(i) = -1;
@@ -63,7 +64,7 @@ function stats = computeMethodStats(folder_name,num,sbpl)
     %get plan times
     raw_stats = load(stat_filename);
     if sbpl
-      time(i) = raw_stats(1,4);
+      time(i) = raw_stats(1,1);
     else
       time(i) = raw_stats(1,1) + raw_stats(1,2);
     end
@@ -80,12 +81,11 @@ end
 function comparison = compareMethods(m,other)
   %first compute stats on the primary method
   comparison.method.name = m.name;
-  fields = fieldnames(m);
-  idx = m.(fields{2}) >= 0
+  fields = fieldnames(m)
+  idx = m.(fields{2}) >= 0;
   for j=2:length(fields)
     idx = idx & (m.(fields{j}) >= 0)
   end
-  idx
   comparison.method.num_trials = length(idx);
   comparison.method.num_success = sum(idx);
   for j=2:length(fields)
